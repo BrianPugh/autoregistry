@@ -1,4 +1,4 @@
-.. image:: assets/logo_200w.png
+.. image:: assets/logo_400w.png
 
 |GHA tests| |Codecov report| |readthedocs|
 
@@ -18,7 +18,7 @@ Installation
 
 .. code-block:: bash
 
-   python -m pip install git+https://github.com/BrianPugh/autoregistry.git
+   python -m pip install autoregistry
 
 
 Usage
@@ -26,7 +26,7 @@ Usage
 
 .. code-block:: python
 
-   import autoregistry
+   from autoregistry import Registry
 
 
 

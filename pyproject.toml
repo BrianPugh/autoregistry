@@ -8,12 +8,12 @@ vcs = "git"
 style = "semver"
 
 [tool.poetry]
-name = "pythontemplate"
+name = "autoregistry"
 version = "0.0.0"  # Do not change, let poetry-dynamic-versioning handle it.
 description = ""
-authors = ["YOUR_NAME_HERE"]
+authors = ["Brian Pugh"]
 readme = "README.rst"
-packages = [{include = "pythontemplate"}]
+packages = [{include = "autoregistry"}]
 
 [tool.poetry.dependencies]
 # Be as loose as possible if writing a library.

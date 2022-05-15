@@ -18,9 +18,9 @@ from datetime import date
 
 # -- Project information -----------------------------------------------------
 
-project = "pythontemplate"
-copyright = f"{date.today().year}, YOUR_NAME_HERE"
-author = "YOUR_NAME_HERE"
+project = "autoregistry"
+copyright = f"{date.today().year}, Brian Pugh"
+author = "Brian Pugh"
 
 # The full version, including alpha/beta/rc tags
 release = "0.0.0"

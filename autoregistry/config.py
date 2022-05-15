@@ -25,7 +25,7 @@ class RegistryConfig:
                 setattr(self, key, value)
 
     def getitem(self, registry: dict, key: str):
-        if self.case_sensitive:
+        if not self.case_sensitive:
             key = key.lower()
 
         return registry[key]

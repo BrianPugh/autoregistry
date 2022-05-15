@@ -18,6 +18,7 @@ class _DictMixin:
         return len(self.__registry__)
 
     def __contains__(self, val: str):
+        val = self.__registry_config__.format(val)
         return val in self.__registry__
 
     def keys(self):
@@ -42,7 +43,8 @@ class RegistryMeta(ABCMeta, _DictMixin):
         cls.__registry__ = {}
 
         try:
-            if cls in Registry:
+            if cls == Registry:
+                # Root registry configuration case.
                 cls.__registry_config__ = RegistryConfig(**config)
                 return cls
         except NameError:

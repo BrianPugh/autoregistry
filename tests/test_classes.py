@@ -2,10 +2,20 @@ import pytest
 from common import construct_pokemon_classes
 
 
+def test_defaults_basic_usecase():
+    Pokemon, Charmander, Pikachu, SurfingPikachu = construct_pokemon_classes()
+    charmander = Pokemon["cHaRmAnDer"](1, 2)
+    assert isinstance(charmander, Charmander)
+
+
 def test_defaults_contains():
     Pokemon, Charmander, Pikachu, SurfingPikachu = construct_pokemon_classes()
     for pokemon in ["charmander", "pikachu", "surfingpikachu"]:
         assert pokemon in Pokemon
+
+    # Test for case insensitivity.
+    for pokemon in ["charmander", "pikachu", "surfingpikachu"]:
+        assert pokemon.upper() in Pokemon
 
 
 def test_defaults_len():

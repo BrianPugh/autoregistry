@@ -36,14 +36,14 @@ class RegistryConfig:
         if not name.endswith(self.suffix):
             raise InvalidClassnameError(f'"{func}" name must end with "{self.suffix}"')
 
+        if self.strip_suffix and self.suffix:
+            name = name[: -len(self.suffix)]
+
         name = self.format(name)
 
         registry[name] = func
 
     def format(self, name):
-        if self.strip_suffix and self.suffix:
-            name = name[: -len(self.suffix)]
-
         if not self.case_sensitive:
             name = name.lower()
 

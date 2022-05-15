@@ -14,6 +14,7 @@ build:
       - asdf install poetry latest
       - asdf global poetry latest
       - poetry config virtualenvs.create false
+      - poetry self update --preview
     post_install:
       - poetry install --without=dev
 

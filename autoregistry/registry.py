@@ -61,9 +61,9 @@ class RegistryMeta(ABCMeta, _DictMixin):
                 return cls
 
         # Copy the nearest parent config, then update it with new params
-        for parent_cls in cls.__mro__[1:]:
+        for parent_cls in cls.mro()[1:]:
             try:
-                cls.__registery_config__ = copy(parent_cls.__registry_config__)  # type: ignore
+                cls.__registry_config__ = copy(parent_cls.__registry_config__)  # type: ignore
                 cls.__registry_config__.update(config)
                 break
             except AttributeError:

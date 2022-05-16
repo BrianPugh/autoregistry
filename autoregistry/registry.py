@@ -93,6 +93,12 @@ class RegistryMeta(ABCMeta, _DictMixin):
 
 class Registry(metaclass=RegistryMeta):
     __call__: Callable  # For decorating
+    __getitem__: Callable
+    __len__: Callable
+    __contains__: Callable
+    keys: Callable
+    values: Callable
+    items: Callable
 
     def __new__(cls, *args, **kwargs):
         if cls is Registry:

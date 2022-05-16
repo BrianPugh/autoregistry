@@ -1,6 +1,8 @@
 import pytest
 from common import construct_pokemon_classes
 
+from autoregistry import Registry
+
 
 def test_defaults_basic_usecase():
     Pokemon, Charmander, Pikachu, SurfingPikachu = construct_pokemon_classes()
@@ -64,3 +66,63 @@ def test_defaults_get():
     assert Pokemon.get("foo") is None
     assert Pokemon.get("foo", "charmander") == Charmander
     assert Pokemon.get("foo", Charmander) == Charmander
+
+
+def test_multiple_inheritence_last():
+    class Foo:
+        def bar(self):
+            return "bar"
+
+    class Baz(Foo, Registry):
+        def blah(self):
+            return "blah"
+
+    class Boop(Baz):
+        pass
+
+    assert list(Baz.keys()) == ["boop"]
+
+
+def test_multiple_inheritence_first():
+    class Foo:
+        def bar(self):
+            return "bar"
+
+    class Baz(Registry, Foo):
+        def blah(self):
+            return "blah"
+
+    class Boop(Baz):
+        pass
+
+    assert list(Baz.keys()) == ["boop"]
+
+
+def test_multiple_inheritence_child_first():
+    class Foo:
+        def bar(self):
+            return "bar"
+
+    class Baz(Registry):
+        def blah(self):
+            return "blah"
+
+    class Boop(Baz, Foo):
+        pass
+
+    assert list(Baz.keys()) == ["boop"]
+
+
+def test_multiple_inheritence_child_last():
+    class Foo:
+        def bar(self):
+            return "bar"
+
+    class Baz(Registry):
+        def blah(self):
+            return "blah"
+
+    class Boop(Foo, Baz):
+        pass
+
+    assert list(Baz.keys()) == ["boop"]

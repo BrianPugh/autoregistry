@@ -68,8 +68,6 @@ class RegistryMeta(ABCMeta, _DictMixin):
                 break
             except AttributeError:
                 pass
-        else:
-            cls.__registry_config__ = RegistryConfig(**config)
 
         # Register direct subclasses of Register to Register
         if cls in Registry.__subclasses__():

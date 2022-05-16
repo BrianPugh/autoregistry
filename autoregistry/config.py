@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from typing import Callable
 
 
-class InvalidClassnameError(Exception):
+class InvalidNameError(Exception):
     """"""
 
 
@@ -62,7 +62,7 @@ class RegistryConfig:
         name = func.__name__
 
         if not name.endswith(self.suffix):
-            raise InvalidClassnameError(f'"{func}" name must end with "{self.suffix}"')
+            raise InvalidNameError(f'"{func}" name must end with "{self.suffix}"')
 
         if self.strip_suffix and self.suffix:
             name = name[: -len(self.suffix)]

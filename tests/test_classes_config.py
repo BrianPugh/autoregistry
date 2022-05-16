@@ -1,7 +1,7 @@
 import pytest
 from common import construct_pokemon_classes
 
-from autoregistry import Registry
+from autoregistry import InvalidNameError, Registry
 
 
 def test_case_sensitive():
@@ -26,6 +26,11 @@ def test_suffix_no_strip():
         pass
 
     assert list(Sensor.keys()) == ["oxygensensor", "temperaturesensor"]
+
+    with pytest.raises(InvalidNameError):
+
+        class Foo(Sensor):
+            pass
 
 
 def test_suffix_yes_strip():

@@ -10,3 +10,15 @@ def test_to_snake():
     assert convert("fooBAR") == "foo_bar"
     assert convert("FOOBAR") == "foobar"
     assert convert("Foo_Bar") == "foo_bar"
+
+
+def test_registry_config_update():
+    config = autoregistry.RegistryConfig()
+    config.update(
+        {
+            "suffix": "test",
+            "not_valid_config_key": None,  # This should be ignored.
+        }
+    )
+
+    assert config.suffix == "test"

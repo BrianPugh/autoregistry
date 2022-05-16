@@ -4,14 +4,18 @@
 
 .. inclusion-marker-do-not-remove
 
-autoregistry
-==============
+AutoRegistry
+============
 
-autoregistry is a
+Invoking functions and class constructors from a string is a common design pattern
+that ``autoregistry`` aims to solve. ``autoregistry`` has a single  powerful class
+``Registry`` that can do the following:
 
+* Be subclassed to automatically register subclasses by their name.
+    * ``Registry`` is, itself, a subclass of ``ABC`` for easy interface creation.
+* Be directly invoked ``my_registery = Registry()`` to create a decorator
+  for registering callables like functions.
 
-Features
-========
 
 Installation
 ============
@@ -21,8 +25,8 @@ Installation
    python -m pip install autoregistry
 
 
-Usage
-=====
+Examples
+========
 
 Class Inheritence
 ^^^^^^^^^^^^^^^^^

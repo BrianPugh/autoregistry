@@ -10,8 +10,9 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Build and publish to pypi
-        uses: JRubics/poetry-publish@v1.10
+        uses: BrianPugh/poetry-publish@poetry-plugins
         with:
           pypi_token: ${{ secrets.PYPI_TOKEN }}
           allow_poetry_pre_release: "yes"
           ignore_dev_requirements: "yes"
+          plugins: "poetry-dynamic-versioning-plugin"

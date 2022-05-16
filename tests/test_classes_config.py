@@ -39,3 +39,25 @@ def test_suffix_yes_strip():
         pass
 
     assert list(Sensor.keys()) == ["oxygen", "temperature"]
+
+
+def test_register_self():
+    Pokemon, Charmander, Pikachu, SurfingPikachu = construct_pokemon_classes(
+        register_self=True,
+    )
+    assert list(Pokemon.keys()) == [
+        "pokemon",
+        "charmander",
+        "pikachu",
+        "surfingpikachu",
+    ]
+
+
+def test_no_recursive():
+    Pokemon, Charmander, Pikachu, SurfingPikachu = construct_pokemon_classes(
+        recursive=False,
+    )
+    assert list(Pokemon.keys()) == ["charmander", "pikachu"]
+    assert list(Charmander.keys()) == []
+    assert list(Pikachu.keys()) == ["surfingpikachu"]
+    assert list(SurfingPikachu.keys()) == []

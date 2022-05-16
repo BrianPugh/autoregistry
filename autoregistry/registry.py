@@ -31,6 +31,12 @@ class _DictMixin:
         for item in self.__registry__.items():
             yield item
 
+    def get(self, key: str, default=None):
+        try:
+            return self[key]
+        except KeyError:
+            return default
+
 
 class RegistryMeta(ABCMeta, _DictMixin):
     __registry__: dict

@@ -17,7 +17,7 @@ class RegistryConfig:
 
     # If ``True``, register new entries in all parent registries.
     # Otherwise, only register in parent.
-    # recursive: bool = True
+    recursive: bool = True
 
     def update(self, new: dict):
         for key, value in new.items():

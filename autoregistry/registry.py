@@ -74,6 +74,12 @@ class RegistryMeta(ABCMeta, _DictMixin):
             if parent_cls == Registry:
                 continue
 
+            if (
+                not cls.__registry_config__.recursive
+                and cls not in parent_cls.__subclasses__()
+            ):
+                continue
+
             try:
                 config = parent_cls.__registry_config__  # type: ignore
             except AttributeError:

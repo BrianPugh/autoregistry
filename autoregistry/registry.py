@@ -35,6 +35,10 @@ class _DictMixin:
         try:
             return self[key]
         except KeyError:
+            pass
+        if isinstance(default, str):
+            return self[default]
+        else:
             return default
 
 

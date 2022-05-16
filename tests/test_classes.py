@@ -56,3 +56,11 @@ def test_defaults_items():
     assert len(list(Charmander.items())) == 0
     assert len(list(Pikachu.items())) == 1
     assert len(list(SurfingPikachu.items())) == 0
+
+
+def test_defaults_get():
+    Pokemon, Charmander, Pikachu, SurfingPikachu = construct_pokemon_classes()
+    assert Pokemon.get("charmander") == Charmander
+    assert Pokemon.get("foo") is None
+    assert Pokemon.get("foo", "charmander") == Charmander
+    assert Pokemon.get("foo", Charmander) == Charmander

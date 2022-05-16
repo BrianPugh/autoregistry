@@ -53,16 +53,12 @@ class RegistryMeta(ABCMeta, _DictMixin):
         cls.__registry__ = {}
 
         try:
-            if cls == Registry:
-                # Root registry configuration case.
-                cls.__registry_config__ = RegistryConfig(**config)
-                return cls
+            Registry
         except NameError:
             # Should only happen the very first time that
             # Registry is being defined.
-            if name == "Registry":
-                cls.__registry_config__ = RegistryConfig(**config)
-                return cls
+            cls.__registry_config__ = RegistryConfig(**config)
+            return cls
 
         # Copy the nearest parent config, then update it with new params
         for parent_cls in cls.mro()[1:]:

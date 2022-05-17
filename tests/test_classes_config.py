@@ -77,3 +77,22 @@ def test_snake_case():
         "pikachu",
         "surfing_pikachu",
     ]
+
+
+def test_config_hierarchy():
+    class Pokemon(Registry, suffix="Type", strip_suffix=True, recursive=False):
+        pass
+
+    class RockType(Pokemon, suffix=""):
+        pass
+
+    class Geodude(RockType):
+        pass
+
+    class GrassType(Pokemon):
+        pass
+
+    with pytest.raises(InvalidNameError):
+        # Because "Oddish" doesn't end in "Type"
+        class Oddish(GrassType):
+            pass

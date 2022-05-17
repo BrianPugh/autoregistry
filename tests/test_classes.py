@@ -36,6 +36,14 @@ def test_defaults_keys():
     assert list(SurfingPikachu.keys()) == []
 
 
+def test_defaults_iter():
+    Pokemon, Charmander, Pikachu, SurfingPikachu = construct_pokemon_classes()
+    assert list(Pokemon) == ["charmander", "pikachu", "surfingpikachu"]
+    assert list(Charmander) == []
+    assert list(Pikachu) == ["surfingpikachu"]
+    assert list(SurfingPikachu) == []
+
+
 def test_defaults_values():
     Pokemon, Charmander, Pikachu, SurfingPikachu = construct_pokemon_classes()
     expected_names = ["Charmander", "Pikachu", "SurfingPikachu"]
@@ -80,7 +88,7 @@ def test_multiple_inheritence_last():
     class Boop(Baz):
         pass
 
-    assert list(Baz.keys()) == ["boop"]
+    assert list(Baz) == ["boop"]
 
 
 def test_multiple_inheritence_first():
@@ -95,7 +103,7 @@ def test_multiple_inheritence_first():
     class Boop(Baz):
         pass
 
-    assert list(Baz.keys()) == ["boop"]
+    assert list(Baz) == ["boop"]
 
 
 def test_multiple_inheritence_child_first():
@@ -110,7 +118,7 @@ def test_multiple_inheritence_child_first():
     class Boop(Baz, Foo):
         pass
 
-    assert list(Baz.keys()) == ["boop"]
+    assert list(Baz) == ["boop"]
 
 
 def test_multiple_inheritence_child_last():
@@ -125,7 +133,7 @@ def test_multiple_inheritence_child_last():
     class Boop(Foo, Baz):
         pass
 
-    assert list(Baz.keys()) == ["boop"]
+    assert list(Baz) == ["boop"]
 
 
 def test_base_registry():
@@ -143,6 +151,6 @@ def test_base_registry():
     class SubBar(Bar):
         pass
 
-    assert list(Registry.keys()) == ["foo", "bar"]
-    assert list(Foo.keys()) == ["subfoo"]
-    assert list(Bar.keys()) == ["subbar"]
+    assert list(Registry) == ["foo", "bar"]
+    assert list(Foo) == ["subfoo"]
+    assert list(Bar) == ["subbar"]

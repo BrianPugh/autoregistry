@@ -41,6 +41,9 @@ class _DictMixin:
         else:
             return default
 
+    def clear(self):
+        self.__registry__.clear()
+
 
 class RegistryMeta(ABCMeta, _DictMixin):
     __registry__: dict

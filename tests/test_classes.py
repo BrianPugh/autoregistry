@@ -126,3 +126,23 @@ def test_multiple_inheritence_child_last():
         pass
 
     assert list(Baz.keys()) == ["boop"]
+
+
+def test_base_registry():
+    Registry.clear()
+
+    class Foo(Registry):
+        pass
+
+    class SubFoo(Foo):
+        pass
+
+    class Bar(Registry):
+        pass
+
+    class SubBar(Bar):
+        pass
+
+    assert list(Registry.keys()) == ["foo", "bar"]
+    assert list(Foo.keys()) == ["subfoo"]
+    assert list(Bar.keys()) == ["subbar"]

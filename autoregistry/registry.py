@@ -112,6 +112,8 @@ class Registry(metaclass=RegistryMeta):
     keys: Callable
     values: Callable
     items: Callable
+    get: Callable
+    clear: Callable
 
     def __new__(cls, *args, **kwargs):
         if cls is Registry:

@@ -1,24 +1,29 @@
 .. image:: https://raw.githubusercontent.com/BrianPugh/autoregistry/main/assets/logo_400w.png
 
-|GHA tests| |Codecov report| |readthedocs|
+|Python compat| |GHA tests| |Codecov report| |readthedocs|
 
 .. inclusion-marker-do-not-remove
 
 AutoRegistry
 ============
 
-Invoking functions and class constructors from a string is a common design pattern
-that ``autoregistry`` aims to solve. ``autoregistry`` has a single  powerful class
-``Registry`` that can do the following:
+Invoking functions and class-constructors from a string is a common design pattern
+that ``autoregistry`` aims to solve. For example, a user might specify a backend
+of type ``"sqlite"`` in a yaml configuration file, for which our program needs to
+construct the ``SQLite`` subclass of our ``Database`` base class.
+``autoregistry`` has a single  powerful class ``Registry`` that can do the following:
 
 * Be subclassed to automatically register subclasses by their name.
-    * ``Registry`` is, itself, a subclass of ``ABC`` for easy interface creation.
+
+  * ``Registry`` is a subclass of ``ABC`` for easy interface creation.
+
 * Be directly invoked ``my_registery = Registry()`` to create a decorator
   for registering callables like functions.
 
 
 Installation
 ============
+AutoRegistry requires Python ``>=3.8``.
 
 .. code-block:: bash
 
@@ -64,7 +69,7 @@ Class Inheritence
 
    print("")
    print(f"{len(Pokemon)} Pokemon registered:")
-   print(f"    {list(Pokemon.keys())}")
+   print(f"    {list(Pokemon)}")
    # By default, lookup is case-insensitive
    charmander = Pokemon["cHaRmAnDer"](level=7, hp=31)
    print(f"Created Pokemon: {charmander}")
@@ -110,8 +115,6 @@ This code block produces the following output:
 .. code-block::
 
    Ash used pokeball and had success_rate=0.1
-   Ash used greatball and had success_rate=0.3
-   Ash used ultraball and had success_rate=0.5
    Ash used masterball and had success_rate=1.0
 
 
@@ -124,3 +127,4 @@ This code block produces the following output:
 .. |readthedocs| image:: https://readthedocs.org/projects/autoregistry/badge/?version=latest
         :target: https://autoregistry.readthedocs.io/en/latest/?badge=latest
         :alt: Documentation Status
+.. |Python compat| image:: https://img.shields.io/badge/>=python-3.8-blue.svg

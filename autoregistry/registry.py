@@ -14,6 +14,10 @@ class _DictMixin:
     def __getitem__(self, key: str):
         return self.__registry_config__.getitem(self.__registry__, key)
 
+    def __iter__(self):
+        for val in self.__registry__:
+            yield val
+
     def __len__(self):
         return len(self.__registry__)
 

@@ -1,4 +1,4 @@
-.. image:: assets/logo_400w.png
+.. image:: https://raw.githubusercontent.com/BrianPugh/autoregistry/main/assets/logo_400w.png
 
 |GHA tests| |Codecov report| |readthedocs|
 

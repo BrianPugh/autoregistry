@@ -34,12 +34,7 @@ def test_defaults_functions_items():
     assert list(registry.items()) == [("foo", foo), ("bar", bar)]
 
 
-def test_defaults_module():
-    import fake_module
-
-    registry = Registry()
-    registry(fake_module)
-    assert list(registry) == ["bar2", "fake_module_1", "fake_module_2", "foo2"]
+def assert_fake_module_registry(registry, fake_module):
     assert registry["bar2"] == fake_module.bar2
     assert registry["fake_module_1"]["foo1"] == fake_module.fake_module_1.foo1
     assert registry["fake_module_1"]["bar1"] == fake_module.fake_module_1.bar1
@@ -48,6 +43,16 @@ def test_defaults_module():
     assert registry["fake_module_2"]["foo2"] == fake_module.fake_module_2.foo2
     assert registry["fake_module_2"]["bar2"] == fake_module.fake_module_2.bar2
     assert registry["foo2"] == fake_module.foo2
+
+
+def test_defaults_module():
+    import fake_module
+
+    registry = Registry()
+    registry(fake_module)
+    assert list(registry) == ["bar2", "fake_module_1", "fake_module_2", "foo2"]
+
+    assert_fake_module_registry(registry, fake_module)
 
 
 def test_defaults_module_dot_query():
@@ -122,15 +127,19 @@ def test_registry_overwrite_key_collision():
 
 
 def test_registry_register_at_creation():
+    import fake_module
+
     def foo():
         pass
 
     def bar():
         pass
 
-    registry = Registry([foo, bar])
+    registry = Registry([foo, bar, fake_module])
 
     for name in ["foo", "bar"]:
         assert name in registry
 
     assert "baz" not in registry
+
+    assert_fake_module_registry(registry, fake_module)

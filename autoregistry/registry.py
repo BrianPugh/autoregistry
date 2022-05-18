@@ -4,7 +4,6 @@ from inspect import ismodule
 from typing import Callable
 
 from .config import RegistryConfig
-from .regex import key_split
 
 
 class _DictMixin:
@@ -144,8 +143,7 @@ class RegistryDecorator(Registry, _DictMixin):
         self.__registry__ = {}
         self.__registry_config__ = RegistryConfig(**config)
 
-    def __call__(self, obj):
-        """For decorator."""
+    def __call__(self, obj, name=None):
         config = self.__registry_config__
         if ismodule(obj):
             for elem_name in dir(obj):
@@ -158,13 +156,12 @@ class RegistryDecorator(Registry, _DictMixin):
                     if not config.recursive:
                         continue
                     subregistry = RegistryDecorator()
-                    subregistry.__name__ = elem_name
                     subregistry(handle)
-                    self(subregistry)
+                    self(subregistry, elem_name)
                 else:
-                    self(handle)
+                    self(handle, elem_name)
         else:
-            config.register(self.__registry__, obj)
+            config.register(self.__registry__, obj, name=name)
         return obj
 
     def __repr__(self):

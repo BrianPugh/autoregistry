@@ -1,11 +1,8 @@
 from dataclasses import dataclass
-from typing import Callable
+from typing import Any, Union
 
+from .exceptions import CannotDeriveNameError, InvalidNameError
 from .regex import key_split, to_snake_case
-
-
-class InvalidNameError(Exception):
-    """"""
 
 
 @dataclass
@@ -37,18 +34,24 @@ class RegistryConfig:
             registry = registry[key]
         return registry
 
-    def register(self, registry: dict, func: Callable):
-        name = func.__name__
+    def register(self, registry: dict, obj: Any, name: Union[str, None] = None):
+        if name is None:
+            try:
+                name = str(obj.__name__)
+            except AttributeError:
+                raise CannotDeriveNameError(
+                    f"Cannot derive name from a bare {type(obj)}."
+                )
 
         if not name.endswith(self.suffix):
-            raise InvalidNameError(f'"{func}" name must end with "{self.suffix}"')
+            raise InvalidNameError(f'"{obj}" name must end with "{self.suffix}"')
 
         if self.strip_suffix and self.suffix:
             name = name[: -len(self.suffix)]
 
         name = self.format(name)
 
-        registry[name] = func
+        registry[name] = obj
 
     def format(self, name):
         if self.snake_case:

@@ -12,3 +12,7 @@ def _foo_private1():
 
 def __magic1__():
     pass
+
+
+some_str = "some_str contents"
+some_list = ["some_list_content_1", ""]

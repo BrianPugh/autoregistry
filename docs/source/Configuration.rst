@@ -32,23 +32,20 @@ and update it with newly passed in values. For example:
      pass
 
 
- # it's just "rock" instead of "rocktype" because we
- # strip the suffix by default.
+ # it's just "rock" instead of "rocktype" because we strip the suffix by default.
  geodude = Pokemon["rock"]["geodude"]()
 
 Here, all direct children of ``Pokemon`` MUST end with ``Type``.
-Because we set ``recursive=False``, children of ``RockType`` will
-NOT be registered with ``RockType``'s parent, ``Pokemon``.
-For RockType, setting ``suffix=""`` overrides its parent's
-setting, allowing the definition of the subclass ``Geodude``,
+Children of ``RockType`` will NOT be registered with ``RockType``'s parent, ``Pokemon``
+because we set ``recursive=False``.
+For ``RockType``, setting ``suffix=""`` overrides its parent's
+``suffix`` setting, allowing the definition of the subclass ``Geodude``,
 despite it not ending with ``Type``.
 
 
 Configuring Decorator-Based
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-When directly declaring a ``Registry`` to be used as a decorator,
-the configurations are passed directly as keyword arguments:
-
+When directly declaring a ``Registry``, the configurations are passed directly as keyword arguments:
 
 .. code-block:: python
 
@@ -65,8 +62,7 @@ the configurations are passed directly as keyword arguments:
        pass
 
 
-   # it's just "json" instead of "json_read" because we
-   # strip the suffix by default.
+   # it's just "json" instead of "json_read" because we strip the suffix by default.
    data = readers["json"]("my_file.json")
 
 
@@ -76,10 +72,8 @@ This section describes and provides examples for all of the configurable options
 in ``autoregistry``.
 
 
-|
-
-``case_sensitive: bool = False``
---------------------------------
+case_sensitive: bool = False
+----------------------------
 If ``False``, all lookups are case-insensitive.
 Otherwise, all lookups are case-sensitive.
 A failed lookup will result in a ``KeyError``.
@@ -125,10 +119,8 @@ A failed lookup will result in a ``KeyError``.
    pikachu = Pokemon["pikachu"]()
 
 
-|
-
-``suffix: str = ""``
---------------------
+suffix: str = ""
+----------------
 All registered items MUST end with this suffix.
 If a registered item does NOT end with this suffix, ``InvalidNameError``
 will be raised.
@@ -147,10 +139,9 @@ will be raised.
    class TemperatureSensor(Sensor):
        pass
 
-|
 
-``strip_suffix: bool = True``
------------------------------
+strip_suffix: bool = True
+-------------------------
 If ``True``, the ``suffix`` will be removed from registered items.
 This generally allows for a more natural lookup.
 
@@ -172,10 +163,8 @@ This generally allows for a more natural lookup.
    my_temperature_sensor = Sensor["temperature"]()
 
 
-|
-
-``register_self: bool = False``
--------------------------------
+register_self: bool = False
+---------------------------
 If ``True``, each registry class is registered in its own registry.
 
 .. code-block:: python
@@ -193,10 +182,8 @@ If ``True``, each registry class is registered in its own registry.
    assert list(Pokeball) == ["pokeball", "masterball"]
 
 
-|
-
-``recursive: bool = True``
---------------------------
+recursive: bool = True
+----------------------
 If ``True``, all subclasses will be recurisvely registered to their parents.
 
 .. code-block:: python
@@ -234,14 +221,13 @@ If ``True``, all subclasses will be recurisvely registered to their parents.
    assert list(Pokemon) == ["pikachu"]
    assert list(Pikachu) == ["surfingpikachu"]
 
-|
 
-``snake_case: bool = False``
-----------------------------
-By default, for case-insensitive queries, the key name is derived
-by taking the all-lowercase version of the class.
+snake_case: bool = False
+------------------------
+By default, for case-insensitive queries, the key is derived
+by taking the all-lowercase version of the class name.
 If ``snake_case=True``, the PascalCase class names will be
-converted to snake_case.
+instead converted to snake_case.
 
 .. code-block:: python
 

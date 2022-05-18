@@ -1,7 +1,6 @@
 Overview
 ========
-The only object from the ``autoregistry`` library you need to concern yourself
-about is the ``Registry`` object:
+All of ``autoregistry``'s functionality comes from the ``Registry`` object.
 
 .. code-block:: python
 
@@ -37,8 +36,8 @@ decorator from ``autoregistry`` as well.
 Here we have defined an interface ``Pokemon`` that currently has one subclass, ``Pikachu``.
 Lets investigate what kind of features ``autoregistry`` gives us.
 
-We can largely treat the ``Pokemon`` **class** as a dictionary mapping strings to
-class-constructors. The keys are derived from the class name.
+The ``Pokemon`` **class** can be treated like a dictionary, mapping strings to
+class-constructors. The keys are derived from the subclasses' names.
 
 .. code-block:: pycon
 
@@ -52,26 +51,25 @@ class-constructors. The keys are derived from the class name.
    >>> pikachu
    <__main__.Pikachu object at 0x10689fb20>
 
-Unlike a dictionary, the queries are by default case-insensitive:
+Unlike a dictionary, the queries are, by default, case-insensitive:
 
 .. code-block:: pycon
 
    >>> pikachu = Pokemon["pIkAcHU"]()  # Case insensitive works, too.
-   >>> pikachu.attack(None)
-   5
-   >>> "pikachu" in Pokemon and "PIKACHU" in Pokemon
+   >>> "pikachu" in Pokemon
+   True
+   >>> "PIKACHU" in Pokemon
    True
 
-When querying for an unregistered string, a ``KerError`` is raised.
-You can also use the ``get`` method to handle missin-key queries.
+When querying for an unregistered string, a ``KeyError`` is raised.
+You can also use the ``get`` method to handle missing-key queries.
+If the provided ``default`` argument is a string, a lookup will be performed.
 
 .. code-block:: pycon
 
    >>> Pokemon["ash"]
    KeyError: 'ash'
-   >>> pikachu = Pokemon.get(
-   ...     "ash", "pikachu"
-   ... )()  # If the default value is a string, perform the lookup
+   >>> pikachu = Pokemon.get("ash", "pikachu")()
    >>> pikachu = Pokemon.get("ash", Pikachu)()  # The default could also be the constructor.
    >>> pikachu = Pokemon.get("ash")()  # If default is not specified, its None.
    Traceback (most recent call last):
@@ -102,15 +100,15 @@ object and use it to decorate functions.
    def bar(x):
        return 2 * x
 
-We can largely treat the ``my_registry`` **object** as a dictionary mapping strings to
-functions. The keys are derived from the function name.
+The ``my_registry`` **object** can be treated like a dictionary, mapping strings to
+registered functions. The keys are derived from the function names.
 
 .. code-block:: pycon
 
    >>> len(my_registry)
    2
    >>> my_registry
-   <RegistryDecorator: ['foo', 'bar']>
+   <Registry: ['foo', 'bar']>
    >>> list(my_registry)
    ['foo', 'bar']
    >>> my_registry["foo"](7)

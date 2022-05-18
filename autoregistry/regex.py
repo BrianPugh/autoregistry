@@ -23,3 +23,7 @@ def to_snake_case(name: str) -> str:
     name = _to_snake_case_pattern2.sub(r"_\1", name)
     name = _to_snake_case_pattern3.sub(r"\1_\2", name)
     return name.lower()
+
+
+def key_split(s: str) -> list[str]:
+    return s.replace("/", ".").split(".")

@@ -1,16 +1,15 @@
 import autoregistry
-import autoregistry.regex
+from autoregistry.regex import key_split, to_snake_case
 
 
 def test_to_snake():
-    convert = autoregistry.regex.to_snake_case
-    assert convert("FooBar") == "foo_bar"
-    assert convert("foo_bar") == "foo_bar"
-    assert convert("FOOBar") == "foo_bar"
-    assert convert("fooBar") == "foo_bar"
-    assert convert("fooBAR") == "foo_bar"
-    assert convert("FOOBAR") == "foobar"
-    assert convert("Foo_Bar") == "foo_bar"
+    assert to_snake_case("FooBar") == "foo_bar"
+    assert to_snake_case("foo_bar") == "foo_bar"
+    assert to_snake_case("FOOBar") == "foo_bar"
+    assert to_snake_case("fooBar") == "foo_bar"
+    assert to_snake_case("fooBAR") == "foo_bar"
+    assert to_snake_case("FOOBAR") == "foobar"
+    assert to_snake_case("Foo_Bar") == "foo_bar"
 
 
 def test_registry_config_update():
@@ -23,3 +22,15 @@ def test_registry_config_update():
     )
 
     assert config.suffix == "test"
+
+
+def test_key_split():
+    assert key_split("foo") == [
+        "foo",
+    ]
+    assert key_split("foo.") == ["foo", ""]
+    assert key_split("foo/") == ["foo", ""]
+    assert key_split("foo.bar") == ["foo", "bar"]
+    assert key_split("foo.bar.") == ["foo", "bar", ""]
+    assert key_split("foo/bar") == ["foo", "bar"]
+    assert key_split("foo.bar/baz") == ["foo", "bar", "baz"]

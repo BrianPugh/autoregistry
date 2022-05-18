@@ -1,7 +1,7 @@
 from abc import ABCMeta
 from copy import copy
 from inspect import ismodule
-from typing import Callable
+from typing import Callable, Union
 
 from .config import RegistryConfig
 
@@ -136,12 +136,18 @@ class Registry(metaclass=RegistryMeta):
 class RegistryDecorator(Registry, _DictMixin):
     __name__: str
 
-    def __init__(self, /, **config):
+    def __init__(self, objs: Union[None, list, tuple] = None, /, **config):
         """Create a Registry for decorating."""
         # overwrite the registry data so its independent
         # of the Registry object.
         self.__registry__ = {}
         self.__registry_config__ = RegistryConfig(**config)
+
+        if objs is None:
+            objs = []
+
+        for obj in objs:
+            self(obj)
 
     def __call__(self, obj, name=None):
         config = self.__registry_config__

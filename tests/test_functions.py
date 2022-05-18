@@ -119,3 +119,18 @@ def test_registry_overwrite_key_collision():
         @registry
         def foo():  # noqa: F811
             pass
+
+
+def test_registry_register_at_creation():
+    def foo():
+        pass
+
+    def bar():
+        pass
+
+    registry = Registry([foo, bar])
+
+    for name in ["foo", "bar"]:
+        assert name in registry
+
+    assert "baz" not in registry

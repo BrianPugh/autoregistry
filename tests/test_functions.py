@@ -59,3 +59,20 @@ def test_defaults_module_dot_query():
     assert registry["fake_module_1/bar1"] == fake_module.fake_module_1.bar1
     assert registry["fake_module_2/foo2"] == fake_module.fake_module_2.foo2
     assert registry["fake_module_2/bar2"] == fake_module.fake_module_2.bar2
+
+
+def test_defaults_module_dot_contains():
+    import fake_module
+
+    registry = Registry()
+    registry(fake_module)
+
+    assert "fake_module_1.foo1" in registry
+    assert "fake_module_1.bar1" in registry
+    assert "fake_module_2.foo2" in registry
+    assert "fake_module_2.bar2" in registry
+
+    assert "fake_module_1/foo1" in registry
+    assert "fake_module_1/bar1" in registry
+    assert "fake_module_2/foo2" in registry
+    assert "fake_module_2/bar2" in registry

@@ -1,3 +1,5 @@
+import pytest
+
 import autoregistry
 from autoregistry.regex import key_split, to_snake_case
 
@@ -22,6 +24,14 @@ def test_registry_config_update():
     )
 
     assert config.suffix == "test"
+
+
+def test_registry_config_cannot_derive_name():
+    config = autoregistry.RegistryConfig()
+    d = {}
+    foo = "foo"
+    with pytest.raises(autoregistry.CannotDeriveNameError):
+        config.register(d, foo)
 
 
 def test_key_split():

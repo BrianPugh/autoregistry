@@ -9,6 +9,8 @@ def test_defaults_functions_contains():
     for name in ["foo", "bar"]:
         assert name in registry
 
+    assert "baz" not in registry
+
 
 def test_defaults_functions_len():
     registry, _, _ = construct_functions()

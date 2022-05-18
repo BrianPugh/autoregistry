@@ -136,7 +136,7 @@ class Registry(metaclass=RegistryMeta):
 class RegistryDecorator(Registry, _DictMixin):
     __name__: str
 
-    def __init__(self, objs: Union[None, list, tuple] = None, /, **config):
+    def __init__(self, objs=None, /, **config):
         """Create a Registry for decorating."""
         # overwrite the registry data so its independent
         # of the Registry object.
@@ -145,6 +145,8 @@ class RegistryDecorator(Registry, _DictMixin):
 
         if objs is None:
             objs = []
+        elif not isinstance(objs, (tuple, list)):
+            objs = [objs]
 
         for obj in objs:
             self(obj)

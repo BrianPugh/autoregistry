@@ -143,3 +143,12 @@ def test_registry_register_at_creation():
     assert "baz" not in registry
 
     assert_fake_module_registry(registry, fake_module)
+
+
+def test_registry_register_at_creation_single():
+    def bar():
+        pass
+
+    registry = Registry(bar)
+
+    assert list(registry) == ["bar"]

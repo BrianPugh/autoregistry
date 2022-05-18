@@ -1,5 +1,7 @@
 from common import construct_functions
 
+from autoregistry import Registry
+
 
 def test_defaults_functions_contains():
     registry, _, _ = construct_functions()
@@ -26,3 +28,11 @@ def test_defaults_functions_values():
 def test_defaults_functions_items():
     registry, foo, bar = construct_functions()
     assert list(registry.items()) == [("foo", foo), ("bar", bar)]
+
+
+def test_defaults_module():
+    import fake_module
+
+    registry = Registry()
+    registry(fake_module)
+    assert list(registry) == ["bar2", "fake_module_1", "fake_module_2", "foo2"]

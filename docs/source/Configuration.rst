@@ -185,6 +185,7 @@ If ``True``, each registry class is registered in its own registry.
 recursive: bool = True
 ----------------------
 If ``True``, all subclasses will be recursively registered to their parents.
+If registering a ``module``, this means all submodules will be recursively transversed.
 
 .. code-block:: python
 

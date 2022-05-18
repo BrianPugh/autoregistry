@@ -1,5 +1,6 @@
 from abc import ABCMeta
 from copy import copy
+from inspect import ismodule
 from typing import Callable
 
 from .config import RegistryConfig
@@ -109,15 +110,16 @@ class RegistryMeta(ABCMeta, _DictMixin):
 
 
 class Registry(metaclass=RegistryMeta):
-    __call__: Callable  # For decorating
-    __getitem__: Callable
-    __len__: Callable
+    __call__: Callable
     __contains__: Callable
+    __getitem__: Callable
+    __iter__: Callable
+    __len__: Callable
+    clear: Callable
+    get: Callable
+    items: Callable
     keys: Callable
     values: Callable
-    items: Callable
-    get: Callable
-    clear: Callable
 
     def __new__(cls, *args, **kwargs):
         if cls is Registry:
@@ -129,6 +131,8 @@ class Registry(metaclass=RegistryMeta):
 
 
 class RegistryDecorator(Registry, _DictMixin):
+    __name__: str
+
     def __init__(self, /, **config):
         """Create a Registry for decorating."""
         # overwrite the registry data so its independent
@@ -138,7 +142,25 @@ class RegistryDecorator(Registry, _DictMixin):
 
     def __call__(self, obj):
         """For decorator."""
-        self.__registry_config__.register(self.__registry__, obj)
+        config = self.__registry_config__
+        if ismodule(obj):
+            for elem_name in dir(obj):
+                if elem_name.startswith("_"):
+                    # Skip private and magic attributes
+                    continue
+                handle = getattr(obj, elem_name)
+
+                if ismodule(handle):
+                    if not config.recursive:
+                        continue
+                    subregistry = RegistryDecorator()
+                    subregistry.__name__ = elem_name
+                    subregistry(handle)
+                    self(subregistry)
+                else:
+                    self(handle)
+        else:
+            config.register(self.__registry__, obj)
         return obj
 
     def __repr__(self):

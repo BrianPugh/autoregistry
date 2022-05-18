@@ -1,8 +1,9 @@
 import autoregistry
+import autoregistry.regex
 
 
 def test_to_snake():
-    convert = autoregistry.config.to_snake_case
+    convert = autoregistry.regex.to_snake_case
     assert convert("FooBar") == "foo_bar"
     assert convert("foo_bar") == "foo_bar"
     assert convert("FOOBar") == "foo_bar"

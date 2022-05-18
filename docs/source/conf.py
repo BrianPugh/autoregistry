@@ -16,14 +16,18 @@
 
 from datetime import date
 
+import autoregistry
+
 # -- Project information -----------------------------------------------------
 
 project = "autoregistry"
 copyright = f"{date.today().year}, Brian Pugh"
 author = "Brian Pugh"
 
+# The short X.Y version.
+version = autoregistry.__version__
 # The full version, including alpha/beta/rc tags
-release = "0.0.0"
+release = autoregistry.__version__
 
 
 # -- General configuration ---------------------------------------------------

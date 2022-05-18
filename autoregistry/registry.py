@@ -122,7 +122,7 @@ class Registry(metaclass=RegistryMeta):
     def __new__(cls, *args, **kwargs):
         if cls is Registry:
             # A Registry is being explicitly created for decorating
-            return super().__new__(RegistryDecorator, *args, **kwargs)
+            return super().__new__(RegistryDecorator)
         else:
             # Registry is being subclassed
             return super().__new__(cls)

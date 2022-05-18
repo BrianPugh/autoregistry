@@ -8,18 +8,22 @@ AutoRegistry
 ============
 
 Invoking functions and class-constructors from a string is a common design pattern
-that ``autoregistry`` aims to solve. For example, a user might specify a backend
-of type ``"sqlite"`` in a yaml configuration file, for which our program needs to
-construct the ``SQLite`` subclass of our ``Database`` base class.
+that ``autoregistry`` aims to solve.
+For example, a user might specify a backend of type ``"sqlite"`` in a yaml configuration
+file, for which our program needs to construct the ``SQLite`` subclass of our ``Database`` class.
+Classically, you would need to manually create a lookup mapping the string ``"sqlite"`` to
+the ``SQLite`` constructor.
+With ``autoregistry``, the lookup is autmatically created for you.
+
+
 ``autoregistry`` has a single  powerful class ``Registry`` that can do the following:
 
 * Be subclassed to automatically register subclasses by their name.
 
-  * ``Registry`` is a subclass of ``ABC`` for easy interface creation.
-
 * Be directly invoked ``my_registery = Registry()`` to create a decorator
   for registering callables like functions.
 
+.. inclusion-marker-remove
 
 Installation
 ============
@@ -35,6 +39,9 @@ Examples
 
 Class Inheritence
 ^^^^^^^^^^^^^^^^^
+
+``Registry`` adds a dictionary-like interface to class constructors
+for looking up subclasses.
 
 .. code-block:: python
 
@@ -67,13 +74,12 @@ Class Inheritence
            return 3
 
 
-   print("")
    print(f"{len(Pokemon)} Pokemon registered:")
    print(f"    {list(Pokemon)}")
-   # By default, lookup is case-insensitive
-   charmander = Pokemon["cHaRmAnDer"](level=7, hp=31)
+   charmander = Pokemon["cHaRmAnDer"](
+       level=7, hp=31
+   )  # By default, lookup is case-insensitive
    print(f"Created Pokemon: {charmander}")
-   print("")
 
 This code block produces the following output:
 
@@ -86,6 +92,9 @@ This code block produces the following output:
 
 Function Registry
 ^^^^^^^^^^^^^^^^^
+
+Directly instantiating a ``Registry`` object allows you to
+register functions by decorating them.
 
 .. code-block:: python
 
@@ -104,15 +113,13 @@ Function Registry
        return 0.1
 
 
-   print("")
    for ball in ["pokeball", "masterball"]:
        success_rate = pokeballs[ball](None)
        print(f"Ash used {ball} and had {success_rate=}")
-   print("")
 
 This code block produces the following output:
 
-.. code-block::
+.. code-block:: text
 
    Ash used pokeball and had success_rate=0.1
    Ash used masterball and had success_rate=1.0

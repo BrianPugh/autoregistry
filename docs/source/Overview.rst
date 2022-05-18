@@ -117,5 +117,44 @@ registered functions. The keys are derived from the function names.
 All of the documentation in `Inheritence-Based`_ is equally valid for the explicitly
 created object ``my_registry``.
 
+Alternative to the decorator, you can also pass in an object or a list of objects
+at registry creation:
+
+.. code-block:: python
+
+   def foo():
+       pass
+
+
+   def bar():
+       pass
+
+
+   my_registry = Registry([foo, bar])
+
+
+   @my_registry
+   def baz():
+       pass
+
+
+Module-Based
+^^^^^^^^^^^^
+Another use of AutoRegistry is to automatically create a registry of an external module.
+For example, in pytorch, the ``torch.optim`` submodule contains many optimizers that
+we may want to configure via a yaml file.
+
+..code-block:: python
+
+   import torch
+   from autoregistry import Registry
+
+   # For some modules, ``recursive=True`` can lead to infinite recursion.
+   optims = Registry(torch.optim, recursive=False)
+
+   assert list(optims) == ['asgd', 'adadelta', 'adagrad', 'adam', 'adamw',
+                           'adamax', 'lbfgs', 'nadam', 'optimizer', 'radam',
+                           'rmsprop', 'rprop', 'sgd', 'sparseadam']
+
 
 .. _abstract base class: https://docs.python.org/3/library/abc.html

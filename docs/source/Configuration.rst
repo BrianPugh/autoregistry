@@ -184,7 +184,7 @@ If ``True``, each registry class is registered in its own registry.
 
 recursive: bool = True
 ----------------------
-If ``True``, all subclasses will be recurisvely registered to their parents.
+If ``True``, all subclasses will be recursively registered to their parents.
 
 .. code-block:: python
 

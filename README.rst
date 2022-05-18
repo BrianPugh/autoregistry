@@ -13,7 +13,7 @@ For example, a user might specify a backend of type ``"sqlite"`` in a yaml confi
 file, for which our program needs to construct the ``SQLite`` subclass of our ``Database`` class.
 Classically, you would need to manually create a lookup mapping the string ``"sqlite"`` to
 the ``SQLite`` constructor.
-With ``autoregistry``, the lookup is autmatically created for you.
+With ``autoregistry``, the lookup is automatically created for you.
 
 
 ``autoregistry`` has a single  powerful class ``Registry`` that can do the following:
@@ -37,7 +37,7 @@ AutoRegistry requires Python ``>=3.8``.
 Examples
 ========
 
-Class Inheritence
+Class Inheritance
 ^^^^^^^^^^^^^^^^^
 
 ``Registry`` adds a dictionary-like interface to class constructors

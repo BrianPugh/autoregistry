@@ -12,7 +12,7 @@ it to create a ``Registry`` object. We'll be investigating these two usecases.
 
 Inheritence-Based
 ^^^^^^^^^^^^^^^^^
-Generally, when inherting ``Registry``, we are defining an interface, and thusly
+Generally, when inheriting ``Registry``, we are defining an interface, and thusly
 an `abstract base class`_. The ``Registry`` class already inherits from ``ABCMeta``,
 so the decorator ``from abc import abstractmethod`` will automatically work with
 subclasses of ``Registry``. For convenience, you can import the ``abstractmethod``

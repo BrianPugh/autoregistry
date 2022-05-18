@@ -131,7 +131,7 @@ class Registry(metaclass=RegistryMeta):
 class RegistryDecorator(Registry, _DictMixin):
     def __init__(self, /, **config):
         """Create a Registry for decorating."""
-        # overwrite the registry datas so its independent
+        # overwrite the registry data so its independent
         # of the Registry object.
         self.__registry__ = {}
         self.__registry_config__ = RegistryConfig(**config)

@@ -4,6 +4,7 @@ from inspect import ismodule
 from typing import Callable
 
 from .config import RegistryConfig
+from .regex import key_split
 
 
 class _DictMixin:
@@ -22,9 +23,12 @@ class _DictMixin:
     def __len__(self):
         return len(self.__registry__)
 
-    def __contains__(self, val: str):
-        val = self.__registry_config__.format(val)
-        return val in self.__registry__
+    def __contains__(self, key: str):
+        try:
+            self.__registry_config__.getitem(self.__registry__, key)
+        except KeyError:
+            return False
+        return True
 
     def keys(self):
         return self.__registry__.keys()

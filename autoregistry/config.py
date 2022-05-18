@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Callable
 
-from .regex import to_snake_case
+from .regex import key_split, to_snake_case
 
 
 class InvalidNameError(Exception):
@@ -29,10 +29,13 @@ class RegistryConfig:
                 setattr(self, key, value)
 
     def getitem(self, registry: dict, key: str):
-        if not self.case_sensitive:
-            key = key.lower()
+        keys = key_split(key)
+        for key in keys:
+            if not self.case_sensitive:
+                key = key.lower()
 
-        return registry[key]
+            registry = registry[key]
+        return registry
 
     def register(self, registry: dict, func: Callable):
         name = func.__name__

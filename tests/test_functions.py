@@ -1,5 +1,7 @@
+import pytest
 from common import construct_functions
 
+import autoregistry
 from autoregistry import Registry
 
 
@@ -91,3 +93,29 @@ def test_defaults_module_dot_contains():
     assert "FAKE_MODULE_1/BAR1" in registry
     assert "FAKE_MODULE_2/FOO2" in registry
     assert "FAKE_MODULE_2/BAR2" in registry
+
+
+def test_registry_overwrite():
+    registry = Registry(overwrite=True)
+
+    @registry
+    def foo():  # type: ignore
+        pass
+
+    @registry
+    def foo():  # noqa: F811
+        pass
+
+
+def test_registry_overwrite_key_collision():
+    registry = Registry(overwrite=False)
+
+    @registry
+    def foo():  # type: ignore
+        pass
+
+    with pytest.raises(autoregistry.KeyCollisionError):
+
+        @registry
+        def foo():  # noqa: F811
+            pass

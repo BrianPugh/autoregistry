@@ -8,3 +8,7 @@ class InvalidNameError(RegistryError):
 
 class CannotDeriveNameError(RegistryError):
     """Cannot derive registry name from object."""
+
+
+class KeyCollisionError(RegistryError):
+    """Attempted to register an object to an already used key."""

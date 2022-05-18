@@ -4,5 +4,10 @@ __version__ = "0.0.0"
 from abc import abstractmethod
 
 from .config import RegistryConfig
-from .exceptions import CannotDeriveNameError, InvalidNameError, RegistryError
+from .exceptions import (
+    CannotDeriveNameError,
+    InvalidNameError,
+    KeyCollisionError,
+    RegistryError,
+)
 from .registry import Registry, RegistryDecorator, RegistryMeta

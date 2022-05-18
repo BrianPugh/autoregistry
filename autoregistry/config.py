@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Any, Union
 
-from .exceptions import CannotDeriveNameError, InvalidNameError
+from .exceptions import CannotDeriveNameError, InvalidNameError, KeyCollisionError
 from .regex import key_split, to_snake_case
 
 
@@ -19,6 +19,8 @@ class RegistryConfig:
     recursive: bool = True
 
     snake_case: bool = False
+
+    overwrite: bool = False
 
     def update(self, new: dict):
         for key, value in new.items():
@@ -50,6 +52,9 @@ class RegistryConfig:
             name = name[: -len(self.suffix)]
 
         name = self.format(name)
+
+        if not self.overwrite and name in registry:
+            raise KeyCollisionError(f'"{name}" already registered to {registry}')
 
         registry[name] = obj
 

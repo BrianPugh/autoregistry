@@ -245,3 +245,36 @@ instead converted to snake_case.
 
 
    assert list(Tools) == ["hammer", "socket_wrench"]
+
+
+overwrite: bool = False
+-----------------------
+By default, attempting to register an object that would overwrite an existing registered item would result in a ``KeyCollisionError``. However, if ``overwrite=True``, then the previous entry will be simply overwritten.
+
+.. code-block:: python
+
+   registry = Registry()
+
+
+   @registry
+   def foo():
+       pass
+
+
+   # This will raise a ``KeyCollisionError``
+   @registry
+   def foo():
+       pass
+
+.. code-block:: python
+   registry = Registry(overwrite=True)
+
+
+   @registry
+   def foo():
+       pass
+
+
+   @registry
+   def foo():
+       pass

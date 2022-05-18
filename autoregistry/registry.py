@@ -77,7 +77,7 @@ class RegistryMeta(ABCMeta, _DictMixin):
                 pass
 
         # Register direct subclasses of Register to Register
-        if cls in Registry.__subclasses__():
+        if cls in Registry.__subclasses__() and name != "RegistryDecorator":
             Registry.__registry_config__.register(Registry.__registry__, cls)
 
         # otherwise, register it in own registry and all parent registries.
@@ -142,4 +142,4 @@ class RegistryDecorator(Registry, _DictMixin):
         return obj
 
     def __repr__(self):
-        return f"<{type(self).__name__}: {list(self.__registry__.keys())}>"
+        return f"<Registry: {list(self.__registry__.keys())}>"

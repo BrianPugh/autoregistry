@@ -10,7 +10,7 @@ style = "semver"
 [tool.poetry]
 name = "autoregistry"
 version = "0.0.0"  # Do not change, let poetry-dynamic-versioning handle it.
-description = ""
+description = "Automatic registry design-pattern for mapping names to functionality."
 authors = ["Brian Pugh"]
 readme = "README.rst"
 packages = [{include = "autoregistry"}]

@@ -76,3 +76,14 @@ def test_defaults_module_dot_contains():
     assert "fake_module_1/bar1" in registry
     assert "fake_module_2/foo2" in registry
     assert "fake_module_2/bar2" in registry
+
+    # Test case-insensitivity
+    assert "FAKE_MODULE_1.FOO1" in registry
+    assert "FAKE_MODULE_1.BAR1" in registry
+    assert "FAKE_MODULE_2.FOO2" in registry
+    assert "FAKE_MODULE_2.BAR2" in registry
+
+    assert "FAKE_MODULE_1/FOO1" in registry
+    assert "FAKE_MODULE_1/BAR1" in registry
+    assert "FAKE_MODULE_2/FOO2" in registry
+    assert "FAKE_MODULE_2/BAR2" in registry

@@ -67,6 +67,8 @@ def test_no_recursive():
     assert list(Pikachu.keys()) == ["surfingpikachu"]
     assert list(SurfingPikachu.keys()) == []
 
+    assert "pikachu.surfingpikachu" in Pokemon
+
 
 def test_snake_case():
     Pokemon, Charmander, Pikachu, SurfingPikachu = construct_pokemon_classes(

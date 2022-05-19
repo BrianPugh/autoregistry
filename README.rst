@@ -23,6 +23,8 @@ With ``autoregistry``, the lookup is automatically created for you.
 * Be directly invoked ``my_registery = Registry()`` to create a decorator
   for registering callables like functions.
 
+* Automatically create registeries for other python modules.
+
 .. inclusion-marker-remove
 
 Installation
@@ -123,6 +125,35 @@ This code block produces the following output:
 
    Ash used pokeball and had success_rate=0.1
    Ash used masterball and had success_rate=1.0
+
+
+Module Registry
+^^^^^^^^^^^^^^^
+
+Create a registry for another python module.
+
+.. code-block:: python
+   import torch
+   from autoregistry import Registry
+
+   optims = Registry(torch.optim, recursive=False)
+
+   assert list(optims) == [
+       "asgd",
+       "adadelta",
+       "adagrad",
+       "adam",
+       "adamw",
+       "adamax",
+       "lbfgs",
+       "nadam",
+       "optimizer",
+       "radam",
+       "rmsprop",
+       "rprop",
+       "sgd",
+       "sparseadam",
+   ]
 
 
 .. |GHA tests| image:: https://github.com/BrianPugh/autoregistry/workflows/tests/badge.svg

@@ -1,22 +1,21 @@
 Overview
 ========
-All of ``autoregistry``'s functionality comes from the ``Registry`` object.
+All of ``autoregistry``'s functionality comes from the ``Registry`` class.
 
 .. code-block:: python
 
    from autoregistry import Regisry
 
-To use the ``Registry`` object, we can either inherit it, or directly invoke
-it to create a ``Registry`` object. We'll be investigating these two usecases.
+To use the ``Registry`` class, we can either inherit it, or directly invoke
+it to create a ``Registry`` object.
 
 
 Inheritence-Based
 ^^^^^^^^^^^^^^^^^
 Generally, when inheriting ``Registry``, we are defining an interface, and thusly
 an `abstract base class`_. The ``Registry`` class already inherits from ``ABCMeta``,
-so the decorator ``from abc import abstractmethod`` will automatically work with
-subclasses of ``Registry``. For convenience, you can import the ``abstractmethod``
-decorator from ``autoregistry`` as well.
+so the decorator ``@abstractmethod`` will automatically work with subclasses of ``Registry``.
+For convenience, you can also import the ``@abstractmethod`` decorator from ``autoregistry``.
 
 .. code-block:: python
 
@@ -33,9 +32,7 @@ decorator from ``autoregistry`` as well.
        def attack(self, target):
            return 5
 
-Here we have defined an interface ``Pokemon`` that currently has one subclass, ``Pikachu``.
-Lets investigate what kind of features ``autoregistry`` gives us.
-
+The interface ``Pokemon`` is defined and currently has one subclass, ``Pikachu``.
 The ``Pokemon`` **class** can be treated like a dictionary, mapping strings to
 class-constructors. The keys are derived from the subclasses' names.
 
@@ -61,7 +58,7 @@ Unlike a dictionary, the queries are, by default, case-insensitive:
    >>> "PIKACHU" in Pokemon
    True
 
-When querying for an unregistered string, a ``KeyError`` is raised.
+If an unregistered string is queried, a ``KeyError`` will be raised.
 You can also use the ``get`` method to handle missing-key queries.
 If the provided ``default`` argument is a string, a lookup will be performed.
 
@@ -114,11 +111,7 @@ registered functions. The keys are derived from the function names.
    >>> my_registry["foo"](7)
    7
 
-All of the documentation in `Inheritence-Based`_ is equally valid for the explicitly
-created object ``my_registry``.
-
-Alternative to the decorator, you can also pass in an object or a list of objects
-at registry creation:
+You can also pass in an object or a list of objects at registry creation:
 
 .. code-block:: python
 
@@ -144,17 +137,31 @@ Another use of AutoRegistry is to automatically create a registry of an external
 For example, in pytorch, the ``torch.optim`` submodule contains many optimizers that
 we may want to configure via a yaml file.
 
-..code-block:: python
+.. code-block:: python
 
    import torch
    from autoregistry import Registry
 
    optims = Registry(torch.optim)
 
-   assert list(optims) == ['asgd', 'adadelta', 'adagrad', 'adam', 'adamw',
-                           'adamax', 'lbfgs', 'nadam', 'optimizer', 'radam',
-                           'rmsprop', 'rprop', 'sgd', 'sparseadam', 'lr_scheduler',
-                           'swa_utils']
+   assert list(optims) == [
+       "asgd",
+       "adadelta",
+       "adagrad",
+       "adam",
+       "adamw",
+       "adamax",
+       "lbfgs",
+       "nadam",
+       "optimizer",
+       "radam",
+       "rmsprop",
+       "rprop",
+       "sgd",
+       "sparseadam",
+       "lr_scheduler",
+       "swa_utils",
+   ]
 
 
 .. _abstract base class: https://docs.python.org/3/library/abc.html

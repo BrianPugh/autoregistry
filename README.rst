@@ -8,22 +8,22 @@ AutoRegistry
 ============
 
 Invoking functions and class-constructors from a string is a common design pattern
-that ``autoregistry`` aims to solve.
+that AutoRegistry aims to solve.
 For example, a user might specify a backend of type ``"sqlite"`` in a yaml configuration
 file, for which our program needs to construct the ``SQLite`` subclass of our ``Database`` class.
-Classically, you would need to manually create a lookup mapping the string ``"sqlite"`` to
+Classically, you would need to manually create a lookup, mapping the string ``"sqlite"`` to
 the ``SQLite`` constructor.
-With ``autoregistry``, the lookup is automatically created for you.
+With AutoRegistry, the lookup is automatically created for you.
 
 
-``autoregistry`` has a single  powerful class ``Registry`` that can do the following:
+AutoRegistry has a single  powerful class ``Registry`` that can do the following:
 
-* Be subclassed to automatically register subclasses by their name.
+* Be inherited to automatically register subclasses by their name.
 
 * Be directly invoked ``my_registery = Registry()`` to create a decorator
   for registering callables like functions.
 
-* Automatically create registeries for other python modules.
+* Traverse and automatically create registries for other python libraries.
 
 .. inclusion-marker-remove
 

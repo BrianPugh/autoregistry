@@ -149,12 +149,12 @@ we may want to configure via a yaml file.
    import torch
    from autoregistry import Registry
 
-   # For some modules, ``recursive=True`` can lead to infinite recursion.
-   optims = Registry(torch.optim, recursive=False)
+   optims = Registry(torch.optim)
 
    assert list(optims) == ['asgd', 'adadelta', 'adagrad', 'adam', 'adamw',
                            'adamax', 'lbfgs', 'nadam', 'optimizer', 'radam',
-                           'rmsprop', 'rprop', 'sgd', 'sparseadam']
+                           'rmsprop', 'rprop', 'sgd', 'sparseadam', 'lr_scheduler',
+                           'swa_utils']
 
 
 .. _abstract base class: https://docs.python.org/3/library/abc.html

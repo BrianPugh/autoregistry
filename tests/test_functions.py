@@ -3,6 +3,7 @@ from common import construct_functions
 
 import autoregistry
 from autoregistry import Registry
+from tests.fake_module import fake_submodule_1
 
 
 def test_defaults_functions_contains():
@@ -50,7 +51,14 @@ def test_defaults_module():
 
     registry = Registry()
     registry(fake_module)
-    assert list(registry) == ["bar2", "fake_module_1", "fake_module_2", "foo2"]
+    assert list(registry) == [
+        "bar2",
+        "fake_module_1",
+        "fake_module_2",
+        "fake_submodule_1",
+        "foo2",
+    ]
+    assert list(registry["fake_submodule_1"]["fake_submodule_1"]) == ["foo"]
 
     assert_fake_module_registry(registry, fake_module)
 
@@ -98,6 +106,13 @@ def test_defaults_module_dot_contains():
     assert "FAKE_MODULE_1/BAR1" in registry
     assert "FAKE_MODULE_2/FOO2" in registry
     assert "FAKE_MODULE_2/BAR2" in registry
+
+
+def test_defaults_module_builtin():
+    import itertools
+
+    with pytest.raises(autoregistry.CannotRegisterPythonBuiltInError):
+        Registry(itertools)
 
 
 def test_registry_overwrite():

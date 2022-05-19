@@ -136,7 +136,7 @@ Create a registry for another python module.
    import torch
    from autoregistry import Registry
 
-   optims = Registry(torch.optim, recursive=False)
+   optims = Registry(torch.optim)
 
    assert list(optims) == [
        "asgd",
@@ -153,6 +153,8 @@ Create a registry for another python module.
        "rprop",
        "sgd",
        "sparseadam",
+       "lr_scheduler",
+       "swa_utils",
    ]
 
 

@@ -158,9 +158,8 @@ class RegistryDecorator(Registry, _DictMixin):
         if ismodule(obj):
             try:
                 obj_file = obj.__file__
-                if obj_file is None:
-                    raise AttributeError
-            except AttributeError:
+                assert obj_file is not None
+            except (AttributeError, AssertionError):
                 raise CannotRegisterPythonBuiltInError(
                     f"Cannot register Python BuiltIn {obj}"
                 )
@@ -174,9 +173,8 @@ class RegistryDecorator(Registry, _DictMixin):
                         continue
                     try:
                         handle_file = handle.__file__
-                        if handle_file is None:
-                            raise AttributeError
-                    except AttributeError:
+                        assert handle_file is not None
+                    except (AttributeError, AssertionError):
                         # handle is a python built-in
                         continue
 

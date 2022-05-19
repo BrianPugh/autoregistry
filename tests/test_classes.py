@@ -137,8 +137,6 @@ def test_multiple_inheritence_child_last():
 
 
 def test_base_registry():
-    Registry.clear()
-
     class Foo(Registry):
         pass
 

@@ -35,12 +35,12 @@ and update it with newly passed in values. For example:
  # it's just "rock" instead of "rocktype" because we strip the suffix by default.
  geodude = Pokemon["rock"]["geodude"]()
 
-Here, all direct children of ``Pokemon`` MUST end with ``Type``.
+All direct children of ``Pokemon`` MUST end with ``"Type"``.
 Children of ``RockType`` will NOT be registered with ``RockType``'s parent, ``Pokemon``
-because we set ``recursive=False``.
+because ``recursive=False`` is set.
 For ``RockType``, setting ``suffix=""`` overrides its parent's
 ``suffix`` setting, allowing the definition of the subclass ``Geodude``,
-despite it not ending with ``Type``.
+despite it not ending with ``"Type"``.
 
 
 Configuring Decorator-Based
@@ -74,8 +74,8 @@ in ``autoregistry``.
 
 case_sensitive: bool = False
 ----------------------------
-If ``False``, all lookups are case-insensitive.
-Otherwise, all lookups are case-sensitive.
+If ``True``, all lookups are case-sensitive.
+Otherwise, all lookups are case-insensitive.
 A failed lookup will result in a ``KeyError``.
 
 .. code-block:: python
@@ -121,8 +121,8 @@ A failed lookup will result in a ``KeyError``.
 
 suffix: str = ""
 ----------------
-All registered items MUST end with this suffix.
-If a registered item does NOT end with this suffix, ``InvalidNameError``
+Registered items **MUST** end with this suffix.
+If a registered item does **NOT** end with this suffix, ``InvalidNameError``
 will be raised.
 
 .. code-block:: python
@@ -185,6 +185,7 @@ If ``True``, each registry class is registered in its own registry.
 recursive: bool = True
 ----------------------
 If ``True``, all subclasses will be recursively registered to their parents.
+If registering a ``module``, this means all submodules will be recursively traversed.
 
 .. code-block:: python
 
@@ -244,3 +245,43 @@ instead converted to snake_case.
 
 
    assert list(Tools) == ["hammer", "socket_wrench"]
+
+
+overwrite: bool = False
+-----------------------
+If ``overwrite=False``, attempting to register an object that would overwrite
+an existing registered item would result in a ``KeyCollisionError``.
+If ``overwrite=True``, then the previous entry will be overwritten and no
+exception will be raised.
+
+.. code-block:: python
+
+   registry = Registry()
+
+
+   @registry
+   def foo():
+       pass
+
+
+   # This will raise a ``KeyCollisionError``
+   @registry
+   def foo():
+       pass
+
+.. code-block:: python
+
+   registry = Registry(overwrite=True)
+
+
+   @registry
+   def foo():
+       return 1
+
+
+   @registry
+   def foo():
+       return 2
+
+
+   assert registry["foo"]() == 2

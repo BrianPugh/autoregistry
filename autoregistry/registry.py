@@ -1,8 +1,11 @@
 from abc import ABCMeta
 from copy import copy
-from typing import Callable
+from inspect import ismodule
+from pathlib import Path
+from typing import Callable, Union
 
 from .config import RegistryConfig
+from .exceptions import CannotRegisterPythonBuiltInError
 
 
 class _DictMixin:
@@ -21,9 +24,12 @@ class _DictMixin:
     def __len__(self):
         return len(self.__registry__)
 
-    def __contains__(self, val: str):
-        val = self.__registry_config__.format(val)
-        return val in self.__registry__
+    def __contains__(self, key: str):
+        try:
+            self.__registry_config__.getitem(self.__registry__, key)
+        except KeyError:
+            return False
+        return True
 
     def keys(self):
         return self.__registry__.keys()
@@ -109,15 +115,16 @@ class RegistryMeta(ABCMeta, _DictMixin):
 
 
 class Registry(metaclass=RegistryMeta):
-    __call__: Callable  # For decorating
-    __getitem__: Callable
-    __len__: Callable
+    __call__: Callable
     __contains__: Callable
+    __getitem__: Callable
+    __iter__: Callable
+    __len__: Callable
+    clear: Callable
+    get: Callable
+    items: Callable
     keys: Callable
     values: Callable
-    items: Callable
-    get: Callable
-    clear: Callable
 
     def __new__(cls, *args, **kwargs):
         if cls is Registry:
@@ -129,16 +136,60 @@ class Registry(metaclass=RegistryMeta):
 
 
 class RegistryDecorator(Registry, _DictMixin):
-    def __init__(self, /, **config):
+    __name__: str
+
+    def __init__(self, objs=None, /, **config):
         """Create a Registry for decorating."""
         # overwrite the registry data so its independent
         # of the Registry object.
         self.__registry__ = {}
         self.__registry_config__ = RegistryConfig(**config)
 
-    def __call__(self, obj):
-        """For decorator."""
-        self.__registry_config__.register(self.__registry__, obj)
+        if objs is None:
+            objs = []
+        elif not isinstance(objs, (tuple, list)):
+            objs = [objs]
+
+        for obj in objs:
+            self(obj)
+
+    def __call__(self, obj, name=None):
+        config = self.__registry_config__
+        if ismodule(obj):
+            try:
+                obj_file = obj.__file__
+                assert obj_file is not None
+            except (AttributeError, AssertionError):
+                raise CannotRegisterPythonBuiltInError(
+                    f"Cannot register Python BuiltIn {obj}"
+                )
+            obj_folder = str(Path(obj_file).parent)
+            # Skip private and magic attributes
+            elem_names = [x for x in dir(obj) if not x.startswith("_")]
+            for elem_name in elem_names:
+                handle = getattr(obj, elem_name)
+                if ismodule(handle):
+                    if not config.recursive:
+                        continue
+                    try:
+                        handle_file = handle.__file__
+                        assert handle_file is not None
+                    except (AttributeError, AssertionError):
+                        # handle is a python built-in
+                        continue
+
+                    handle_folder = str(Path(handle_file).parent)
+                    if not handle_folder.startswith(obj_folder):
+                        # Only traverse direct submodules
+                        continue
+
+                    subregistry = RegistryDecorator()
+                    subregistry(handle)
+                    self(subregistry, elem_name)
+                else:
+                    self(handle, elem_name)
+        else:
+            config.register(self.__registry__, obj, name=name)
         return obj
 
     def __repr__(self):

@@ -8,20 +8,22 @@ AutoRegistry
 ============
 
 Invoking functions and class-constructors from a string is a common design pattern
-that ``autoregistry`` aims to solve.
+that AutoRegistry aims to solve.
 For example, a user might specify a backend of type ``"sqlite"`` in a yaml configuration
 file, for which our program needs to construct the ``SQLite`` subclass of our ``Database`` class.
-Classically, you would need to manually create a lookup mapping the string ``"sqlite"`` to
+Classically, you would need to manually create a lookup, mapping the string ``"sqlite"`` to
 the ``SQLite`` constructor.
-With ``autoregistry``, the lookup is automatically created for you.
+With AutoRegistry, the lookup is automatically created for you.
 
 
-``autoregistry`` has a single  powerful class ``Registry`` that can do the following:
+AutoRegistry has a single  powerful class ``Registry`` that can do the following:
 
-* Be subclassed to automatically register subclasses by their name.
+* Be inherited to automatically register subclasses by their name.
 
 * Be directly invoked ``my_registery = Registry()`` to create a decorator
   for registering callables like functions.
+
+* Traverse and automatically create registries for other python libraries.
 
 .. inclusion-marker-remove
 
@@ -123,6 +125,38 @@ This code block produces the following output:
 
    Ash used pokeball and had success_rate=0.1
    Ash used masterball and had success_rate=1.0
+
+
+Module Registry
+^^^^^^^^^^^^^^^
+
+Create a registry for another python module.
+
+.. code-block:: python
+
+   import torch
+   from autoregistry import Registry
+
+   optims = Registry(torch.optim)
+
+   assert list(optims) == [
+       "asgd",
+       "adadelta",
+       "adagrad",
+       "adam",
+       "adamw",
+       "adamax",
+       "lbfgs",
+       "nadam",
+       "optimizer",
+       "radam",
+       "rmsprop",
+       "rprop",
+       "sgd",
+       "sparseadam",
+       "lr_scheduler",
+       "swa_utils",
+   ]
 
 
 .. |GHA tests| image:: https://github.com/BrianPugh/autoregistry/workflows/tests/badge.svg

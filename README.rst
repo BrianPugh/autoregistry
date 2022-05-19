@@ -133,6 +133,7 @@ Module Registry
 Create a registry for another python module.
 
 .. code-block:: python
+
    import torch
    from autoregistry import Registry
 

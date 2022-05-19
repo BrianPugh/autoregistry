@@ -12,3 +12,7 @@ class CannotDeriveNameError(RegistryError):
 
 class KeyCollisionError(RegistryError):
     """Attempted to register an object to an already used key."""
+
+
+class CannotRegisterPythonBuiltInError(RegistryError):
+    """AutoRegistry doesn't work with python built-ins."""

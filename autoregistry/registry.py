@@ -1,9 +1,11 @@
 from abc import ABCMeta
 from copy import copy
 from inspect import ismodule
+from pathlib import Path
 from typing import Callable, Union
 
 from .config import RegistryConfig
+from .exceptions import CannotRegisterPythonBuiltInError
 
 
 class _DictMixin:
@@ -154,15 +156,35 @@ class RegistryDecorator(Registry, _DictMixin):
     def __call__(self, obj, name=None):
         config = self.__registry_config__
         if ismodule(obj):
-            for elem_name in dir(obj):
-                if elem_name.startswith("_"):
-                    # Skip private and magic attributes
-                    continue
+            try:
+                obj_file = obj.__file__
+                if obj_file is None:
+                    raise AttributeError
+            except AttributeError:
+                raise CannotRegisterPythonBuiltInError(
+                    f"Cannot register Python BuiltIn {obj}"
+                )
+            obj_folder = str(Path(obj_file).parent)
+            # Skip private and magic attributes
+            elem_names = [x for x in dir(obj) if not x.startswith("_")]
+            for elem_name in elem_names:
                 handle = getattr(obj, elem_name)
-
                 if ismodule(handle):
                     if not config.recursive:
                         continue
+                    try:
+                        handle_file = handle.__file__
+                        if handle_file is None:
+                            raise AttributeError
+                    except AttributeError:
+                        # handle is a python built-in
+                        continue
+
+                    handle_folder = str(Path(handle_file).parent)
+                    if not handle_folder.startswith(obj_folder):
+                        # Only traverse direct submodules
+                        continue
+
                     subregistry = RegistryDecorator()
                     subregistry(handle)
                     self(subregistry, elem_name)

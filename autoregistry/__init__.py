@@ -6,6 +6,7 @@ from abc import abstractmethod
 from .config import RegistryConfig
 from .exceptions import (
     CannotDeriveNameError,
+    CannotRegisterPythonBuiltInError,
     InvalidNameError,
     KeyCollisionError,
     RegistryError,

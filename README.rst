@@ -78,9 +78,8 @@ for looking up subclasses.
 
    print(f"{len(Pokemon)} Pokemon registered:")
    print(f"    {list(Pokemon)}")
-   charmander = Pokemon["cHaRmAnDer"](
-       level=7, hp=31
-   )  # By default, lookup is case-insensitive
+   # By default, lookup is case-insensitive
+   charmander = Pokemon["cHaRmAnDer"](level=7, hp=31)
    print(f"Created Pokemon: {charmander}")
 
 This code block produces the following output:
@@ -138,6 +137,9 @@ Create a registry for another python module.
    from autoregistry import Registry
 
    optims = Registry(torch.optim)
+
+   # "adamw" and ``lr`` could be coming from a configuration file.
+   optimizer = optims["adamw"](model.parameterse(), lr=3e-3)
 
    assert list(optims) == [
        "asgd",

@@ -1,6 +1,6 @@
 .. image:: https://raw.githubusercontent.com/BrianPugh/autoregistry/main/assets/logo_400w.png
 
-|Python compat| |GHA tests| |Codecov report| |readthedocs|
+|Python compat| |PyPi| |GHA tests| |Codecov report| |readthedocs|
 
 .. inclusion-marker-do-not-remove
 
@@ -169,3 +169,5 @@ Create a registry for another python module.
         :target: https://autoregistry.readthedocs.io/en/latest/?badge=latest
         :alt: Documentation Status
 .. |Python compat| image:: https://img.shields.io/badge/>=python-3.8-blue.svg
+.. |PyPi| image:: https://img.shields.io/pypi/v/autoregistry.svg
+        :target: https://pypi.python.org/pypi/autoregistry

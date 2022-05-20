@@ -10,6 +10,9 @@ style = "semver"
 [tool.poetry]
 name = "autoregistry"
 version = "0.0.0"  # Do not change, let poetry-dynamic-versioning handle it.
+homepage = "https://github.com/BrianPugh/autoregistry"
+repository = "https://github.com/BrianPugh/autoregistry"
+license = "Apache-2.0"
 description = "Automatic registry design-pattern for mapping names to functionality."
 authors = ["Brian Pugh"]
 readme = "README.rst"

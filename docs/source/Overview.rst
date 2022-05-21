@@ -13,13 +13,13 @@ it to create a ``Registry`` object.
 Inheritence-Based
 ^^^^^^^^^^^^^^^^^
 Generally, when inheriting ``Registry``, we are defining an interface, and thusly
-an `abstract base class`_. The ``Registry`` class already inherits from ``ABCMeta``,
-so the decorator ``@abstractmethod`` will automatically work with subclasses of ``Registry``.
-For convenience, you can also import the ``@abstractmethod`` decorator from ``autoregistry``.
+an `abstract base class`_. The ``Registry`` class is an instance of ``ABCMeta``,
+so the ``abc`` decorator ``@abstractmethod`` will work with subclasses of ``Registry``.
 
 .. code-block:: python
 
-   from autoregistry import Registry, abstractmethod
+   from abc import abstractmethod
+   from autoregistry import Registry
 
 
    class Pokemon(Registry):

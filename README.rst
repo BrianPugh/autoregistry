@@ -76,7 +76,7 @@ for looking up subclasses.
            return 3
 
 
-   print(f"{len(Pokemon)} Pokemon registered:")
+   print(f"{len(Pokemon)} Pokemon types registered:")
    print(f"    {list(Pokemon)}")
    # By default, lookup is case-insensitive
    charmander = Pokemon["cHaRmAnDer"](level=7, hp=31)
@@ -86,7 +86,7 @@ This code block produces the following output:
 
 .. code-block::
 
-   3 Pokemon registered:
+   3 Pokemon types registered:
        ['charmander', 'pikachu', 'surfingpikachu']
    Created Pokemon: Charmander(level=7, hp=31)
 

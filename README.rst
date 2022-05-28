@@ -139,7 +139,7 @@ Create a registry for another python module.
    optims = Registry(torch.optim)
 
    # "adamw" and ``lr`` could be coming from a configuration file.
-   optimizer = optims["adamw"](model.parameterse(), lr=3e-3)
+   optimizer = optims["adamw"](model.parameters(), lr=3e-3)
 
    assert list(optims) == [
        "asgd",

@@ -1,4 +1,5 @@
 import re
+from typing import List
 
 _to_snake_case_pattern1 = re.compile("(.)([A-Z][a-z]+)")
 _to_snake_case_pattern2 = re.compile("__([A-Z])")
@@ -25,5 +26,5 @@ def to_snake_case(name: str) -> str:
     return name.lower()
 
 
-def key_split(s: str) -> list[str]:
+def key_split(s: str) -> List[str]:
     return s.replace("/", ".").split(".")

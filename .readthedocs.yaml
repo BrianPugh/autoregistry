@@ -14,7 +14,7 @@ build:
       - asdf install poetry 1.2.0b1
       - asdf global poetry 1.2.0b1
       - poetry config virtualenvs.create false
-      - poetry plugin add poetry-dynamic-versioning-plugin poetry-core==1.1.0a7 # Remove poetry-core once Poetry 1.2.0b2 or higher is out
+      - poetry plugin add poetry-dynamic-versioning-plugin
     post_install:
       - poetry install --without=dev
 

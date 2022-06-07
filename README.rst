@@ -47,8 +47,9 @@ for looking up subclasses.
 
 .. code-block:: python
 
+   from abc import abstractmethod
    from dataclasses import dataclass
-   from autoregistry import Registry, abstractmethod
+   from autoregistry import Registry
 
 
    @dataclass

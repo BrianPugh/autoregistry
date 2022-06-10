@@ -8,7 +8,9 @@ from .regex import key_split, to_snake_case
 @dataclass
 class RegistryConfig:
     case_sensitive: bool = False
+    prefix: str = ""
     suffix: str = ""
+    strip_prefix: bool = True
     strip_suffix: bool = True
 
     # Classes only; Register to its own registry
@@ -45,8 +47,14 @@ class RegistryConfig:
                     f"Cannot derive name from a bare {type(obj)}."
                 )
 
+        if not name.startswith(self.prefix):
+            raise InvalidNameError(f'"{obj}" name must start with "{self.prefix}"')
+
         if not name.endswith(self.suffix):
             raise InvalidNameError(f'"{obj}" name must end with "{self.suffix}"')
+
+        if self.strip_prefix and self.prefix:
+            name = name[len(self.prefix) :]
 
         if self.strip_suffix and self.suffix:
             name = name[: -len(self.suffix)]

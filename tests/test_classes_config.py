@@ -15,6 +15,37 @@ def test_case_sensitive():
         Pokemon["CHARMANDER"]
 
 
+def test_prefix_no_strip():
+    class Sensor(Registry, prefix="Sensor", strip_prefix=False):
+        pass
+
+    class SensorOxygen(Sensor):
+        pass
+
+    class SensorTemperature(Sensor):
+        pass
+
+    assert list(Sensor.keys()) == ["sensoroxygen", "sensortemperature"]
+
+    with pytest.raises(InvalidNameError):
+
+        class Foo(Sensor):
+            pass
+
+
+def test_prefix_yes_strip():
+    class Sensor(Registry, prefix="Sensor"):
+        pass
+
+    class SensorOxygen(Sensor):
+        pass
+
+    class SensorTemperature(Sensor):
+        pass
+
+    assert list(Sensor.keys()) == ["oxygen", "temperature"]
+
+
 def test_suffix_no_strip():
     class Sensor(Registry, suffix="Sensor", strip_suffix=False):
         pass
@@ -41,6 +72,19 @@ def test_suffix_yes_strip():
         pass
 
     class TemperatureSensor(Sensor):
+        pass
+
+    assert list(Sensor.keys()) == ["oxygen", "temperature"]
+
+
+def test_prefix_suffix_yes_strip():
+    class Sensor(Registry, prefix="Premium", suffix="Sensor"):
+        pass
+
+    class PremiumOxygenSensor(Sensor):
+        pass
+
+    class PremiumTemperatureSensor(Sensor):
         pass
 
     assert list(Sensor.keys()) == ["oxygen", "temperature"]

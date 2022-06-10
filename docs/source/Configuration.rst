@@ -119,11 +119,30 @@ A failed lookup will result in a ``KeyError``.
    pikachu = Pokemon["pikachu"]()
 
 
+prefix: str = ""
+----------------
+Registered items **MUST** start with this prefix.
+If a registered item does **NOT** start with this prefix, ``InvalidNameError`` will be raised.
+
+.. code-block:: python
+
+   class Sensor(Registry, prefix="Sensor"):
+       pass
+
+
+   # This will raise an InvalidNameError because the class name doesn't start with "Sensor"
+   class Temperature(Sensor):
+       pass
+
+
+   class SensorTemperature(Sensor):
+       pass
+
+
 suffix: str = ""
 ----------------
 Registered items **MUST** end with this suffix.
-If a registered item does **NOT** end with this suffix, ``InvalidNameError``
-will be raised.
+If a registered item does **NOT** end with this suffix, ``InvalidNameError`` will be raised.
 
 .. code-block:: python
 
@@ -138,6 +157,29 @@ will be raised.
 
    class TemperatureSensor(Sensor):
        pass
+
+
+strip_prefix: bool = True
+-------------------------
+If ``True``, the ``prefix`` will be removed from registered items.
+This generally allows for a more natural lookup.
+
+.. code-block:: python
+
+   class Sensor(Registry, prefix="Sensor", strip_prefix=True):
+       pass
+
+
+   class SensorTemperature(Sensor):
+       pass
+
+
+   class SensorHumidity(Sensor):
+       pass
+
+
+   assert list(Sensor) == ["temperature", "humidity"]
+   my_temperature_sensor = Sensor["temperature"]()
 
 
 strip_suffix: bool = True

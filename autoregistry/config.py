@@ -1,3 +1,4 @@
+import dataclasses
 from dataclasses import dataclass
 from typing import Any, Union
 
@@ -23,6 +24,10 @@ class RegistryConfig:
     snake_case: bool = False
 
     overwrite: bool = False
+
+    def copy(self):
+        obj = dataclasses.replace(self)
+        return obj
 
     def update(self, new: dict):
         for key, value in new.items():

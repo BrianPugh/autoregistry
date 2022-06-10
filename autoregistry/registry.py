@@ -1,5 +1,4 @@
 from abc import ABCMeta
-from copy import copy
 from inspect import ismodule
 from pathlib import Path
 from typing import Callable, Union
@@ -76,7 +75,7 @@ class RegistryMeta(ABCMeta, _DictMixin):
         # Copy the nearest parent config, then update it with new params
         for parent_cls in cls.mro()[1:]:
             try:
-                cls.__registry_config__ = copy(parent_cls.__registry_config__)  # type: ignore
+                cls.__registry_config__ = parent_cls.__registry_config__.copy()  # type: ignore
                 cls.__registry_config__.update(config)
                 break
             except AttributeError:

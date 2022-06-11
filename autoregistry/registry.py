@@ -58,8 +58,10 @@ class RegistryMeta(ABCMeta, _DictMixin):
     __registry__: dict
     __registry_config__: RegistryConfig
 
-    def __new__(mcls, name, bases, namespace, **config):
-        cls = super().__new__(mcls, name, bases, namespace)
+    def __new__(
+        mcls, cls_name, bases, namespace, name: Union[str, None] = None, **config
+    ):
+        cls = super().__new__(mcls, cls_name, bases, namespace)
 
         # Each subclass gets its own registry.
         cls.__registry__ = {}
@@ -82,7 +84,7 @@ class RegistryMeta(ABCMeta, _DictMixin):
                 pass
 
         # Register direct subclasses of Register to Register
-        if cls in Registry.__subclasses__() and name != "RegistryDecorator":
+        if cls in Registry.__subclasses__() and cls_name != "RegistryDecorator":
             Registry.__registry_config__.register(Registry.__registry__, cls)
 
         # otherwise, register it in own registry and all parent registries.
@@ -105,7 +107,7 @@ class RegistryMeta(ABCMeta, _DictMixin):
             if not config.register_self and parent_cls == cls:
                 continue
 
-            config.register(parent_cls.__registry__, cls)  # type: ignore
+            config.register(parent_cls.__registry__, cls, name)  # type: ignore
 
         return cls
 

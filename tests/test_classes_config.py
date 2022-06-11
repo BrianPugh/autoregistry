@@ -142,3 +142,16 @@ def test_config_hierarchy():
         # Because "Oddish" doesn't end in "Type"
         class Oddish(GrassType):
             pass
+
+
+def test_name_override():
+    class Sensor(Registry):
+        pass
+
+    class Oxygen(Sensor, name="o2"):
+        pass
+
+    class Temperature(Sensor):
+        pass
+
+    assert list(Sensor.keys()) == ["o2", "temperature"]

@@ -37,6 +37,28 @@ def test_decorator_called_name_override():
     assert registry["bar"] == foo
 
 
+def test_decorator_called_aliases_str():
+    registry = Registry(case_sensitive=True)
+
+    @registry(aliases="bar")
+    def foo():
+        pass
+
+    assert list(registry) == ["foo", "bar"]
+    assert registry["bar"] == registry["foo"] == foo
+
+
+def test_decorator_called_aliases_list():
+    registry = Registry(case_sensitive=True)
+
+    @registry(aliases=["bar", "baz"])
+    def foo():
+        pass
+
+    assert list(registry) == ["foo", "bar", "baz"]
+    assert registry["bar"] == registry["foo"] == registry["baz"] == foo
+
+
 def test_module_non_recursive():
     import fake_module
 

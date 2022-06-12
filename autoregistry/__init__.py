@@ -7,6 +7,7 @@ from .exceptions import (
     CannotRegisterPythonBuiltInError,
     InvalidNameError,
     KeyCollisionError,
+    ModuleAliasError,
     RegistryError,
 )
 from .registry import Registry, RegistryDecorator, RegistryMeta

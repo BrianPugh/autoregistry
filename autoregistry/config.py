@@ -1,6 +1,6 @@
 import dataclasses
 from dataclasses import dataclass
-from typing import Any, Union
+from typing import Any, List, Union
 
 from .exceptions import CannotDeriveNameError, InvalidNameError, KeyCollisionError
 from .regex import key_split, to_snake_case
@@ -43,7 +43,13 @@ class RegistryConfig:
             registry = registry[key]
         return registry
 
-    def register(self, registry: dict, obj: Any, name: Union[str, None] = None):
+    def register(
+        self,
+        registry: dict,
+        obj: Any,
+        name: Union[str, None] = None,
+        aliases: Union[str, None, List[str]] = None,
+    ):
         if name is None:
             try:
                 name = str(obj.__name__)
@@ -70,6 +76,13 @@ class RegistryConfig:
             raise KeyCollisionError(f'"{name}" already registered to {registry}')
 
         registry[name] = obj
+
+        if aliases is None:
+            aliases = []
+        elif isinstance(aliases, str):
+            aliases = [aliases]
+        for alias in aliases:
+            self.register(registry, obj, alias)
 
     def format(self, name):
         if self.snake_case:

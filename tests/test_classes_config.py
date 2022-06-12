@@ -155,3 +155,31 @@ def test_name_override():
         pass
 
     assert list(Sensor.keys()) == ["o2", "temperature"]
+
+
+def test_aliases_single_str():
+    class Sensor(Registry):
+        pass
+
+    class Oxygen(Sensor, aliases="o2"):
+        pass
+
+    class Temperature(Sensor):
+        pass
+
+    assert list(Sensor.keys()) == ["oxygen", "o2", "temperature"]
+    assert Sensor["oxygen"] == Sensor["o2"] == Oxygen
+
+
+def test_aliases_list():
+    class Sensor(Registry):
+        pass
+
+    class Oxygen(Sensor, aliases=["o2", "air"]):
+        pass
+
+    class Temperature(Sensor):
+        pass
+
+    assert list(Sensor.keys()) == ["oxygen", "o2", "air", "temperature"]
+    assert Sensor["oxygen"] == Sensor["o2"] == Sensor["air"] == Oxygen

@@ -2,7 +2,7 @@ from abc import ABCMeta
 from functools import partial
 from inspect import ismodule
 from pathlib import Path
-from typing import Callable, Union
+from typing import Callable, List, Union
 
 from .config import RegistryConfig
 from .exceptions import CannotRegisterPythonBuiltInError
@@ -60,7 +60,13 @@ class RegistryMeta(ABCMeta, _DictMixin):
     __registry_config__: RegistryConfig
 
     def __new__(
-        mcls, cls_name, bases, namespace, name: Union[str, None] = None, **config
+        mcls,
+        cls_name,
+        bases,
+        namespace,
+        name: Union[str, None] = None,
+        aliases: Union[str, None, List[str]] = None,
+        **config,
     ):
         cls = super().__new__(mcls, cls_name, bases, namespace)
 
@@ -74,6 +80,11 @@ class RegistryMeta(ABCMeta, _DictMixin):
             # Registry is being defined.
             cls.__registry_config__ = RegistryConfig(**config)
             return cls
+
+        if aliases is None:
+            aliases = []
+        elif isinstance(aliases, str):
+            aliases = [aliases]
 
         # Copy the nearest parent config, then update it with new params
         for parent_cls in cls.mro()[1:]:
@@ -109,6 +120,8 @@ class RegistryMeta(ABCMeta, _DictMixin):
                 continue
 
             config.register(parent_cls.__registry__, cls, name)  # type: ignore
+            for alias in aliases:
+                config.register(parent_cls.__registry__, cls, alias)  # type: ignore
 
         return cls
 

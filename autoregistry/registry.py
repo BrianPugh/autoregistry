@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Callable, List, Union
 
 from .config import RegistryConfig
-from .exceptions import CannotRegisterPythonBuiltInError
+from .exceptions import CannotRegisterPythonBuiltInError, ModuleAliasError
 
 
 class _DictMixin:
@@ -81,11 +81,6 @@ class RegistryMeta(ABCMeta, _DictMixin):
             cls.__registry_config__ = RegistryConfig(**config)
             return cls
 
-        if aliases is None:
-            aliases = []
-        elif isinstance(aliases, str):
-            aliases = [aliases]
-
         # Copy the nearest parent config, then update it with new params
         for parent_cls in cls.mro()[1:]:
             try:
@@ -119,9 +114,7 @@ class RegistryMeta(ABCMeta, _DictMixin):
             if not config.register_self and parent_cls == cls:
                 continue
 
-            config.register(parent_cls.__registry__, cls, name)  # type: ignore
-            for alias in aliases:
-                config.register(parent_cls.__registry__, cls, alias)  # type: ignore
+            config.register(parent_cls.__registry__, cls, name, aliases=aliases)  # type: ignore
 
         return cls
 
@@ -168,16 +161,26 @@ class RegistryDecorator(Registry, _DictMixin):
         for obj in objs:
             self(obj)
 
-    def __call__(self, obj=None, /, *, name=None):
+    def __call__(
+        self,
+        obj=None,
+        /,
+        *,
+        name=None,
+        aliases: Union[str, None, List[str]] = None,
+    ):
         config = self.__registry_config__
 
         if obj is None:
             # Was called @my_registry(**config_params)
             # TODO: should be able to pass all kwargs here
             # Maybe copy config and update and pass it through
-            return partial(self.__call__, name=name)
+            return partial(self.__call__, name=name, aliases=aliases)
 
         if ismodule(obj):
+            if aliases:
+                raise ModuleAliasError
+
             try:
                 obj_file = obj.__file__
                 assert obj_file is not None
@@ -211,7 +214,7 @@ class RegistryDecorator(Registry, _DictMixin):
                 else:
                     self(handle, name=elem_name)
         else:
-            config.register(self.__registry__, obj, name=name)
+            config.register(self.__registry__, obj, name=name, aliases=aliases)
         return obj
 
     def __repr__(self):

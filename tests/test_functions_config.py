@@ -26,6 +26,17 @@ def test_decorator_called():
     assert list(registry) == ["foo"]
 
 
+def test_decorator_called_name_override():
+    registry = Registry(case_sensitive=True)
+
+    @registry(name="bar")
+    def foo():
+        pass
+
+    assert list(registry) == ["bar"]
+    assert registry["bar"] == foo
+
+
 def test_module_non_recursive():
     import fake_module
 

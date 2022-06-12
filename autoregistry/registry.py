@@ -1,4 +1,5 @@
 from abc import ABCMeta
+from functools import partial
 from inspect import ismodule
 from pathlib import Path
 from typing import Callable, Union
@@ -154,8 +155,15 @@ class RegistryDecorator(Registry, _DictMixin):
         for obj in objs:
             self(obj)
 
-    def __call__(self, obj, name=None):
+    def __call__(self, obj=None, /, *, name=None):
         config = self.__registry_config__
+
+        if obj is None:
+            # Was called @my_registry(**config_params)
+            # TODO: should be able to pass all kwargs here
+            # Maybe copy config and update and pass it through
+            return partial(self.__call__, name=name)
+
         if ismodule(obj):
             try:
                 obj_file = obj.__file__
@@ -186,9 +194,9 @@ class RegistryDecorator(Registry, _DictMixin):
 
                     subregistry = RegistryDecorator()
                     subregistry(handle)
-                    self(subregistry, elem_name)
+                    self(subregistry, name=elem_name)
                 else:
-                    self(handle, elem_name)
+                    self(handle, name=elem_name)
         else:
             config.register(self.__registry__, obj, name=name)
         return obj

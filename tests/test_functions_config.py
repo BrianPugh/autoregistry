@@ -16,6 +16,16 @@ def test_decorator_case_sensitive():
         registry["FOO"]
 
 
+def test_decorator_called():
+    registry = Registry(case_sensitive=True)
+
+    @registry()
+    def foo():
+        pass
+
+    assert list(registry) == ["foo"]
+
+
 def test_module_non_recursive():
     import fake_module
 

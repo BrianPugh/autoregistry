@@ -3,6 +3,7 @@ from common import construct_functions
 
 import autoregistry
 from autoregistry import Registry
+from autoregistry.exceptions import ModuleAliasError
 from tests.fake_module import fake_submodule_1
 
 
@@ -167,3 +168,11 @@ def test_registry_register_at_creation_single():
     registry = Registry(bar)
 
     assert list(registry) == ["bar"]
+
+
+def test_registry_module_alias():
+    import fake_module
+
+    registry = Registry(fake_module)
+    with pytest.raises(ModuleAliasError):
+        registry(fake_module, aliases="module_alias")

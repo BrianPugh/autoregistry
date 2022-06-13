@@ -93,9 +93,15 @@ object and use it to decorate functions.
        return x
 
 
-   @my_registry
+   @my_registry()  # This also works.
    def bar(x):
        return 2 * x
+
+
+   # You can also register classes this way.
+   @my_registry
+   class Baz:
+       pass
 
 The ``my_registry`` **object** can be treated like a dictionary, mapping strings to
 registered functions. The keys are derived from the function names.
@@ -103,11 +109,11 @@ registered functions. The keys are derived from the function names.
 .. code-block:: pycon
 
    >>> len(my_registry)
-   2
+   3
    >>> my_registry
-   <Registry: ['foo', 'bar']>
+   <Registry: ['foo', 'bar', "baz"]>
    >>> list(my_registry)
-   ['foo', 'bar']
+   ['foo', 'bar', 'baz']
    >>> my_registry["foo"](7)
    7
 

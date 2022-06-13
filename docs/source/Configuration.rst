@@ -45,7 +45,8 @@ despite it not ending with ``"Type"``.
 
 Configuring Decorator-Based
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-When directly declaring a ``Registry``, the configurations are passed directly as keyword arguments:
+When directly declaring a ``Registry``, configurations are passed as keyword arguments
+when instantiating the ``Registry`` object:
 
 .. code-block:: python
 
@@ -57,13 +58,75 @@ When directly declaring a ``Registry``, the configurations are passed directly a
        pass
 
 
-   @readers
+   @readers()  # This also works.
    def json_read(fn):
        pass
 
 
    # it's just "json" instead of "json_read" because we strip the suffix by default.
    data = readers["json"]("my_file.json")
+
+
+Name Override and Aliases
+^^^^^^^^^^^^^^^^^^^^^^^^^
+There are two special configuration values: ``name`` and ``aliases``.
+``name`` overrides the auto-derived string to register the class/function under, while
+``aliases`` registers *additional* string(s) to the class/function, but
+doesn't impact the auto-derived registration key.
+``aliases`` may be a single string, or a list of strings.
+``name`` and ``aliases`` values are **not** subject to configured naming rules and will **not** be modified
+by configurations, such as ``strip_suffix``.
+However, values are still subject to the ``overwrite`` configuration and will raise ``KeyCollisionError`` if
+``name`` or ``aliases`` attempts to overwrite an existing entry while ``overwrite=False``.
+These parameters are intended to aid developers maintain backwards compatibility as their codebase changes.
+
+Inheritence-Based
+-----------------
+
+Name and aliases are provided as additional class keyword arguments.
+
+.. code-block:: python
+
+   class Pokemon(Registry):
+       pass
+
+
+   class Ekans(name="snake"):
+       pass
+
+
+   class Pikachu(aliases=["electricmouse"]):
+       pass
+
+
+   my_pokemon = []
+   # Pokemon["ekans"] will raise a KeyError
+   my_pokemon.append(Pokemon["snake"]())
+   my_pokemon.append(Pokemon["pikachu"]())
+   my_pokemon.append(Pokemon["electricmouse"]())
+
+
+Decorator-Based
+---------------
+
+Name and aliases are provided as additional decorator keyword arguments.
+
+.. code-block:: python
+
+   registry = Registry()
+
+
+   @registry(name="foo")
+   def foo2():
+       pass
+
+
+   @registry(aliases=["baz", "bop"])
+   def bar():
+       pass
+
+
+   assert list(registry) == ["foo", "bar", "baz", "bop"]
 
 
 Configurations

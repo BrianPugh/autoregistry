@@ -82,7 +82,7 @@ class RegistryConfig:
         elif isinstance(aliases, str):
             aliases = [aliases]
         for alias in aliases:
-            self.register(registry, obj, alias)
+            registry[alias] = obj
 
     def format(self, name):
         if self.snake_case:

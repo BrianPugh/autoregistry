@@ -48,6 +48,22 @@ def test_decorator_called_aliases_str():
     assert registry["bar"] == registry["foo"] == foo
 
 
+def test_decorator_called_aliases_str_dont_follow_rules():
+    registry = Registry(suffix="_baz")
+
+    @registry
+    def foo_baz():
+        pass
+
+    # "bop" doesn't end with "_baz"
+    @registry(aliases="bop")
+    def bar_baz():
+        pass
+
+    assert list(registry) == ["foo", "bar", "bop"]
+    assert registry["bar"] == registry["bop"] == bar_baz
+
+
 def test_decorator_called_aliases_list():
     registry = Registry(case_sensitive=True)
 

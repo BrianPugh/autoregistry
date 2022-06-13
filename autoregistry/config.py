@@ -50,7 +50,24 @@ class RegistryConfig:
         name: Union[str, None] = None,
         aliases: Union[str, None, List[str]] = None,
     ):
+        """Register an object to a registry, subject to configuration.
+
+        Parameters
+        ----------
+        registry: dict
+            Dictionary to store key/value pair.
+        obj: object
+            object to store and attempt to auto-derive name from.
+        name: str
+            If provided, register ``obj`` to this name.
+            If not provided, name will be auto-derived from ``obj``.
+        aliases: Union[str, None, List[str]]
+            If provided, also register ``obj`` to these strings.
+            Not subject to configuration rules.
+        """
+        validate = False
         if name is None:
+            validate = True
             try:
                 name = str(obj.__name__)
             except AttributeError:
@@ -58,19 +75,20 @@ class RegistryConfig:
                     f"Cannot derive name from a bare {type(obj)}."
                 )
 
-        if not name.startswith(self.prefix):
-            raise InvalidNameError(f'"{obj}" name must start with "{self.prefix}"')
+        if validate:
+            if not name.startswith(self.prefix):
+                raise InvalidNameError(f'"{obj}" name must start with "{self.prefix}"')
 
-        if not name.endswith(self.suffix):
-            raise InvalidNameError(f'"{obj}" name must end with "{self.suffix}"')
+            if not name.endswith(self.suffix):
+                raise InvalidNameError(f'"{obj}" name must end with "{self.suffix}"')
 
-        if self.strip_prefix and self.prefix:
-            name = name[len(self.prefix) :]
+            if self.strip_prefix and self.prefix:
+                name = name[len(self.prefix) :]
 
-        if self.strip_suffix and self.suffix:
-            name = name[: -len(self.suffix)]
+            if self.strip_suffix and self.suffix:
+                name = name[: -len(self.suffix)]
 
-        name = self.format(name)
+            name = self.format(name)
 
         if not self.overwrite and name in registry:
             raise KeyCollisionError(f'"{name}" already registered to {registry}')
@@ -81,7 +99,11 @@ class RegistryConfig:
             aliases = []
         elif isinstance(aliases, str):
             aliases = [aliases]
+
         for alias in aliases:
+            if not self.overwrite and alias in registry:
+                raise KeyCollisionError(f'"{alias}" already registered to {registry}')
+
             registry[alias] = obj
 
     def format(self, name):

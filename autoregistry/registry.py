@@ -114,7 +114,12 @@ class RegistryMeta(ABCMeta, _DictMixin):
             if not config.register_self and parent_cls == cls:
                 continue
 
-            config.register(parent_cls.__registry__, cls, name, aliases=aliases)  # type: ignore
+            config.register(
+                parent_cls.__registry__,
+                cls,
+                name,
+                aliases=aliases,
+            )  # type: ignore
 
         return cls
 
@@ -208,7 +213,9 @@ class RegistryDecorator(Registry, _DictMixin):
                         # Only traverse direct submodules
                         continue
 
-                    subregistry = RegistryDecorator()
+                    subregistry = (
+                        RegistryDecorator()
+                    )  # TODO: config should probably be propagated.
                     subregistry(handle)
                     self(subregistry, name=elem_name)
                 else:

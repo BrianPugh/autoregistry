@@ -182,6 +182,31 @@ A failed lookup will result in a ``KeyError``.
    pikachu = Pokemon["pikachu"]()
 
 
+regex: str = ""
+---------------
+Registered items **MUST** match this regular expression.
+If a registered item does **NOT** match this regex, ``InvalidNameError`` will be raised.
+
+.. code-block:: python
+
+   # Capital letters only
+   registry = Registry(regex="[A-Z]+", case_sensitive=True)
+
+
+   @registry
+   def FOO():
+       pass
+
+
+   # This will raise an InvalidNameError, because the supplied regex only allows for capital letters.
+   @registry
+   def bar():
+       pass
+
+
+   assert list(registry) == ["FOO"]
+
+
 prefix: str = ""
 ----------------
 Registered items **MUST** start with this prefix.

@@ -27,7 +27,7 @@ def test_decorator_called():
     assert list(registry) == ["foo"]
 
 
-def test_decorator_invalid_name():
+def test_decorator_invalid_name_suffix():
     registry = Registry(suffix="_baz")
 
     with pytest.raises(InvalidNameError):
@@ -35,6 +35,23 @@ def test_decorator_invalid_name():
         @registry
         def foo():
             pass
+
+
+def test_decorator_regex():
+    # Capital letters only
+    registry = Registry(regex="[A-Z]+", case_sensitive=True)
+
+    @registry
+    def FOO():
+        pass
+
+    with pytest.raises(InvalidNameError):
+
+        @registry
+        def bar():
+            pass
+
+    assert list(registry) == ["FOO"]
 
 
 def test_decorator_called_name_override():

@@ -1,4 +1,5 @@
 import dataclasses
+import re
 from dataclasses import dataclass
 from typing import Any, List, Union
 
@@ -14,6 +15,9 @@ class RegistryConfig:
     strip_prefix: bool = True
     strip_suffix: bool = True
 
+    # Registered objects name must conform to this regex.
+    regex: str = ""
+
     # Classes only; Register to its own registry
     register_self: bool = False
 
@@ -24,6 +28,12 @@ class RegistryConfig:
     snake_case: bool = False
 
     overwrite: bool = False
+
+    def __post_init__(self):
+        if self.regex:
+            self._regex_validator = re.compile(self.regex)
+        else:
+            self._regex_validator = None
 
     def copy(self):
         obj = dataclasses.replace(self)
@@ -76,6 +86,9 @@ class RegistryConfig:
                 )
 
         if validate:
+            if self._regex_validator and not self._regex_validator.match(name):
+                raise InvalidNameError(f"{obj} name must match regex {self.regex}")
+
             if not name.startswith(self.prefix):
                 raise InvalidNameError(f'"{obj}" name must start with "{self.prefix}"')
 

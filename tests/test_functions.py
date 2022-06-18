@@ -116,6 +116,22 @@ def test_defaults_module_builtin():
         Registry(itertools)
 
 
+def test_case_sensitive_module():
+    """Tests that the registry config is propagated to subregistries."""
+    import fake_module
+
+    registry = Registry(case_sensitive=True)
+    registry(fake_module)
+
+    assert "fake_module_1" in registry
+    assert "fake_module_1.SOME_UPPER" in registry
+    assert (
+        registry["fake_module_1"]["SOME_UPPER"] == fake_module.fake_module_1.SOME_UPPER
+    )
+    with pytest.raises(KeyError):
+        registry["fake_module_1"]["some_upper"]
+
+
 def test_registry_overwrite():
     registry = Registry(overwrite=True)
 

@@ -178,50 +178,49 @@ class RegistryDecorator(Registry, _DictMixin):
 
         if obj is None:
             # Was called @my_registry(**config_params)
-            # TODO: should be able to pass all kwargs here
             # Maybe copy config and update and pass it through
             return partial(self.__call__, name=name, aliases=aliases)
 
-        if ismodule(obj):
-            if aliases:
-                raise ModuleAliasError
-
-            try:
-                obj_file = obj.__file__
-                assert obj_file is not None
-            except (AttributeError, AssertionError):
-                raise CannotRegisterPythonBuiltInError(
-                    f"Cannot register Python BuiltIn {obj}"
-                )
-            obj_folder = str(Path(obj_file).parent)
-            # Skip private and magic attributes
-            elem_names = [x for x in dir(obj) if not x.startswith("_")]
-            for elem_name in elem_names:
-                handle = getattr(obj, elem_name)
-                if ismodule(handle):
-                    if not config.recursive:
-                        continue
-                    try:
-                        handle_file = handle.__file__
-                        assert handle_file is not None
-                    except (AttributeError, AssertionError):
-                        # handle is a python built-in
-                        continue
-
-                    handle_folder = str(Path(handle_file).parent)
-                    if not handle_folder.startswith(obj_folder):
-                        # Only traverse direct submodules
-                        continue
-
-                    subregistry = (
-                        RegistryDecorator()
-                    )  # TODO: config should probably be propagated.
-                    subregistry(handle)
-                    self(subregistry, name=elem_name)
-                else:
-                    self(handle, name=elem_name)
-        else:
+        if not ismodule(obj):
             config.register(self.__registry__, obj, name=name, aliases=aliases)
+            return obj
+
+        if aliases:
+            raise ModuleAliasError
+
+        try:
+            obj_file = obj.__file__
+            assert obj_file is not None
+        except (AttributeError, AssertionError):
+            raise CannotRegisterPythonBuiltInError(
+                f"Cannot register Python BuiltIn {obj}"
+            )
+        obj_folder = str(Path(obj_file).parent)
+        # Skip private and magic attributes
+        elem_names = [x for x in dir(obj) if not x.startswith("_")]
+        for elem_name in elem_names:
+            handle = getattr(obj, elem_name)
+            if ismodule(handle):
+                if not config.recursive:
+                    continue
+                try:
+                    handle_file = handle.__file__
+                    assert handle_file is not None
+                except (AttributeError, AssertionError):
+                    # handle is a python built-in
+                    continue
+
+                handle_folder = str(Path(handle_file).parent)
+                if not handle_folder.startswith(obj_folder):
+                    # Only traverse direct submodules
+                    continue
+
+                subregistry = RegistryDecorator(**config.asdict())
+                subregistry(handle)
+                self(subregistry, name=elem_name)
+            else:
+                self(handle, name=elem_name)
+
         return obj
 
     def __repr__(self):

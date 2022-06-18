@@ -1,6 +1,6 @@
 import dataclasses
 import re
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from typing import Any, List, Union
 
 from .exceptions import CannotDeriveNameError, InvalidNameError, KeyCollisionError
@@ -34,6 +34,9 @@ class RegistryConfig:
             self._regex_validator = re.compile(self.regex)
         else:
             self._regex_validator = None
+
+    def asdict(self):
+        return asdict(self)
 
     def copy(self):
         obj = dataclasses.replace(self)

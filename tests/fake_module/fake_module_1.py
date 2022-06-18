@@ -16,3 +16,5 @@ def __magic1__():
 
 some_str = "some_str contents"
 some_list = ["some_list_content_1", ""]
+
+SOME_UPPER = "SOME_UPPER contents"

@@ -360,6 +360,8 @@ by taking the all-lowercase version of the class name.
 If ``snake_case=True``, the PascalCase class names will be
 instead converted to snake_case.
 
+Snake case conversion is performed *after* name validation (like ``prefix`` and ``suffix``) checks are performed.
+
 .. code-block:: python
 
    class Tools(Registry, snake_case=True):

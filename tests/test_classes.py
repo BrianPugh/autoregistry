@@ -152,3 +152,30 @@ def test_base_registry():
     assert list(Registry) == ["foo", "bar"]
     assert list(Foo) == ["subfoo"]
     assert list(Bar) == ["subbar"]
+
+
+def test_hierarchy_init_subclass():
+    class Base(Registry):
+        pass
+
+    registry_ids = {id(Base.__registry__)}
+
+    class Foo(Base):
+        def __init_subclass__(cls, **kwargs):
+            assert id(cls) not in registry_ids
+            # import ipdb; ipdb.set_trace()
+
+    assert id(Foo.__registry__) not in registry_ids
+    registry_ids.add(id(Foo.__registry__))
+
+    class FooBar1(Foo):
+        pass
+
+    assert id(FooBar1.__registry__) not in registry_ids
+    registry_ids.add(id(FooBar1.__registry__))
+
+    class FooBar2(Foo):
+        pass
+
+    assert id(FooBar2.__registry__) not in registry_ids
+    registry_ids.add(id(FooBar2.__registry__))

@@ -68,10 +68,12 @@ class RegistryMeta(ABCMeta, _DictMixin):
         aliases: Union[str, None, List[str]] = None,
         **config,
     ):
-        cls = super().__new__(mcls, cls_name, bases, namespace)
-
         # Each subclass gets its own registry.
-        cls.__registry__ = {}
+        # Set it here so that __registry__ is correct in hooks like __init_subclass__
+        namespace["__registry__"] = {}
+
+        # This will call hooks like __init_subclass__
+        cls = super().__new__(mcls, cls_name, bases, namespace)
 
         try:
             Registry

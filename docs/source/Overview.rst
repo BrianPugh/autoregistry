@@ -1,6 +1,6 @@
 Overview
 ========
-All of ``autoregistry``'s functionality comes from the ``Registry`` class.
+All of AutoRegistry's functionality comes from the ``Registry`` class.
 
 .. code-block:: python
 
@@ -10,8 +10,8 @@ To use the ``Registry`` class, we can either inherit it, or directly invoke
 it to create a ``Registry`` object.
 
 
-Inheritence-Based
-^^^^^^^^^^^^^^^^^
+Inheritance
+^^^^^^^^^^^
 Generally, when inheriting ``Registry``, we are defining an interface, and thusly
 an `abstract base class`_. The ``Registry`` class is an instance of ``ABCMeta``,
 so the ``abc`` decorator ``@abstractmethod`` will work with subclasses of ``Registry``.
@@ -75,8 +75,8 @@ If the provided ``default`` argument is a string, a lookup will be performed.
 
 The ruleset for deriving keys and valid classnames is configurable. See :ref:`Configuration`.
 
-Decorator-Based
-^^^^^^^^^^^^^^^
+Decorator
+^^^^^^^^^
 
 Instead of using classes, you can also use ``Registry`` to explicitly create a dictionary-like
 object and use it to decorate functions.
@@ -137,8 +137,8 @@ You can also pass in an object or a list of objects at registry creation:
        pass
 
 
-Module-Based
-^^^^^^^^^^^^
+Module
+^^^^^^
 Another use of AutoRegistry is to automatically create a registry of an external module.
 For example, in pytorch, the ``torch.optim`` submodule contains many optimizers that
 we may want to configure via a yaml file.

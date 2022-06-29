@@ -8,6 +8,7 @@
 
    Installation
    Overview
+   Reverse Lookup
    Configuration
 
 

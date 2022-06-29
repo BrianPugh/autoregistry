@@ -129,8 +129,8 @@ Name and aliases are provided as additional decorator keyword arguments.
    assert list(registry) == ["foo", "bar", "baz", "bop"]
 
 
-Configurations
-^^^^^^^^^^^^^^
+Parameters
+^^^^^^^^^^
 This section describes and provides examples for all of the configurable options
 in ``autoregistry``.
 

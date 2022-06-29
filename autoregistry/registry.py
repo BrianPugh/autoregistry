@@ -58,6 +58,7 @@ class _DictMixin:
 class RegistryMeta(ABCMeta, _DictMixin):
     __registry__: dict
     __registry_config__: RegistryConfig
+    __registry_name__: str
 
     def __new__(
         mcls,
@@ -86,10 +87,20 @@ class RegistryMeta(ABCMeta, _DictMixin):
         for parent_cls in bases:
             try:
                 namespace["__registry_config__"] = parent_cls.__registry_config__.copy()  # type: ignore
-                namespace["__registry_config__"].update(config)
                 break
             except AttributeError:
                 pass
+
+        # Set __registry_name__ before updating __registry_config__, since a classes own name is
+        # subject to it's parents configuration, not its own.
+        if name is None:
+            namespace["__registry_name__"] = namespace["__registry_config__"].format(
+                cls_name
+            )
+        else:
+            namespace["__registry_name__"] = name
+
+        namespace["__registry_config__"].update(config)
 
         # We cannot defer class creation any further.
         # This will call hooks like __init_subclass__

@@ -42,7 +42,7 @@ class RegistryConfig:
         obj = dataclasses.replace(self)
         return obj
 
-    def update(self, new: dict):
+    def update(self, new: dict) -> None:
         for key, value in new.items():
             if hasattr(self, key):
                 setattr(self, key, value)
@@ -73,7 +73,7 @@ class RegistryConfig:
             object to store and attempt to auto-derive name from.
         name: str
             If provided, register ``obj`` to this name; overrides checks.
-            If not provided, name will be auto-derived from ``obj``.
+            If not provided, name will be auto-derived from ``obj`` via ``format``.
         aliases: Union[str, None, List[str]]
             If provided, also register ``obj`` to these strings.
             Not subject to configuration rules.
@@ -103,7 +103,15 @@ class RegistryConfig:
 
             registry[alias] = obj
 
-    def format(self, name: str):
+    def format(self, name: str) -> str:
+        """Convert and validate a PascalCase class name to a registry key.
+
+        Parameters
+        ----------
+        name: str
+            Name to convert to a registry key. For example, converts ``FooBar``
+            into ``foobar``.
+        """
         if self._regex_validator and not self._regex_validator.match(name):
             raise InvalidNameError(f"{name} name must match regex {self.regex}")
 

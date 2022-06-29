@@ -3,8 +3,8 @@
 Configuration
 =============
 
-Configuring Inheritence-Based
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Configuring Inheritance
+^^^^^^^^^^^^^^^^^^^^^^^
 
 When inheriting from the ``Registry`` class, keyword configuration values can be passed
 along side it when defining the subclass. For example:
@@ -43,8 +43,8 @@ For ``RockType``, setting ``suffix=""`` overrides its parent's
 despite it not ending with ``"Type"``.
 
 
-Configuring Decorator-Based
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Configuring Decorator
+^^^^^^^^^^^^^^^^^^^^^
 When directly declaring a ``Registry``, configurations are passed as keyword arguments
 when instantiating the ``Registry`` object:
 
@@ -80,8 +80,8 @@ However, values are still subject to the ``overwrite`` configuration and will ra
 ``name`` or ``aliases`` attempts to overwrite an existing entry while ``overwrite=False``.
 These parameters are intended to aid developers maintain backwards compatibility as their codebase changes.
 
-Inheritence-Based
------------------
+Inheritance
+-----------
 
 Name and aliases are provided as additional class keyword arguments.
 
@@ -106,8 +106,8 @@ Name and aliases are provided as additional class keyword arguments.
    my_pokemon.append(Pokemon["electricmouse"]())
 
 
-Decorator-Based
----------------
+Decorator
+---------
 
 Name and aliases are provided as additional decorator keyword arguments.
 

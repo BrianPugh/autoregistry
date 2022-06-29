@@ -68,29 +68,32 @@ class RegistryMeta(ABCMeta, _DictMixin):
         aliases: Union[str, None, List[str]] = None,
         **config,
     ):
+        # Manipulate namespace instead of modifying attributes after calling __new__ so
+        # that hooks like __init_subclass__ have appropriately set registry attributes.
         # Each subclass gets its own registry.
-        # Set it here so that __registry__ is correct in hooks like __init_subclass__
         namespace["__registry__"] = {}
-
-        # This will call hooks like __init_subclass__
-        cls = super().__new__(mcls, cls_name, bases, namespace)
 
         try:
             Registry
         except NameError:
             # Should only happen the very first time that
             # Registry is being defined.
+            cls = super().__new__(mcls, cls_name, bases, namespace)
             cls.__registry_config__ = RegistryConfig(**config)
             return cls
 
         # Copy the nearest parent config, then update it with new params
-        for parent_cls in cls.mro()[1:]:
+        for parent_cls in bases:
             try:
-                cls.__registry_config__ = parent_cls.__registry_config__.copy()  # type: ignore
-                cls.__registry_config__.update(config)
+                namespace["__registry_config__"] = parent_cls.__registry_config__.copy()  # type: ignore
+                namespace["__registry_config__"].update(config)
                 break
             except AttributeError:
                 pass
+
+        # We cannot defer class creation any further.
+        # This will call hooks like __init_subclass__
+        cls = super().__new__(mcls, cls_name, bases, namespace)
 
         # Register direct subclasses of Register to Register
         if cls in Registry.__subclasses__() and cls_name != "RegistryDecorator":

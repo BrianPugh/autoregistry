@@ -163,7 +163,6 @@ def test_hierarchy_init_subclass():
     class Foo(Base):
         def __init_subclass__(cls, **kwargs):
             assert id(cls) not in registry_ids
-            # import ipdb; ipdb.set_trace()
 
     assert id(Foo.__registry__) not in registry_ids
     registry_ids.add(id(Foo.__registry__))

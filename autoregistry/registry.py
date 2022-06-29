@@ -86,7 +86,7 @@ class RegistryMeta(ABCMeta, _DictMixin):
         # Copy the nearest parent config, then update it with new params
         for parent_cls in bases:
             try:
-                namespace["__registry_config__"] = parent_cls.__registry_config__.copy()  # type: ignore
+                namespace["__registry_config__"] = parent_cls.__registry_config__.copy()
                 break
             except AttributeError:
                 pass

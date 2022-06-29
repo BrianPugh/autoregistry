@@ -83,17 +83,21 @@ def test_defaults_get():
 
 def test_multiple_inheritence_last():
     class Foo:
-        def bar(self):
-            return "bar"
+        pass
+
+    class Bar:
+        pass
 
     class Baz(Foo, Registry):
-        def blah(self):
-            return "blah"
+        pass
 
     class Boop(Baz):
         pass
 
-    assert list(Baz) == ["boop"]
+    class Blap(Bar, Baz):
+        pass
+
+    assert list(Baz) == ["boop", "blap"]
 
 
 def test_multiple_inheritence_first():

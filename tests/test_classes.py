@@ -9,6 +9,11 @@ def test_defaults_basic_usecase():
     charmander = Pokemon["cHaRmAnDer"](1, 2)
     assert isinstance(charmander, Charmander)
 
+    assert Pokemon.__registry_name__ == "pokemon"
+    assert Charmander.__registry_name__ == "charmander"
+    assert Pikachu.__registry_name__ == "pikachu"
+    assert SurfingPikachu.__registry_name__ == "surfingpikachu"
+
 
 def test_defaults_contains():
     Pokemon, Charmander, Pikachu, SurfingPikachu = construct_pokemon_classes()
@@ -160,18 +165,25 @@ def test_hierarchy_init_subclass():
 
     registry_ids = {id(Base.__registry__)}
 
+    expected_registry_name = None
+
     class Foo(Base):
         def __init_subclass__(cls, **kwargs):
             assert id(cls) not in registry_ids
+            assert cls.__registry_name__ == expected_registry_name
 
     assert id(Foo.__registry__) not in registry_ids
     registry_ids.add(id(Foo.__registry__))
+
+    expected_registry_name = "foobar1"
 
     class FooBar1(Foo):
         pass
 
     assert id(FooBar1.__registry__) not in registry_ids
     registry_ids.add(id(FooBar1.__registry__))
+
+    expected_registry_name = "foobar2"
 
     class FooBar2(Foo):
         pass

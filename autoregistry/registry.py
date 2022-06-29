@@ -108,7 +108,9 @@ class RegistryMeta(ABCMeta, _DictMixin):
 
         # Register direct subclasses of Register to Register
         if cls in Registry.__subclasses__() and cls_name != "RegistryDecorator":
-            Registry.__registry_config__.register(Registry.__registry__, cls)
+            Registry.__registry_config__.register(
+                Registry.__registry__, cls, name=cls.__registry_name__
+            )
 
         # otherwise, register it in own registry and all parent registries.
         for parent_cls in cls.mro():
@@ -133,7 +135,7 @@ class RegistryMeta(ABCMeta, _DictMixin):
             config.register(
                 parent_cls.__registry__,
                 cls,
-                name,
+                name=cls.__registry_name__,
                 aliases=aliases,
             )  # type: ignore
 

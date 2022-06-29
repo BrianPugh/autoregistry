@@ -72,38 +72,19 @@ class RegistryConfig:
         obj: object
             object to store and attempt to auto-derive name from.
         name: str
-            If provided, register ``obj`` to this name.
+            If provided, register ``obj`` to this name; overrides checks.
             If not provided, name will be auto-derived from ``obj``.
         aliases: Union[str, None, List[str]]
             If provided, also register ``obj`` to these strings.
             Not subject to configuration rules.
         """
-        validate = False
         if name is None:
-            validate = True
             try:
                 name = str(obj.__name__)
             except AttributeError:
                 raise CannotDeriveNameError(
                     f"Cannot derive name from a bare {type(obj)}."
                 )
-
-        if validate:
-            if self._regex_validator and not self._regex_validator.match(name):
-                raise InvalidNameError(f"{obj} name must match regex {self.regex}")
-
-            if not name.startswith(self.prefix):
-                raise InvalidNameError(f'"{obj}" name must start with "{self.prefix}"')
-
-            if not name.endswith(self.suffix):
-                raise InvalidNameError(f'"{obj}" name must end with "{self.suffix}"')
-
-            if self.strip_prefix and self.prefix:
-                name = name[len(self.prefix) :]
-
-            if self.strip_suffix and self.suffix:
-                name = name[: -len(self.suffix)]
-
             name = self.format(name)
 
         if not self.overwrite and name in registry:
@@ -122,7 +103,22 @@ class RegistryConfig:
 
             registry[alias] = obj
 
-    def format(self, name):
+    def format(self, name: str):
+        if self._regex_validator and not self._regex_validator.match(name):
+            raise InvalidNameError(f"{name} name must match regex {self.regex}")
+
+        if not name.startswith(self.prefix):
+            raise InvalidNameError(f'"{name}" name must start with "{self.prefix}"')
+
+        if not name.endswith(self.suffix):
+            raise InvalidNameError(f'"{name}" name must end with "{self.suffix}"')
+
+        if self.strip_prefix and self.prefix:
+            name = name[len(self.prefix) :]
+
+        if self.strip_suffix and self.suffix:
+            name = name[: -len(self.suffix)]
+
         if self.snake_case:
             name = to_snake_case(name)
 

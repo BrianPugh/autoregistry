@@ -194,3 +194,20 @@ def test_hierarchy_init_subclass():
 
     assert id(FooBar2.__registry__) not in registry_ids
     registry_ids.add(id(FooBar2.__registry__))
+
+
+def test_valid_repr():
+    class Base(Registry):
+        pass
+
+    class Foo(Base):
+        pass
+
+    assert str(Base) == "<Base: ['foo']>"
+
+
+def test_invalid_repr():
+    class Base(Registry):
+        keys = {"hey": ["you", "there"]}
+
+    assert str(Base) == "<class 'test_classes.test_invalid_repr.<locals>.Base'>"

@@ -221,17 +221,32 @@ def test_invalid_repr():
     assert str(Base) == "<class 'test_classes.test_invalid_repr.<locals>.Base'>"
 
 
-@pytest.mark.xfail(reason="Not sure how to get keys to use the metaclass's")
 def test_dict_methods_override():
     class Base(Registry):
+        def __init__(self, a, b):
+            self.a = a
+            self.b = b
+
         def __getitem__(self, key):
             return 0
 
         def keys(self):
             return 0
 
+        @classmethod
+        def some_classmethod(cls):
+            pass
+
+        @staticmethod
+        def some_staticmethod(cls):
+            pass
+
     class Foo(Base):
         pass
 
+    base = Base(1, 2)
+
     assert Base["foo"] == Foo
-    assert Base.keys() == ["foo"]
+
+    assert list(Base.keys()) == ["foo"]
+    assert base.keys() == 0

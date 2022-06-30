@@ -55,6 +55,28 @@ class _DictMixin:
         self.__registry__.clear()
 
 
+class _RedirectMethod(object):
+    """Dispatches call depending if it was called from a Class or an instance."""
+
+    def __init__(self, obj_method, name):
+        self.obj_method = obj_method
+        self.cls_method = name
+
+    def __get__(self, obj, cls):
+        if obj is None:
+            # invoked directly from Class
+            def redirect(*args, **kwargs):
+                return self.cls_method(cls, *args, **kwargs)
+
+            return redirect
+        else:
+            # invoked from instance
+            def redirect(*args, **kwargs):
+                return self.obj_method(obj, *args, **kwargs)
+
+            return redirect
+
+
 class RegistryMeta(ABCMeta, _DictMixin):
     __registry__: dict
     __registry_config__: RegistryConfig
@@ -86,6 +108,21 @@ class RegistryMeta(ABCMeta, _DictMixin):
         # that hooks like __init_subclass__ have appropriately set registry attributes.
         # Each subclass gets its own registry.
         namespace["__registry__"] = {}
+        for key in [
+            "__getitem__",
+            "__iter__",
+            "__len__",
+            "__contains__",
+            "keys",
+            "values",
+            "items",
+            "get",
+            "clear",
+        ]:
+            if key in namespace and not isinstance(
+                namespace[key], (staticmethod, classmethod)
+            ):
+                namespace[key] = _RedirectMethod(namespace[key], getattr(mcls, key))
 
         try:
             Registry

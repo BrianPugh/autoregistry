@@ -14,12 +14,12 @@ from .exceptions import (
 
 
 class _Registry(dict):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, config: RegistryConfig):
+        super().__init__()
+        self.config = config
 
         # These will be populated later
         self.cls: Any = None
-        self.config: Optional[RegistryConfig] = None
 
     def register(
         self,
@@ -166,34 +166,35 @@ class RegistryMeta(ABCMeta, _DictMixin):
         # Manipulate namespace instead of modifying attributes after calling __new__ so
         # that hooks like __init_subclass__ have appropriately set registry attributes.
         # Each subclass gets its own registry.
-        namespace["__registry__"] = _Registry()
         try:
             Registry
         except NameError:
             # Should only happen the very first time that
             # Registry is being defined.
+            namespace["__registry__"] = _Registry(RegistryConfig(**config))
             cls = super().__new__(mcls, cls_name, bases, namespace)
-            cls.__registry__.config = RegistryConfig(**config)
             return cls
 
         # Copy the nearest parent config, then update it with new params
         for parent_cls in bases:
             try:
-                namespace["__registry__"].config = parent_cls.__registry__.config.copy()
+                registry_config = parent_cls.__registry__.config.copy()
                 break
             except AttributeError:
                 pass
+        else:
+            raise Exception("Should never happen.")
 
         # Set __registry_name__ before updating __registry_config__, since a classes own name is
         # subject to it's parents configuration, not its own.
         if name is None:
-            namespace["__registry_name__"] = namespace["__registry__"].config.format(
-                cls_name
-            )
+            namespace["__registry_name__"] = registry_config.format(cls_name)
         else:
             namespace["__registry_name__"] = name
 
-        namespace["__registry__"].config.update(config)
+        registry_config.update(config)
+
+        namespace["__registry__"] = _Registry(registry_config)
 
         if namespace["__registry__"].config.redirect:
             for key in [
@@ -288,8 +289,7 @@ class RegistryDecorator(Registry, _DictMixin):
         """Create a Registry for decorating."""
         # overwrite the registry data so its independent
         # of the Registry object.
-        self.__registry__ = _Registry()
-        self.__registry__.config = RegistryConfig(**config)
+        self.__registry__ = _Registry(RegistryConfig(**config))
 
         if objs is None:
             objs = []

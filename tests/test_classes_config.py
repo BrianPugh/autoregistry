@@ -183,3 +183,16 @@ def test_aliases_list():
 
     assert list(Sensor.keys()) == ["oxygen", "o2", "air", "temperature"]
     assert Sensor["oxygen"] == Sensor["o2"] == Sensor["air"] == Oxygen
+
+
+def test_skip():
+    class Sensor(Registry):
+        pass
+
+    class Oxygen(Sensor, skip=True):
+        pass
+
+    class Temperature(Sensor):
+        pass
+
+    assert list(Sensor.keys()) == ["temperature"]

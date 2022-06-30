@@ -105,6 +105,24 @@ Name and aliases are provided as additional class keyword arguments.
    my_pokemon.append(Pokemon["pikachu"]())
    my_pokemon.append(Pokemon["electricmouse"]())
 
+To not register a subclass to the appropriate registry(s), set the parameter ``skip=True``.
+
+.. code-block:: python
+
+    class Sensor(Registry):
+        pass
+
+
+    class Oxygen(Sensor, skip=True):
+        pass
+
+
+    class Temperature(Sensor):
+        pass
+
+
+    assert list(Sensor.keys()) == ["temperature"]
+
 
 Decorator
 ---------

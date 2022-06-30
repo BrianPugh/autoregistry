@@ -67,8 +67,21 @@ class RegistryMeta(ABCMeta, _DictMixin):
         namespace,
         name: Union[str, None] = None,
         aliases: Union[str, None, List[str]] = None,
+        skip: bool = False,
         **config,
     ):
+        """Create Class Constructor.
+
+        Parameters
+        ----------
+        name : str or None
+            Register to given ``name`` and skip validation checks.
+            Otherwise, auto-derive name.
+        aliases : str or list or None
+            Additionally, register this class under these string(s).
+        skip : bool
+            Do **not** register this class to the appropriate registry(s).
+        """
         # Manipulate namespace instead of modifying attributes after calling __new__ so
         # that hooks like __init_subclass__ have appropriately set registry attributes.
         # Each subclass gets its own registry.
@@ -105,6 +118,9 @@ class RegistryMeta(ABCMeta, _DictMixin):
         # We cannot defer class creation any further.
         # This will call hooks like __init_subclass__
         cls = super().__new__(mcls, cls_name, bases, namespace)
+
+        if skip:
+            return cls
 
         # Register direct subclasses of Register to Register
         if cls in Registry.__subclasses__() and cls_name != "RegistryDecorator":

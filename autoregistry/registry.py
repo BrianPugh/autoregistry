@@ -159,7 +159,7 @@ class RegistryMeta(ABCMeta, _DictMixin):
 
     def __repr__(self):
         try:
-            return f"<{self.__name__}: {list(self.keys())}>"
+            return f"<{self.__name__}: {list(self.__registry__.keys())}>"
         except Exception:
             return super().__repr__()
 

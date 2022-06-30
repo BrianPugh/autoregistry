@@ -29,6 +29,9 @@ class RegistryConfig:
 
     overwrite: bool = False
 
+    # Redirect vanilla methods that would collide with the dict-like interface.
+    redirect: bool = True
+
     def __post_init__(self):
         if self.regex:
             self._regex_validator = re.compile(self.regex)

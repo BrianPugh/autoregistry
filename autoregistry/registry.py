@@ -108,22 +108,6 @@ class RegistryMeta(ABCMeta, _DictMixin):
         # that hooks like __init_subclass__ have appropriately set registry attributes.
         # Each subclass gets its own registry.
         namespace["__registry__"] = {}
-        for key in [
-            "__getitem__",
-            "__iter__",
-            "__len__",
-            "__contains__",
-            "keys",
-            "values",
-            "items",
-            "get",
-            "clear",
-        ]:
-            if key in namespace and not isinstance(
-                namespace[key], (staticmethod, classmethod)
-            ):
-                namespace[key] = _RedirectMethod(namespace[key], getattr(mcls, key))
-
         try:
             Registry
         except NameError:
@@ -151,6 +135,23 @@ class RegistryMeta(ABCMeta, _DictMixin):
             namespace["__registry_name__"] = name
 
         namespace["__registry_config__"].update(config)
+
+        if namespace["__registry_config__"].redirect:
+            for key in [
+                "__getitem__",
+                "__iter__",
+                "__len__",
+                "__contains__",
+                "keys",
+                "values",
+                "items",
+                "get",
+                "clear",
+            ]:
+                if key in namespace and not isinstance(
+                    namespace[key], (staticmethod, classmethod)
+                ):
+                    namespace[key] = _RedirectMethod(namespace[key], getattr(mcls, key))
 
         # We cannot defer class creation any further.
         # This will call hooks like __init_subclass__

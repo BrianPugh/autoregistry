@@ -114,6 +114,24 @@ def test_no_recursive():
     assert "pikachu.surfingpikachu" in Pokemon
 
 
+@pytest.mark.xfail(reason="recursive registering isn't implemented correctly")
+def test_recursive_hierarchy():
+    class Base(Registry, recursive=False):
+        pass
+
+    class Foo(Base, recursive=True):
+        pass
+
+    class Bar(Foo):
+        pass
+
+    class Baz(Bar):
+        pass
+
+    assert list(Base) == ["foo"]
+    assert list(Foo) == ["bar", "baz"]
+
+
 def test_snake_case():
     Pokemon, Charmander, Pikachu, SurfingPikachu = construct_pokemon_classes(
         snake_case=True,

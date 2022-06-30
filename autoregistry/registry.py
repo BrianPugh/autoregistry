@@ -14,9 +14,10 @@ from .exceptions import (
 
 
 class _Registry(dict):
-    def __init__(self, config: RegistryConfig):
+    def __init__(self, config: RegistryConfig, name: Optional[str] = None):
         super().__init__()
         self.config = config
+        self.name = name
 
         # These will be populated later
         self.cls: Any = None
@@ -139,7 +140,6 @@ class _RedirectMethod(object):
 
 class RegistryMeta(ABCMeta, _DictMixin):
     __registry__: _Registry
-    __registry_name__: str
 
     def __new__(
         mcls,
@@ -188,13 +188,13 @@ class RegistryMeta(ABCMeta, _DictMixin):
         # Set __registry_name__ before updating __registry_config__, since a classes own name is
         # subject to it's parents configuration, not its own.
         if name is None:
-            namespace["__registry_name__"] = registry_config.format(cls_name)
+            registry_name = registry_config.format(cls_name)
         else:
-            namespace["__registry_name__"] = name
+            registry_name = name
 
         registry_config.update(config)
 
-        namespace["__registry__"] = _Registry(registry_config)
+        namespace["__registry__"] = _Registry(registry_config, name=registry_name)
 
         if namespace["__registry__"].config.redirect:
             for key in [
@@ -223,7 +223,7 @@ class RegistryMeta(ABCMeta, _DictMixin):
 
         # Register direct subclasses of Register to Register
         if cls in Registry.__subclasses__() and cls_name != "RegistryDecorator":
-            Registry.__registry__.register(cls, name=cls.__registry_name__)
+            Registry.__registry__.register(cls, name=cls.__registry__.name)
 
         # otherwise, register it in own registry and all parent registries.
         for parent_cls in cls.mro():
@@ -248,7 +248,7 @@ class RegistryMeta(ABCMeta, _DictMixin):
 
             parent_cls.__registry__.register(
                 cls,
-                name=cls.__registry_name__,
+                name=cls.__registry__.name,
                 aliases=aliases,
             )  # type: ignore
 

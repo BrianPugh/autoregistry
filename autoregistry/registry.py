@@ -2,20 +2,28 @@ from abc import ABCMeta
 from functools import partial
 from inspect import ismodule
 from pathlib import Path
-from typing import Callable, List, Union
+from typing import Any, Callable, List, Optional, Union
 
 from .config import RegistryConfig
 from .exceptions import CannotRegisterPythonBuiltInError, ModuleAliasError
 
 
+class _Registry(dict):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # These will be populated later
+        self.cls: Any = None
+        self.config: Optional[RegistryConfig] = None
+
+
 class _DictMixin:
     """Dict-like methods for a registry-based class."""
 
-    __registry__: dict
-    __registry_config__: RegistryConfig
+    __registry__: _Registry
 
     def __getitem__(self, key: str):
-        return self.__registry_config__.getitem(self.__registry__, key)
+        return self.__registry__.config.getitem(self.__registry__, key)
 
     def __iter__(self):
         for val in self.__registry__:
@@ -26,7 +34,7 @@ class _DictMixin:
 
     def __contains__(self, key: str):
         try:
-            self.__registry_config__.getitem(self.__registry__, key)
+            self.__registry__.config.getitem(self.__registry__, key)
         except KeyError:
             return False
         return True
@@ -78,8 +86,7 @@ class _RedirectMethod(object):
 
 
 class RegistryMeta(ABCMeta, _DictMixin):
-    __registry__: dict
-    __registry_config__: RegistryConfig
+    __registry__: _Registry
     __registry_name__: str
 
     def __new__(
@@ -107,20 +114,20 @@ class RegistryMeta(ABCMeta, _DictMixin):
         # Manipulate namespace instead of modifying attributes after calling __new__ so
         # that hooks like __init_subclass__ have appropriately set registry attributes.
         # Each subclass gets its own registry.
-        namespace["__registry__"] = {}
+        namespace["__registry__"] = _Registry()
         try:
             Registry
         except NameError:
             # Should only happen the very first time that
             # Registry is being defined.
             cls = super().__new__(mcls, cls_name, bases, namespace)
-            cls.__registry_config__ = RegistryConfig(**config)
+            cls.__registry__.config = RegistryConfig(**config)
             return cls
 
         # Copy the nearest parent config, then update it with new params
         for parent_cls in bases:
             try:
-                namespace["__registry_config__"] = parent_cls.__registry_config__.copy()
+                namespace["__registry__"].config = parent_cls.__registry__.config.copy()
                 break
             except AttributeError:
                 pass
@@ -128,15 +135,15 @@ class RegistryMeta(ABCMeta, _DictMixin):
         # Set __registry_name__ before updating __registry_config__, since a classes own name is
         # subject to it's parents configuration, not its own.
         if name is None:
-            namespace["__registry_name__"] = namespace["__registry_config__"].format(
+            namespace["__registry_name__"] = namespace["__registry__"].config.format(
                 cls_name
             )
         else:
             namespace["__registry_name__"] = name
 
-        namespace["__registry_config__"].update(config)
+        namespace["__registry__"].config.update(config)
 
-        if namespace["__registry_config__"].redirect:
+        if namespace["__registry__"].config.redirect:
             for key in [
                 "__getitem__",
                 "__iter__",
@@ -156,13 +163,14 @@ class RegistryMeta(ABCMeta, _DictMixin):
         # We cannot defer class creation any further.
         # This will call hooks like __init_subclass__
         cls = super().__new__(mcls, cls_name, bases, namespace)
+        cls.__registry__.cls = cls
 
         if skip:
             return cls
 
         # Register direct subclasses of Register to Register
         if cls in Registry.__subclasses__() and cls_name != "RegistryDecorator":
-            Registry.__registry_config__.register(
+            Registry.__registry__.config.register(
                 Registry.__registry__, cls, name=cls.__registry_name__
             )
 
@@ -171,22 +179,23 @@ class RegistryMeta(ABCMeta, _DictMixin):
             if parent_cls == Registry:
                 continue
 
-            if (
-                not cls.__registry_config__.recursive
-                and cls not in parent_cls.__subclasses__()
-            ):
-                continue
-
             try:
-                config = parent_cls.__registry_config__  # type: ignore
+                parent_config = parent_cls.__registry__.config  # type: ignore
             except AttributeError:
                 # Not a Registry object
                 continue
 
-            if not config.register_self and parent_cls == cls:
+            # Issue: should stop whenever a parent says recursive=False
+            if (
+                not cls.__registry__.config.recursive
+                and cls not in parent_cls.__subclasses__()
+            ):
                 continue
 
-            config.register(
+            if not parent_config.register_self and parent_cls == cls:
+                continue
+
+            parent_config.register(
                 parent_cls.__registry__,
                 cls,
                 name=cls.__registry_name__,
@@ -230,8 +239,8 @@ class RegistryDecorator(Registry, _DictMixin):
         """Create a Registry for decorating."""
         # overwrite the registry data so its independent
         # of the Registry object.
-        self.__registry__ = {}
-        self.__registry_config__ = RegistryConfig(**config)
+        self.__registry__ = _Registry()
+        self.__registry__.config = RegistryConfig(**config)
 
         if objs is None:
             objs = []
@@ -249,7 +258,7 @@ class RegistryDecorator(Registry, _DictMixin):
         name=None,
         aliases: Union[str, None, List[str]] = None,
     ):
-        config = self.__registry_config__
+        config = self.__registry__.config
 
         if obj is None:
             # Was called @my_registry(**config_params)

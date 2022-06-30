@@ -206,10 +206,18 @@ def test_valid_repr():
     assert str(Base) == "<Base: ['foo']>"
 
 
+def test_valid_repr_keys_override():
+    class Base(Registry):
+        keys = {"hey": ["you", "there"]}  # type:ignore
+
+    assert str(Base) == "<Base: []>"
+
+
 def test_invalid_repr():
     class Base(Registry):
-        keys = {"hey": ["you", "there"]}
+        pass
 
+    Base.__registry__ = None  # type: ignore
     assert str(Base) == "<class 'test_classes.test_invalid_repr.<locals>.Base'>"
 
 

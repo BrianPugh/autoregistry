@@ -59,53 +59,6 @@ class RegistryConfig:
             registry = registry[key]
         return registry
 
-    def register(
-        self,
-        registry: dict,
-        obj: Any,
-        name: Union[str, None] = None,
-        aliases: Union[str, None, List[str]] = None,
-    ):
-        """Register an object to a registry, subject to configuration.
-
-        Parameters
-        ----------
-        registry: dict
-            Dictionary to store key/value pair.
-        obj: object
-            object to store and attempt to auto-derive name from.
-        name: str
-            If provided, register ``obj`` to this name; overrides checks.
-            If not provided, name will be auto-derived from ``obj`` via ``format``.
-        aliases: Union[str, None, List[str]]
-            If provided, also register ``obj`` to these strings.
-            Not subject to configuration rules.
-        """
-        if name is None:
-            try:
-                name = str(obj.__name__)
-            except AttributeError:
-                raise CannotDeriveNameError(
-                    f"Cannot derive name from a bare {type(obj)}."
-                )
-            name = self.format(name)
-
-        if not self.overwrite and name in registry:
-            raise KeyCollisionError(f'"{name}" already registered to {registry}')
-
-        registry[name] = obj
-
-        if aliases is None:
-            aliases = []
-        elif isinstance(aliases, str):
-            aliases = [aliases]
-
-        for alias in aliases:
-            if not self.overwrite and alias in registry:
-                raise KeyCollisionError(f'"{alias}" already registered to {registry}')
-
-            registry[alias] = obj
-
     def format(self, name: str) -> str:
         """Convert and validate a PascalCase class name to a registry key.
 

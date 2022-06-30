@@ -5,7 +5,12 @@ from pathlib import Path
 from typing import Any, Callable, List, Optional, Union
 
 from .config import RegistryConfig
-from .exceptions import CannotRegisterPythonBuiltInError, ModuleAliasError
+from .exceptions import (
+    CannotDeriveNameError,
+    CannotRegisterPythonBuiltInError,
+    KeyCollisionError,
+    ModuleAliasError,
+)
 
 
 class _Registry(dict):
@@ -15,6 +20,53 @@ class _Registry(dict):
         # These will be populated later
         self.cls: Any = None
         self.config: Optional[RegistryConfig] = None
+
+    def register(
+        self,
+        # registry: dict,
+        obj: Any,
+        name: Union[str, None] = None,
+        aliases: Union[str, None, List[str]] = None,
+    ):
+        """Register an object to a registry, subject to configuration.
+
+        Parameters
+        ----------
+        registry: dict
+            Dictionary to store key/value pair.
+        obj: object
+            object to store and attempt to auto-derive name from.
+        name: str
+            If provided, register ``obj`` to this name; overrides checks.
+            If not provided, name will be auto-derived from ``obj`` via ``format``.
+        aliases: Union[str, None, List[str]]
+            If provided, also register ``obj`` to these strings.
+            Not subject to configuration rules.
+        """
+        if name is None:
+            try:
+                name = str(obj.__name__)
+            except AttributeError:
+                raise CannotDeriveNameError(
+                    f"Cannot derive name from a bare {type(obj)}."
+                )
+            name = self.config.format(name)
+
+        if not self.config.overwrite and name in self:
+            raise KeyCollisionError(f'"{name}" already registered to {self}')
+
+        self[name] = obj
+
+        if aliases is None:
+            aliases = []
+        elif isinstance(aliases, str):
+            aliases = [aliases]
+
+        for alias in aliases:
+            if not self.config.overwrite and alias in self:
+                raise KeyCollisionError(f'"{alias}" already registered to {self}')
+
+            self[alias] = obj
 
 
 class _DictMixin:
@@ -170,9 +222,7 @@ class RegistryMeta(ABCMeta, _DictMixin):
 
         # Register direct subclasses of Register to Register
         if cls in Registry.__subclasses__() and cls_name != "RegistryDecorator":
-            Registry.__registry__.config.register(
-                Registry.__registry__, cls, name=cls.__registry_name__
-            )
+            Registry.__registry__.register(cls, name=cls.__registry_name__)
 
         # otherwise, register it in own registry and all parent registries.
         for parent_cls in cls.mro():
@@ -195,8 +245,7 @@ class RegistryMeta(ABCMeta, _DictMixin):
             if not parent_config.register_self and parent_cls == cls:
                 continue
 
-            parent_config.register(
-                parent_cls.__registry__,
+            parent_cls.__registry__.register(
                 cls,
                 name=cls.__registry_name__,
                 aliases=aliases,
@@ -266,7 +315,7 @@ class RegistryDecorator(Registry, _DictMixin):
             return partial(self.__call__, name=name, aliases=aliases)
 
         if not ismodule(obj):
-            config.register(self.__registry__, obj, name=name, aliases=aliases)
+            self.__registry__.register(obj, name=name, aliases=aliases)
             return obj
 
         if aliases:

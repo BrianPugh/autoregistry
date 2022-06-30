@@ -435,3 +435,30 @@ exception will be raised.
 
 
    assert registry["foo"]() == 2
+
+
+redirect: bool = True
+---------------------
+If ``redirect=True``, then methods that would have collided with the dict-like
+registry interface are wrapped in a redirect object.
+The redirect object will invoke registry methods if called from the class, e.g.
+``MyClass.keys()``, but will call the user-defined method if called from an
+instantiated object, e.g. ``my_class.keys()``.
+Methods decorated with ``@classmethod`` or ``@staticmethod`` will not be wrapped;
+they will override the dict-like registry interface.
+
+
+.. code-block:: python
+
+   class Foo(Registry):
+       def keys(self):
+           return 0
+
+
+   class Bar(Foo):
+       pass
+
+
+   foo = Foo()
+   assert list(Foo.keys()) == ["bar"]
+   assert foo.keys() == 0

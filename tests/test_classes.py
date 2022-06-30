@@ -235,18 +235,72 @@ def test_dict_methods_override():
 
         @classmethod
         def some_classmethod(cls):
-            pass
+            return 1
 
         @staticmethod
-        def some_staticmethod(cls):
-            pass
+        def some_staticmethod():
+            return 2
 
     class Foo(Base):
         pass
 
     base = Base(1, 2)
 
+    assert base.a == 1
+    assert base.b == 2
+
     assert Base["foo"] == Foo
+    assert base["foo"] == 0
 
     assert list(Base.keys()) == ["foo"]
+    assert base.keys() == 0
+
+    assert Base.some_classmethod() == 1
+    assert Base.some_staticmethod() == 2
+
+
+def test_dict_methods_override_classmethod():
+    class Base(Registry):
+        def __init__(self):
+            pass
+
+        @classmethod
+        def keys(cls):
+            return 0
+
+    base = Base()
+    assert Base.keys() == 0
+    assert base.keys() == 0
+
+
+def test_dict_methods_override_staticmethod():
+    class Base(Registry):
+        def __init__(self):
+            pass
+
+        @staticmethod
+        def keys():
+            return 0
+
+    base = Base()
+    assert Base.keys() == 0
+    assert base.keys() == 0
+
+
+def test_dict_methods_override_redirect_false():
+    class Base(Registry, redirect=False):
+        def __init__(self, a, b):
+            self.a = a
+            self.b = b
+
+        def keys(self):
+            return 0
+
+    class Foo(Base):
+        pass
+
+    with pytest.raises(TypeError):
+        Base.keys()
+
+    base = Base(1, 2)
     assert base.keys() == 0

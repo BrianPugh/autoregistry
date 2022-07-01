@@ -23,8 +23,8 @@ Subclasses can be accessed via the standard AutoRegistry indexing, i.e:
    assert Pokemon["pikachu"] == Pikachu
 
 To perform the reverse-lookup, i.e. obtain the string ``"pikachu"`` from the
-class ``Pikachu``, access the ``__registry_name__`` attribute:
+class ``Pikachu``, access the ``__registry__.name`` attribute:
 
 .. code-block:: python
 
-   assert Pikachu.__registry_name__ == "pikachu"
+   assert Pikachu.__registry__.name == "pikachu"

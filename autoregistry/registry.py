@@ -29,7 +29,7 @@ class _Registry(dict):
         obj: Any,
         name: Union[str, None] = None,
         aliases: Union[str, None, List[str]] = None,
-        recursive: bool = False,
+        root: bool = False,
     ):
         """Register an object to a registry, subject to configuration.
 
@@ -43,9 +43,9 @@ class _Registry(dict):
         aliases: Union[str, None, List[str]]
             If provided, also register ``obj`` to these strings.
             Not subject to configuration rules.
-        recursive: bool
+        root: bool
+            Set to ``True`` when calling initial ``__register__``.
             Force register to immediate parent(s).
-            Gets logical or'd with ``config.recursive``.
         """
         if name is None:
             try:
@@ -78,8 +78,10 @@ class _Registry(dict):
 
             self[alias] = obj
 
-        # Register to parents
-        if (recursive or self.config.recursive) and self.cls is not None:
+        # Register to parents if one of the following conditions are met:
+        #     1. This is the root ``__recursive__`` call.
+        #     2. Both this.recursive is True, and parent.recursive is True.
+        if (root or self.config.recursive) and self.cls is not None:
             for parent_cls in self.cls.__bases__:
                 if parent_cls == Registry:
                     break
@@ -89,7 +91,8 @@ class _Registry(dict):
                 except AttributeError:
                     # Not a Registry object
                     continue
-                parent_registry.register(obj, name=name, aliases=aliases)
+                if root or parent_registry.config.recursive:
+                    parent_registry.register(obj, name=name, aliases=aliases)
 
 
 class _DictMixin:
@@ -259,7 +262,7 @@ class RegistryMeta(ABCMeta, _DictMixin):
             cls,
             name=cls.__registry__.name,
             aliases=aliases,
-            recursive=True,  # Always register to direct parents
+            root=True,  # Always register to direct parents
         )
 
         return cls

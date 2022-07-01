@@ -118,10 +118,10 @@ def test_recursive_hierarchy():
     class Base(Registry, recursive=False):
         pass
 
-    class Foo(Base, recursive=False):
+    class Foo(Base, recursive=True):
         pass
 
-    class Bar(Foo, recursive=True):
+    class Bar(Foo):
         pass
 
     class Baz(Bar):

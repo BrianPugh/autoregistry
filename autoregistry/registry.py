@@ -1,6 +1,6 @@
 from abc import ABCMeta
 from functools import partial
-from inspect import ismodule
+from inspect import isclass, ismodule
 from pathlib import Path
 from typing import Any, Callable, List, Optional, Union
 
@@ -14,6 +14,8 @@ from .exceptions import (
 
 
 class _Registry(dict):
+    """Unified container object for __registry__."""
+
     def __init__(self, config: RegistryConfig, name: Optional[str] = None):
         super().__init__()
         self.config = config
@@ -24,17 +26,15 @@ class _Registry(dict):
 
     def register(
         self,
-        # registry: dict,
         obj: Any,
         name: Union[str, None] = None,
         aliases: Union[str, None, List[str]] = None,
+        recursive: bool = False,
     ):
         """Register an object to a registry, subject to configuration.
 
         Parameters
         ----------
-        registry: dict
-            Dictionary to store key/value pair.
         obj: object
             object to store and attempt to auto-derive name from.
         name: str
@@ -43,6 +43,9 @@ class _Registry(dict):
         aliases: Union[str, None, List[str]]
             If provided, also register ``obj`` to these strings.
             Not subject to configuration rules.
+        recursive: bool
+            Force register to immediate parent(s).
+            Gets logical or'd with ``config.recursive``.
         """
         if name is None:
             try:
@@ -56,8 +59,14 @@ class _Registry(dict):
         if not self.config.overwrite and name in self:
             raise KeyCollisionError(f'"{name}" already registered to {self}')
 
-        self[name] = obj
+        # Check if should register self
+        if obj == self.cls:
+            if self.config.register_self:
+                self[name] = obj
+        else:
+            self[name] = obj
 
+        # Register aliases
         if aliases is None:
             aliases = []
         elif isinstance(aliases, str):
@@ -68,6 +77,19 @@ class _Registry(dict):
                 raise KeyCollisionError(f'"{alias}" already registered to {self}')
 
             self[alias] = obj
+
+        # Register to parents
+        if (recursive or self.config.recursive) and self.cls is not None:
+            for parent_cls in self.cls.__bases__:
+                if parent_cls == Registry:
+                    break
+
+                try:
+                    parent_registry = parent_cls.__registry__
+                except AttributeError:
+                    # Not a Registry object
+                    continue
+                parent_registry.register(obj, name=name, aliases=aliases)
 
 
 class _DictMixin:
@@ -221,36 +243,24 @@ class RegistryMeta(ABCMeta, _DictMixin):
         if skip:
             return cls
 
-        # Register direct subclasses of Register to Register
-        if cls in Registry.__subclasses__() and cls_name != "RegistryDecorator":
-            Registry.__registry__.register(cls, name=cls.__registry__.name)
+        # Register to root Registry
+        if cls in Registry.__subclasses__():
+            if cls_name == "RegistryDecorator":
+                return cls
 
-        # otherwise, register it in own registry and all parent registries.
-        for parent_cls in cls.mro():
-            if parent_cls == Registry:
-                continue
-
-            try:
-                parent_config = parent_cls.__registry__.config  # type: ignore
-            except AttributeError:
-                # Not a Registry object
-                continue
-
-            # Issue: should stop whenever a parent says recursive=False
-            if (
-                not cls.__registry__.config.recursive
-                and cls not in parent_cls.__subclasses__()
-            ):
-                continue
-
-            if not parent_config.register_self and parent_cls == cls:
-                continue
-
-            parent_cls.__registry__.register(
+            Registry.__registry__.register(
                 cls,
                 name=cls.__registry__.name,
                 aliases=aliases,
-            )  # type: ignore
+            )
+
+        # Register to parent(s)
+        cls.__registry__.register(
+            cls,
+            name=cls.__registry__.name,
+            aliases=aliases,
+            recursive=True,  # Always register to direct parents
+        )
 
         return cls
 

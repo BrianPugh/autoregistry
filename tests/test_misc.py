@@ -2,6 +2,7 @@ import pytest
 
 import autoregistry
 from autoregistry.regex import key_split, to_snake_case
+from autoregistry.registry import _Registry
 
 
 def test_to_snake():
@@ -26,15 +27,11 @@ def test_registry_config_update():
     assert config.suffix == "test"
 
 
-@pytest.mark.skip(
-    reason="register is being moved to _Registry, revisit this test later"
-)
 def test_registry_config_cannot_derive_name():
-    config = autoregistry.RegistryConfig()
-    d = {}
+    __registry__ = _Registry(autoregistry.RegistryConfig())
     foo = "foo"
     with pytest.raises(autoregistry.CannotDeriveNameError):
-        config.register(d, foo)
+        __registry__.register(foo)
 
 
 def test_key_split():

@@ -114,15 +114,14 @@ def test_no_recursive():
     assert "pikachu.surfingpikachu" in Pokemon
 
 
-@pytest.mark.xfail(reason="Needs more thought on how we want recursive to propagate")
 def test_recursive_hierarchy():
     class Base(Registry, recursive=False):
         pass
 
-    class Foo(Base, recursive=True):
+    class Foo(Base, recursive=False):
         pass
 
-    class Bar(Foo):
+    class Bar(Foo, recursive=True):
         pass
 
     class Baz(Bar):

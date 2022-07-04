@@ -83,15 +83,17 @@ class _Registry(dict):
         #     2. Both this.recursive is True, and parent.recursive is True.
         if (root or self.config.recursive) and self.cls is not None:
             for parent_cls in self.cls.__bases__:
-                if parent_cls == Registry:
-                    break
-
                 try:
                     parent_registry = parent_cls.__registry__
                 except AttributeError:
                     # Not a Registry object
                     continue
-                if root or parent_registry.config.recursive:
+
+                if parent_cls is Registry:
+                    # Only register to Registry if this is a root call.
+                    if root:
+                        parent_registry.register(obj, name=name, aliases=aliases)
+                elif root or parent_registry.config.recursive:
                     parent_registry.register(obj, name=name, aliases=aliases)
 
 
@@ -245,17 +247,6 @@ class RegistryMeta(ABCMeta, _DictMixin):
 
         if skip:
             return cls
-
-        # Register to root Registry
-        if cls in Registry.__subclasses__():
-            if cls_name == "RegistryDecorator":
-                return cls
-
-            Registry.__registry__.register(
-                cls,
-                name=cls.__registry__.name,
-                aliases=aliases,
-            )
 
         # Register to parent(s)
         cls.__registry__.register(

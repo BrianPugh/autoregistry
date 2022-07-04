@@ -103,6 +103,7 @@ def test_register_self():
 
 
 def test_no_recursive():
+    """Tests that children properly inherit and obey ``recursive=False``."""
     Pokemon, Charmander, Pikachu, SurfingPikachu = construct_pokemon_classes(
         recursive=False,
     )
@@ -115,6 +116,8 @@ def test_no_recursive():
 
 
 def test_recursive_hierarchy():
+    """Test more complex recursive configurations."""
+
     class Base(Registry, recursive=False):
         pass
 

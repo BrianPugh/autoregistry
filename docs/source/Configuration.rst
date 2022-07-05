@@ -42,7 +42,6 @@ For ``RockType``, setting ``suffix=""`` overrides its parent's
 ``suffix`` setting, allowing the definition of the subclass ``Geodude``,
 despite it not ending with ``"Type"``.
 
-
 Configuring Decorator
 ^^^^^^^^^^^^^^^^^^^^^
 When directly declaring a ``Registry``, configurations are passed as keyword arguments
@@ -369,6 +368,41 @@ If registering a ``module``, this means all submodules will be recursively trave
 
    assert list(Pokemon) == ["pikachu"]
    assert list(Pikachu) == ["surfingpikachu"]
+
+Consider the following more complicated situation:
+
+.. code-block:: python
+
+    class ClassA(Registry, recursive=False):
+        pass
+
+
+    class ClassB(ClassA):
+        pass
+
+
+    class ClassC(ClassB, recursive=True):
+        pass
+
+
+    class ClassD(ClassC):
+        pass
+
+
+    class ClassE(ClassD):
+        pass
+
+The registries and configurations are as follows:
+
+* ``ClassA`` has ``recursive=False``, and contains ``["classb"]``, its only direct child.
+
+* ``ClassB`` inherits ``recursive=False``, and contains ``["classc"]``, its only direct child.
+
+* ``ClassC`` overrides ``recursive=True``, and contains all of its children ``["classd", "classe"]``
+
+* ``ClassD`` inherits ``recursive=True``, and contains its child ``["classe"]``.
+
+* ``ClassE`` inherits ``recursive=True``, and is empty since it has no children.
 
 
 snake_case: bool = False

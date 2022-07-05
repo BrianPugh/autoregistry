@@ -3,6 +3,7 @@ repos:
     rev: v2.1.0
     hooks:
       - id: codespell
+        args: ["-L", "ClassE,classe"]
 
   - repo: https://github.com/PyCQA/isort
     rev: 5.10.1

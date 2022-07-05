@@ -223,7 +223,7 @@ class RegistryMeta(ABCMeta, _DictMixin):
         else:
             raise Exception("Should never happen.")
 
-        # Set __registry_name__ before updating __registry_config__, since a classes own name is
+        # Derive registry name before updating registry config, since a classes own name is
         # subject to it's parents configuration, not its own.
         if name is None:
             registry_name = registry_config.format(cls_name)

@@ -8,6 +8,7 @@ from .config import RegistryConfig
 from .exceptions import (
     CannotDeriveNameError,
     CannotRegisterPythonBuiltInError,
+    InvalidNameError,
     KeyCollisionError,
     ModuleAliasError,
 )
@@ -47,6 +48,7 @@ class _Registry(dict):
             Set to ``True`` when calling initial ``__register__``.
             Force register to immediate parent(s).
         """
+        # Derive/Validate Name
         if name is None:
             try:
                 name = str(obj.__name__)
@@ -55,9 +57,23 @@ class _Registry(dict):
                     f"Cannot derive name from a bare {type(obj)}."
                 )
             name = self.config.format(name)
+        elif "." in name or "/" in name:
+            raise InvalidNameError(f'Name "{name}" cannot contain "." or "/".')
 
         if not self.config.overwrite and name in self:
             raise KeyCollisionError(f'"{name}" already registered to {self}')
+
+        # Validate aliases and massage it into a list.
+        if aliases is None:
+            aliases = []
+        elif isinstance(aliases, str):
+            aliases = [aliases]
+
+        for alias in aliases:
+            if "." in alias or "/" in alias:
+                raise InvalidNameError(f'Alias "{alias}" cannot contain "." or "/".')
+            if not self.config.overwrite and alias in self:
+                raise KeyCollisionError(f'"{alias}" already registered to {self}')
 
         # Check if should register self
         if obj == self.cls:
@@ -65,18 +81,6 @@ class _Registry(dict):
                 self[name] = obj
         else:
             self[name] = obj
-
-        # Register aliases
-        if aliases is None:
-            aliases = []
-        elif isinstance(aliases, str):
-            aliases = [aliases]
-
-        for alias in aliases:
-            if not self.config.overwrite and alias in self:
-                raise KeyCollisionError(f'"{alias}" already registered to {self}')
-
-            self[alias] = obj
 
         # Register to parents if one of the following conditions are met:
         #     1. This is the root ``__recursive__`` call.
@@ -95,6 +99,13 @@ class _Registry(dict):
                         parent_registry.register(obj, name=name, aliases=aliases)
                 elif root or parent_registry.config.recursive:
                     parent_registry.register(obj, name=name, aliases=aliases)
+
+        # Register aliases
+        for alias in aliases:
+            if not self.config.overwrite and alias in self:
+                raise KeyCollisionError(f'"{alias}" already registered to {self}')
+
+            self[alias] = obj
 
 
 class _DictMixin:

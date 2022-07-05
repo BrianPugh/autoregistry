@@ -77,6 +77,22 @@ def test_decorator_called_name_override_dont_follow_rules():
     assert registry["bar"] == foo_baz
 
 
+def test_decorator_called_name_invalid():
+    registry = Registry()
+
+    with pytest.raises(InvalidNameError):
+
+        @registry(name="bar.baz")
+        def foo1():
+            pass
+
+    with pytest.raises(InvalidNameError):
+
+        @registry(name="bar/baz")
+        def foo2():
+            pass
+
+
 def test_decorator_called_aliases_str():
     registry = Registry()
 
@@ -86,6 +102,22 @@ def test_decorator_called_aliases_str():
 
     assert list(registry) == ["foo", "bar"]
     assert registry["bar"] == registry["foo"] == foo
+
+
+def test_decorator_called_aliases_str_invalid():
+    registry = Registry()
+
+    with pytest.raises(InvalidNameError):
+
+        @registry(aliases="bar.baz")
+        def foo1():
+            pass
+
+    with pytest.raises(InvalidNameError):
+
+        @registry(aliases="bar/baz")
+        def foo2():
+            pass
 
 
 def test_decorator_called_aliases_str_dont_follow_rules():

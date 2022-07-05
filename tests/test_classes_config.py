@@ -200,6 +200,21 @@ def test_name_override():
     assert list(Sensor.keys()) == ["o2", "temperature"]
 
 
+def test_name_override_invalid():
+    class Sensor(Registry):
+        pass
+
+    with pytest.raises(InvalidNameError):
+
+        class Oxygen1(Sensor, name="o/2"):
+            pass
+
+    with pytest.raises(InvalidNameError):
+
+        class Oxygen2(Sensor, name="o.2"):
+            pass
+
+
 def test_aliases_single_str():
     class Sensor(Registry):
         pass
@@ -226,6 +241,21 @@ def test_aliases_list():
 
     assert list(Sensor.keys()) == ["oxygen", "o2", "air", "temperature"]
     assert Sensor["oxygen"] == Sensor["o2"] == Sensor["air"] == Oxygen
+
+
+def test_aliases_single_str_invalid():
+    class Sensor(Registry):
+        pass
+
+    with pytest.raises(InvalidNameError):
+
+        class Oxygen1(Sensor, aliases="o/2"):
+            pass
+
+    with pytest.raises(InvalidNameError):
+
+        class Oxygen2(Sensor, aliases="o.2"):
+            pass
 
 
 def test_skip():

@@ -73,10 +73,13 @@ There are two special configuration values: ``name`` and ``aliases``.
 ``aliases`` registers *additional* string(s) to the class/function, but
 doesn't impact the auto-derived registration key.
 ``aliases`` may be a single string, or a list of strings.
+
 ``name`` and ``aliases`` values are **not** subject to configured naming rules and will **not** be modified
-by configurations, such as ``strip_suffix``.
+by configurations like ``strip_suffix``.
 However, values are still subject to the ``overwrite`` configuration and will raise ``KeyCollisionError`` if
 ``name`` or ``aliases`` attempts to overwrite an existing entry while ``overwrite=False``.
+Additionally, ``name`` and ``aliases`` may **not** contain a  ``.`` or a ``/`` due to :ref:`Key Splitting`.
+
 These parameters are intended to aid developers maintain backwards compatibility as their codebase changes.
 
 Inheritance

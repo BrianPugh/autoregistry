@@ -115,7 +115,7 @@ def test_no_recursive():
     assert "pikachu.surfingpikachu" in Pokemon
 
 
-def test_recursive_hierarchy():
+def test_recursive_hierarchy_1():
     """Test more complex recursive configurations."""
 
     class Base(Registry, recursive=False):
@@ -132,6 +132,29 @@ def test_recursive_hierarchy():
 
     assert list(Base) == ["foo"]
     assert list(Foo) == ["bar", "baz"]
+
+
+def test_recursive_hierarchy_2():
+    class ClassA(Registry, prefix="Class", recursive=False):
+        pass
+
+    class ClassB(ClassA):
+        pass
+
+    class ClassC(ClassB, recursive=True):
+        pass
+
+    class ClassD(ClassC):
+        pass
+
+    class ClassE(ClassD):
+        pass
+
+    assert list(ClassA) == ["b"]
+    assert list(ClassB) == ["c"]
+    assert list(ClassC) == ["d", "e"]
+    assert list(ClassD) == ["e"]
+    assert list(ClassE) == []
 
 
 def test_snake_case():

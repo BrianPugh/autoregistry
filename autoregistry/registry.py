@@ -221,7 +221,7 @@ class RegistryMeta(ABCMeta, _DictMixin):
             except AttributeError:
                 pass
         else:
-            raise Exception("Should never happen.")
+            raise Exception("Should never happen.")  # pragma: no cover
 
         # Derive registry name before updating registry config, since a classes own name is
         # subject to it's parents configuration, not its own.

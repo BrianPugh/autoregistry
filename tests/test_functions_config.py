@@ -120,6 +120,15 @@ def test_decorator_called_aliases_str_invalid():
             pass
 
 
+def test_decorator_called_aliases_duplicate():
+    registry = Registry()
+    with pytest.raises(KeyCollisionError):
+
+        @registry(aliases=["bar", "bar"])
+        def foo():
+            pass
+
+
 def test_decorator_called_aliases_str_dont_follow_rules():
     registry = Registry(suffix="_baz")
 

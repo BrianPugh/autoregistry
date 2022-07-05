@@ -8,5 +8,6 @@
 
    Installation
    Overview
+   Key Splitting
    Reverse Lookup
    Configuration

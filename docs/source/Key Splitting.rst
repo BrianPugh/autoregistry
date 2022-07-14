@@ -6,7 +6,7 @@ Consider the following code example:
 
 .. code-block:: python
 
-   class Pokemon(Registry, case_sensitive=False):
+   class Pokemon(Registry, recursive=False):
        pass
 
 
@@ -21,7 +21,7 @@ We can naively access the ``SurfingPikachu`` constructor via
 ``Pokemon["pikachu"]["surfingpikachu"]``.
 We can also access the same constructor using dot or slash
 notation from a single string. The query string will be split
-on dots and dashes, and iteratively queried:
+on dots and slashes, then iteratively queried:
 
 .. code-block:: python
 

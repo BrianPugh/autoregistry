@@ -27,6 +27,8 @@ AutoRegistry has a single  powerful class ``Registry`` that can do the following
 
 .. inclusion-marker-remove
 
+`Checkout the docs for more information <https://autoregistry.readthedocs.io/en/latest/?badge=latest/>`_.
+
 Installation
 ============
 AutoRegistry requires Python ``>=3.8``.

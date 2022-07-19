@@ -4,7 +4,7 @@ All of AutoRegistry's functionality comes from the ``Registry`` class.
 
 .. code-block:: python
 
-   from autoregistry import Regisry
+   from autoregistry import Registry
 
 To use the ``Registry`` class, we can either inherit it, or directly invoke
 it to create a ``Registry`` object.

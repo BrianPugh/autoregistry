@@ -1,8 +1,9 @@
 from abc import ABCMeta
+from collections.abc import ItemsView, KeysView, ValuesView
 from functools import partial
 from inspect import isclass, ismodule
 from pathlib import Path
-from typing import Any, Callable, List, Optional, Union
+from typing import Any, Callable, Generator, List, Optional, Type, Union
 
 from .config import RegistryConfig
 from .exceptions import (
@@ -113,34 +114,34 @@ class _DictMixin:
 
     __registry__: _Registry
 
-    def __getitem__(self, key: str):
+    def __getitem__(self, key: str) -> Type:
         return self.__registry__.config.getitem(self.__registry__, key)
 
-    def __iter__(self):
+    def __iter__(self) -> Generator[str, None, None]:
         for val in self.__registry__:
             yield val
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.__registry__)
 
-    def __contains__(self, key: str):
+    def __contains__(self, key: str) -> bool:
         try:
             self.__registry__.config.getitem(self.__registry__, key)
         except KeyError:
             return False
         return True
 
-    def keys(self):
+    def keys(self) -> KeysView:
         return self.__registry__.keys()
 
-    def values(self):
+    def values(self) -> ValuesView:
         return self.__registry__.values()
 
     def items(self):
         for item in self.__registry__.items():
             yield item
 
-    def get(self, key: str, default=None):
+    def get(self, key: Union[str, Type], default=None) -> Type:
         try:
             return self[key]
         except KeyError:
@@ -278,15 +279,15 @@ class RegistryMeta(ABCMeta, _DictMixin):
 
 class Registry(metaclass=RegistryMeta):
     __call__: Callable
-    __contains__: Callable
-    __getitem__: Callable
+    __contains__: Callable[..., bool]
+    __getitem__: Callable[[str], Type]
     __iter__: Callable
-    __len__: Callable
-    clear: Callable
-    get: Callable
+    __len__: Callable[..., int]
+    clear: Callable[[], None]
+    get: Callable[..., Type]
     items: Callable
-    keys: Callable
-    values: Callable
+    keys: Callable[[], KeysView]
+    values: Callable[[], ValuesView]
 
     def __new__(cls, *args, **kwargs):
         if cls is Registry:

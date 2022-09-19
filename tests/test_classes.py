@@ -252,7 +252,7 @@ def test_dict_methods_override():
     assert Base["foo"] == Foo
     assert base["foo"] == 0
 
-    assert list(Base.keys()) == ["foo"]
+    assert list(Base.keys()) == ["foo"]  # pyright: ignore[reportGeneralTypeIssues]
     assert base.keys() == 0
 
     assert Base.some_classmethod() == 1
@@ -300,7 +300,7 @@ def test_dict_methods_override_redirect_false():
         pass
 
     with pytest.raises(TypeError):
-        Base.keys()
+        Base.keys()  # pyright: ignore[reportGeneralTypeIssues]
 
     base = Base(1, 2)
     assert base.keys() == 0

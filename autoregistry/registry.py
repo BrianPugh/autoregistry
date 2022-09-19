@@ -205,7 +205,7 @@ class RegistryMeta(ABCMeta, _DictMixin):
         # that hooks like __init_subclass__ have appropriately set registry attributes.
         # Each subclass gets its own registry.
         try:
-            Registry
+            Registry  # pyright: ignore[reportUnusedExpression]
         except NameError:
             # Should only happen the very first time that
             # Registry is being defined.

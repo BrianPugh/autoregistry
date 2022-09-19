@@ -46,13 +46,13 @@ def test_abc_multiple_inheritence_first():
         pass
 
     with pytest.raises(TypeError):
-        Pokemon()
+        Pokemon()  # pyright: ignore[reportGeneralTypeIssues]
 
     with pytest.raises(TypeError):
         Pokemon["pikachu"]()
 
     with pytest.raises(TypeError):
-        Pikachu()
+        Pikachu()  # pyright: ignore[reportGeneralTypeIssues]
 
     Charmander()
 
@@ -73,12 +73,12 @@ def test_abc_multiple_inheritence_last():
         pass
 
     with pytest.raises(TypeError):
-        Pokemon()
+        Pokemon()  # pyright: ignore[reportGeneralTypeIssues]
 
     with pytest.raises(TypeError):
         Pokemon["pikachu"]()
 
     with pytest.raises(TypeError):
-        Pikachu()
+        Pikachu()  # pyright: ignore[reportGeneralTypeIssues]
 
     Charmander()

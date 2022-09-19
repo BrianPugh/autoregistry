@@ -38,7 +38,7 @@ def test_defaults_functions_items():
 
 def test_defaults_functions_call():
     registry, _, _ = construct_functions()
-    registry["foo"]()
+    assert registry["foo"]("test string") == "test string"
 
 
 def assert_fake_module_registry(registry, fake_module):

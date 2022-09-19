@@ -36,6 +36,11 @@ def test_defaults_functions_items():
     assert list(registry.items()) == [("foo", foo), ("bar", bar)]
 
 
+def test_defaults_functions_call():
+    registry, _, _ = construct_functions()
+    assert registry["foo"]("test string") == "test string"
+
+
 def assert_fake_module_registry(registry, fake_module):
     assert registry["bar2"] == fake_module.bar2
     assert registry["fake_module_1"]["foo1"] == fake_module.fake_module_1.foo1

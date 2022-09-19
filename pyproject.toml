@@ -62,3 +62,7 @@ exclude_lines = [
     "if False:",
     "if __name__ == .__main__.:",
 ]
+
+[tool.pyright]
+venvPath = "."
+venv = ".venv"

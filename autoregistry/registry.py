@@ -180,7 +180,7 @@ class RegistryMeta(ABCMeta, _DictMixin):
     __registry__: _Registry
 
     def __new__(
-        mcls,
+        cls,
         cls_name,
         bases,
         namespace,
@@ -210,8 +210,8 @@ class RegistryMeta(ABCMeta, _DictMixin):
             # Should only happen the very first time that
             # Registry is being defined.
             namespace["__registry__"] = _Registry(RegistryConfig(**config))
-            cls = super().__new__(mcls, cls_name, bases, namespace)
-            return cls
+            new_cls = super().__new__(cls, cls_name, bases, namespace)
+            return new_cls
 
         # Copy the nearest parent config, then update it with new params
         for parent_cls in bases:
@@ -249,25 +249,25 @@ class RegistryMeta(ABCMeta, _DictMixin):
                 if key in namespace and not isinstance(
                     namespace[key], (staticmethod, classmethod)
                 ):
-                    namespace[key] = _RedirectMethod(namespace[key], getattr(mcls, key))
+                    namespace[key] = _RedirectMethod(namespace[key], getattr(cls, key))
 
         # We cannot defer class creation any further.
         # This will call hooks like __init_subclass__
-        cls = super().__new__(mcls, cls_name, bases, namespace)
-        cls.__registry__.cls = cls
+        new_cls = super().__new__(cls, cls_name, bases, namespace)
+        new_cls.__registry__.cls = new_cls
 
         if skip:
-            return cls
+            return new_cls
 
         # Register to parent(s)
-        cls.__registry__.register(
-            cls,
-            name=cls.__registry__.name,
+        new_cls.__registry__.register(
+            new_cls,
+            name=new_cls.__registry__.name,
             aliases=aliases,
             root=True,  # Always register to direct parents
         )
 
-        return cls
+        return new_cls
 
     def __repr__(self):
         try:

@@ -256,7 +256,11 @@ def test_dict_methods_override():
     assert base["foo"] == 0
 
     assert list(Base.keys()) == ["foo"]  # pyright: ignore[reportGeneralTypeIssues]
+
     assert base.keys() == 0
+    assert base.some_classmethod() == 1
+    assert base.some_staticmethod() == 2
+    assert base.normal_method() == 3
 
     assert Base.some_classmethod() == 1
     assert Base.some_staticmethod() == 2
@@ -307,3 +311,97 @@ def test_dict_methods_override_redirect_false():
 
     base = Base(1, 2)
     assert base.keys() == 0
+
+
+def test_dict_method_override_getitem():
+    class Base(Registry):
+        def __getitem__(self, key):
+            return None
+
+    with pytest.raises(KeyError):
+        Base["foo"]
+
+    base = Base()
+    assert base["foo"] is None
+
+
+def test_dict_method_override_iter():
+    class Base(Registry):
+        def __iter__(self):
+            yield 1
+            yield 2
+            yield 3
+
+    assert list(Base) == []
+    base = Base()
+    assert list(base) == [1, 2, 3]
+
+
+def test_dict_method_override_len():
+    class Base(Registry):
+        def __len__(self):
+            return 5
+
+    assert len(Base) == 0
+    base = Base()
+    assert len(base) == 5
+
+
+def test_dict_method_override_contains():
+    class Base(Registry):
+        def __contains__(self, key):
+            return True
+
+    assert "foo" not in Base
+    base = Base()
+    assert "foo" in base
+
+
+def test_dict_method_override_keys():
+    class Base(Registry):
+        def keys(self):
+            return [1, 2, 3]
+
+    assert not Base.keys()
+    base = Base()
+    assert base.keys() == [1, 2, 3]
+
+
+def test_dict_method_override_values():
+    class Base(Registry):
+        def values(self):
+            return [1, 2, 3]
+
+    assert not Base.values()
+    base = Base()
+    assert base.values() == [1, 2, 3]
+
+
+def test_dict_method_override_items():
+    class Base(Registry):
+        def items(self):
+            return [1, 2, 3]
+
+    assert not list(Base.items())
+    base = Base()
+    assert base.items() == [1, 2, 3]
+
+
+def test_dict_method_override_get():
+    class Base(Registry):
+        def get(self, key):
+            return 5
+
+    assert Base.get("foo") is None
+    base = Base()
+    assert base.get("foo") == 5
+
+
+def test_dict_method_override_clear():
+    class Base(Registry):
+        def clear(self):
+            return 5
+
+    assert Base.clear() is None
+    base = Base()
+    assert base.clear() == 5

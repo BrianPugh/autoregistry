@@ -241,6 +241,9 @@ def test_dict_methods_override():
         def some_staticmethod():
             return 2
 
+        def normal_method(self):
+            return 3
+
     class Foo(Base):
         pass
 

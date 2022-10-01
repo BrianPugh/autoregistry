@@ -155,24 +155,26 @@ class _DictMixin:
         self.__registry__.clear()
 
 
-class _RedirectMethod(object):
-    """Dispatches call depending if it was called from a Class or an instance."""
+class MethodDescriptor(object):
+    """
+    Non-data-descriptor that dispatches depending if it was called from a Class or an instance.
+    """
 
-    def __init__(self, obj_method, name):
-        self.obj_method = obj_method
-        self.cls_method = name
+    def __init__(self, user_method, registry_method):
+        self.user_method = user_method
+        self.registry_method = registry_method
 
-    def __get__(self, obj, cls):
+    def __get__(self, obj, objtype):
         if obj is None:
             # invoked directly from Class
             def redirect(*args, **kwargs):
-                return self.cls_method(cls, *args, **kwargs)
+                return self.registry_method(objtype, *args, **kwargs)
 
             return redirect
         else:
             # invoked from instance
             def redirect(*args, **kwargs):
-                return self.obj_method(obj, *args, **kwargs)
+                return self.user_method(obj, *args, **kwargs)
 
             return redirect
 
@@ -236,7 +238,7 @@ class RegistryMeta(ABCMeta, _DictMixin):
         namespace["__registry__"] = _Registry(registry_config, name=registry_name)
 
         if namespace["__registry__"].config.redirect:
-            for key in [
+            for method_name in [
                 "__getitem__",
                 "__iter__",
                 "__len__",
@@ -247,10 +249,12 @@ class RegistryMeta(ABCMeta, _DictMixin):
                 "get",
                 "clear",
             ]:
-                if key in namespace and not isinstance(
-                    namespace[key], (staticmethod, classmethod)
+                if method_name in namespace and not isinstance(
+                    namespace[method_name], (staticmethod, classmethod)
                 ):
-                    namespace[key] = _RedirectMethod(namespace[key], getattr(cls, key))
+                    namespace[method_name] = MethodDescriptor(
+                        namespace[method_name], getattr(cls, method_name)
+                    )
 
         # We cannot defer class creation any further.
         # This will call hooks like __init_subclass__

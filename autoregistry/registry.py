@@ -3,6 +3,7 @@ from collections.abc import ItemsView, KeysView, ValuesView
 from functools import partial
 from inspect import isclass, ismodule
 from pathlib import Path
+from types import MethodType
 from typing import Any, Callable, Generator, List, Optional, Type, Union
 
 from .config import RegistryConfig
@@ -166,17 +167,11 @@ class MethodDescriptor(object):
 
     def __get__(self, obj, objtype):
         if obj is None:
-            # invoked directly from Class
-            def redirect(*args, **kwargs):
-                return self.registry_method(objtype, *args, **kwargs)
-
-            return redirect
+            # invoked from class
+            return MethodType(self.registry_method, objtype)
         else:
-            # invoked from instance
-            def redirect(*args, **kwargs):
-                return self.user_method(obj, *args, **kwargs)
-
-            return redirect
+            # invoked from instance of class
+            return MethodType(self.user_method, obj)
 
 
 class RegistryMeta(ABCMeta, _DictMixin):

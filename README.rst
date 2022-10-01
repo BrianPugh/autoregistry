@@ -27,6 +27,7 @@ AutoRegistry has a single  powerful class ``Registry`` that can do the following
 
 .. inclusion-marker-remove
 
+AutoRegistry is also highly configurable, with features like name-schema-enforcement and name-conversion-rules.
 `Checkout the docs for more information <https://autoregistry.readthedocs.io/en/latest/?badge=latest/>`_.
 
 Installation

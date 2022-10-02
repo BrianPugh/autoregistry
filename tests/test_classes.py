@@ -362,7 +362,7 @@ def test_dict_method_override_keys():
         def keys(self):
             return [1, 2, 3]
 
-    assert not Base.keys()
+    assert not Base.keys()  # pyright: ignore[reportGeneralTypeIssues]
     base = Base()
     assert base.keys() == [1, 2, 3]
 
@@ -372,7 +372,7 @@ def test_dict_method_override_values():
         def values(self):
             return [1, 2, 3]
 
-    assert not Base.values()
+    assert not Base.values()  # pyright: ignore[reportGeneralTypeIssues]
     base = Base()
     assert base.values() == [1, 2, 3]
 
@@ -382,7 +382,7 @@ def test_dict_method_override_items():
         def items(self):
             return [1, 2, 3]
 
-    assert not list(Base.items())
+    assert not list(Base.items())  # pyright: ignore[reportGeneralTypeIssues]
     base = Base()
     assert base.items() == [1, 2, 3]
 
@@ -392,7 +392,7 @@ def test_dict_method_override_get():
         def get(self, key):
             return 5
 
-    assert Base.get("foo") is None
+    assert Base.get("foo") is None  # pyright: ignore[reportGeneralTypeIssues]
     base = Base()
     assert base.get("foo") == 5
 
@@ -402,6 +402,6 @@ def test_dict_method_override_clear():
         def clear(self):
             return 5
 
-    assert Base.clear() is None
+    assert Base.clear() is None  # pyright: ignore[reportGeneralTypeIssues]
     base = Base()
     assert base.clear() == 5

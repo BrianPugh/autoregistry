@@ -17,7 +17,7 @@ repos:
         args: ["--profile=black"]
 
   - repo: https://github.com/psf/black
-    rev: 22.6.0
+    rev: 22.8.0
     hooks:
       - id: black
         args:
@@ -34,12 +34,12 @@ repos:
       - id: blacken-docs
 
   - repo: https://github.com/kynan/nbstripout
-    rev: 0.6.0
+    rev: 0.6.1
     hooks:
       - id: nbstripout
 
   - repo: https://github.com/nbQA-dev/nbQA
-    rev: 1.4.0
+    rev: 1.5.2
     hooks:
       - id: nbqa-isort
         args: ["--profile=black"]
@@ -108,6 +108,6 @@ repos:
           - flake8-use-pathlib
 
   - repo: https://github.com/RobertCraigie/pyright-python
-    rev: v1.1.271
+    rev: v1.1.273
     hooks:
       - id: pyright

@@ -297,7 +297,7 @@ class Registry(metaclass=RegistryMeta):
             return super().__new__(cls)
 
 
-class RegistryDecorator(Registry, _DictMixin):
+class RegistryDecorator(Registry, _DictMixin, skip=True):
     __name__: str
 
     def __init__(self, objs=None, /, **config):

@@ -158,7 +158,7 @@ def test_base_registry():
     class SubBar(Bar):
         pass
 
-    assert list(Registry) == ["foo", "bar"]
+    assert list(Registry) == []
     assert list(Foo) == ["subfoo"]
     assert list(Bar) == ["subbar"]
 

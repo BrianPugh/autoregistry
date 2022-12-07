@@ -96,10 +96,11 @@ class _Registry(dict):
                     continue
 
                 if parent_cls is Registry:
-                    # Only register to Registry if this is a root call.
-                    if root:
-                        parent_registry.register(obj, name=name, aliases=aliases)
-                elif root or parent_registry.config.recursive:
+                    # Never register to the base Registry class.
+                    # Unwanted cross-library interactions may occur, otherwise.
+                    continue
+
+                if root or parent_registry.config.recursive:
                     parent_registry.register(obj, name=name, aliases=aliases)
 
         # Register aliases

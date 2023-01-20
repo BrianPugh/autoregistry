@@ -19,7 +19,7 @@ from .exceptions import (
 class _Registry(dict):
     """Unified container object for __registry__."""
 
-    def __init__(self, config: RegistryConfig, name: Optional[str] = None):
+    def __init__(self, config: RegistryConfig, name: str = ""):
         super().__init__()
         self.config = config
         self.name = name
@@ -30,7 +30,7 @@ class _Registry(dict):
     def register(
         self,
         obj: Any,
-        name: Union[str, None] = None,
+        name: str = "",
         aliases: Union[str, None, List[str]] = None,
         root: bool = False,
     ):
@@ -51,7 +51,7 @@ class _Registry(dict):
             Force register to immediate parent(s).
         """
         # Derive/Validate Name
-        if name is None:
+        if not name:
             try:
                 name = str(obj.__name__)
             except AttributeError:
@@ -317,12 +317,12 @@ class RegistryDecorator(Registry, _DictMixin, skip=True):
 
     def __call__(
         self,
-        obj=None,
+        obj: Any = None,
         /,
         *,
-        name=None,
+        name: str = "",
         aliases: Union[str, None, List[str]] = None,
-    ):
+    ) -> Any:
         config = self.__registry__.config
 
         if obj is None:

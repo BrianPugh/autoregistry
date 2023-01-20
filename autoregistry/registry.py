@@ -1,10 +1,10 @@
 from abc import ABCMeta
-from collections.abc import ItemsView, KeysView, ValuesView
+from collections.abc import KeysView, ValuesView
 from functools import partial
-from inspect import isclass, ismodule
+from inspect import ismodule
 from pathlib import Path
 from types import MethodType
-from typing import Any, Callable, Generator, List, Optional, Type, Union
+from typing import Any, Callable, Generator, Iterable, Type, Union
 
 from .config import RegistryConfig
 from .exceptions import (
@@ -31,7 +31,7 @@ class _Registry(dict):
         self,
         obj: Any,
         name: str = "",
-        aliases: Union[str, None, List[str]] = None,
+        aliases: Union[str, None, Iterable[str]] = None,
         root: bool = False,
     ):
         """Register an object to a registry, subject to configuration.
@@ -43,7 +43,7 @@ class _Registry(dict):
         name: str
             If provided, register ``obj`` to this name; overrides checks.
             If not provided, name will be auto-derived from ``obj`` via ``format``.
-        aliases: Union[str, None, List[str]]
+        aliases: Union[str, None, Iterable[str]]
             If provided, also register ``obj`` to these strings.
             Not subject to configuration rules.
         root: bool
@@ -184,7 +184,7 @@ class RegistryMeta(ABCMeta, _DictMixin):
         bases,
         namespace,
         name: Union[str, None] = None,
-        aliases: Union[str, None, List[str]] = None,
+        aliases: Union[str, None, Iterable[str]] = None,
         skip: bool = False,
         **config,
     ):
@@ -321,7 +321,7 @@ class RegistryDecorator(Registry, _DictMixin, skip=True):
         /,
         *,
         name: str = "",
-        aliases: Union[str, None, List[str]] = None,
+        aliases: Union[str, None, Iterable[str]] = None,
     ) -> Any:
         config = self.__registry__.config
 

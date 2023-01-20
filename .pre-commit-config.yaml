@@ -1,12 +1,12 @@
 repos:
   - repo: https://github.com/codespell-project/codespell
-    rev: v2.2.1
+    rev: v2.2.2
     hooks:
       - id: codespell
         args: ["-L", "ClassE,classe"]
 
   - repo: https://github.com/PyCQA/isort
-    rev: 5.10.1
+    rev: 5.11.4
     hooks:
       - id: isort
         name: isort
@@ -17,7 +17,7 @@ repos:
         args: ["--profile=black"]
 
   - repo: https://github.com/psf/black
-    rev: 22.8.0
+    rev: 22.12.0
     hooks:
       - id: black
         args:
@@ -27,9 +27,10 @@ repos:
           - "--target-version=py39"
           - "--target-version=py310"
         types: [python]
+        exclude: ^typesafety/
 
   - repo: https://github.com/asottile/blacken-docs
-    rev: v1.12.1
+    rev: 1.13.0
     hooks:
       - id: blacken-docs
 
@@ -39,7 +40,7 @@ repos:
       - id: nbstripout
 
   - repo: https://github.com/nbQA-dev/nbQA
-    rev: 1.5.2
+    rev: 1.6.1
     hooks:
       - id: nbqa-isort
         args: ["--profile=black"]
@@ -53,7 +54,7 @@ repos:
       - id: nbqa-flake8
 
   - repo: https://github.com/pre-commit/pygrep-hooks
-    rev: v1.9.0
+    rev: v1.10.0
     hooks:
       - id: python-check-blanket-noqa
       - id: python-check-mock-methods
@@ -65,7 +66,7 @@ repos:
         types: [text]
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.3.0
+    rev: v4.4.0
     hooks:
       - id: check-added-large-files
       - id: check-ast
@@ -91,12 +92,12 @@ repos:
         exclude: \.(html|svg)$
 
   - repo: https://github.com/asottile/setup-cfg-fmt
-    rev: v2.0.0
+    rev: v2.2.0
     hooks:
       - id: setup-cfg-fmt
 
   - repo: https://github.com/PyCQA/flake8
-    rev: 5.0.4
+    rev: 6.0.0
     hooks:
       - id: flake8
         additional_dependencies:
@@ -108,6 +109,7 @@ repos:
           - flake8-use-pathlib
 
   - repo: https://github.com/RobertCraigie/pyright-python
-    rev: v1.1.273
+    rev: v1.1.290
     hooks:
       - id: pyright
+        exclude: ^typesafety/

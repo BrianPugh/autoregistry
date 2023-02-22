@@ -6,7 +6,7 @@ repos:
         args: ["-L", "ClassE,classe"]
 
   - repo: https://github.com/PyCQA/isort
-    rev: 5.11.4
+    rev: 5.12.0
     hooks:
       - id: isort
         name: isort
@@ -17,7 +17,7 @@ repos:
         args: ["--profile=black"]
 
   - repo: https://github.com/psf/black
-    rev: 22.12.0
+    rev: 23.1.0
     hooks:
       - id: black
         args:
@@ -40,7 +40,7 @@ repos:
       - id: nbstripout
 
   - repo: https://github.com/nbQA-dev/nbQA
-    rev: 1.6.1
+    rev: 1.6.3
     hooks:
       - id: nbqa-isort
         args: ["--profile=black"]
@@ -109,7 +109,7 @@ repos:
           - flake8-use-pathlib
 
   - repo: https://github.com/RobertCraigie/pyright-python
-    rev: v1.1.290
+    rev: v1.1.295
     hooks:
       - id: pyright
         exclude: ^typesafety/

@@ -1,6 +1,7 @@
 import pytest
 
 import autoregistry
+from autoregistry.config import RegistryConfig
 from autoregistry.regex import key_split, to_snake_case
 from autoregistry.registry import _Registry
 
@@ -16,7 +17,7 @@ def test_to_snake():
 
 
 def test_registry_config_update():
-    config = autoregistry.RegistryConfig()
+    config = RegistryConfig()
     config.update(
         {
             "suffix": "test",
@@ -28,7 +29,7 @@ def test_registry_config_update():
 
 
 def test_registry_config_cannot_derive_name():
-    __registry__ = _Registry(autoregistry.RegistryConfig())
+    __registry__ = _Registry(RegistryConfig())
     foo = "foo"
     with pytest.raises(autoregistry.CannotDeriveNameError):
         __registry__.register(foo)

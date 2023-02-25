@@ -95,3 +95,11 @@ html_theme_options = {
     "includehidden": True,
     "titles_only": False,
 }
+
+html_context = {
+    # Github options
+    "display_github": True,
+    "github_user": "BrianPugh",
+    "github_repo": "autoregistry",
+    "github_version": "main/docs/",
+}

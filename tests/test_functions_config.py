@@ -199,6 +199,19 @@ def test_decorator_hyphenate():
     assert list(registry) == ["bar", "foo-1"]
 
 
+def test_registry_transform():
+    def transform(name) -> str:
+        return f"foo-{name}"
+
+    registry = Registry(transform=transform)
+
+    @registry
+    def bar():
+        pass
+
+    assert list(registry) == ["foo-bar"]
+
+
 def test_module_non_recursive():
     import fake_module
 

@@ -1,6 +1,7 @@
 import dataclasses
 import re
 from dataclasses import asdict, dataclass
+from typing import Callable, Optional
 
 from .exceptions import InvalidNameError
 from .regex import hyphenate, key_split, to_snake_case
@@ -24,10 +25,16 @@ class RegistryConfig:
     # Otherwise, only register in parent.
     recursive: bool = True
 
+    # Convert PascalCase names to snake_case.
     snake_case: bool = False
 
+    # Convert underscores _ to hyphens -
     hyphen: bool = False
 
+    # Custom user-provided name transform.
+    transform: Optional[Callable[[str], str]] = None
+
+    # Allow registry keys to be overwritten.
     overwrite: bool = False
 
     # Redirect vanilla methods that would collide with the dict-like interface.
@@ -61,13 +68,12 @@ class RegistryConfig:
         return registry
 
     def format(self, name: str) -> str:
-        """Convert and validate a PascalCase class name to a registry key.
+        """Convert and validate a function or class name to a registry key.
 
         Parameters
         ----------
         name: str
-            Name to convert to a registry key. For example, converts ``FooBar``
-            into ``foobar``.
+            Name to convert to a registry key.
         """
         if self._regex_validator and not self._regex_validator.match(name):
             raise InvalidNameError(f"{name} name must match regex {self.regex}")
@@ -92,5 +98,8 @@ class RegistryConfig:
 
         if not self.case_sensitive:
             name = name.lower()
+
+        if self.transform:
+            name = self.transform(name)
 
         return name

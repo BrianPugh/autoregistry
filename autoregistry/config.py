@@ -96,10 +96,10 @@ class RegistryConfig:
         if self.hyphen:
             name = hyphenate(name)
 
-        if not self.case_sensitive:
-            name = name.lower()
-
         if self.transform:
             name = self.transform(name)
+
+        if not self.case_sensitive:
+            name = name.lower()
 
         return name

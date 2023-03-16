@@ -157,7 +157,7 @@ class _DictMixin:
         self.__registry__.clear()
 
 
-class MethodDescriptor(object):
+class MethodDescriptor:
     """
     Non-data-descriptor that dispatches depending if it was called from a Class or an instance.
     """

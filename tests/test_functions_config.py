@@ -185,6 +185,33 @@ def test_decorator_aliases_overwrite():
     assert registry["bar"] == registry["foo"] == foo
 
 
+def test_decorator_hyphenate():
+    registry = Registry(hyphen=True)
+
+    @registry
+    def bar():
+        pass
+
+    @registry
+    def foo_1():
+        pass
+
+    assert list(registry) == ["bar", "foo-1"]
+
+
+def test_registry_transform():
+    def transform(name) -> str:
+        return f"foo-{name}"
+
+    registry = Registry(transform=transform)
+
+    @registry
+    def bar():
+        pass
+
+    assert list(registry) == ["foo-bar"]
+
+
 def test_module_non_recursive():
     import fake_module
 

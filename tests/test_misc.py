@@ -1,9 +1,9 @@
 import pytest
 
 import autoregistry
+from autoregistry._registry import _Registry
 from autoregistry.config import RegistryConfig
 from autoregistry.regex import key_split, to_snake_case
-from autoregistry.registry import _Registry
 
 
 def test_to_snake():

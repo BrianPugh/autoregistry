@@ -474,6 +474,76 @@ exception will be raised.
    assert registry["foo"]() == 2
 
 
+hyphen: bool = False
+--------------------
+Converts all underscores to hyphens.
+
+.. code-block:: python
+
+   tools = Registry(hyphen=True)
+
+
+   @registry
+   def ballpeen_hammer():
+       pass
+
+
+   @registry
+   def socket_wrench():
+       pass
+
+
+   assert list(Tools) == ["ballpeen-hammer", "socket-wrench"]
+
+Can be used in conjunction with ``snake_case``.
+
+.. code-block:: python
+
+   class Tools(Registry, snake_case=True, hyphen=True):
+       pass
+
+
+   class Hammer(Tools):
+       pass
+
+
+   class SocketWrench(Tools):
+       pass
+
+
+   assert list(Tools) == ["hammer", "socket-wrench"]
+
+transform: Optional[Callable] = None
+------------------------------------
+Provide a custom function to modify the registry for a given function/class name.
+Must that in a single string argument, and return a string.
+The ``transform`` is called as the **final** name processing step, after all other
+transforms like ``snake_case`` and ``hyphen``.
+
+.. code-block::
+
+   def transform(name: str) -> str:
+       return f"shiny_{name}"
+
+
+   class Pokemon(Registry, transform=transform, snake_case=True):
+       pass
+
+
+   class Pikachu(Pokemon):
+       pass
+
+
+   class SurfingPikachu(Pokemon):
+       pass
+
+
+   assert list(Pokemon) == [
+       "shiny_pikachu",
+       "shiny_surfing_pikachu",
+   ]
+
+
 redirect: bool = True
 ---------------------
 If ``redirect=True``, then methods that would have collided with the dict-like

@@ -12,6 +12,7 @@ __all__ = [
     "RegistryMeta",
 ]
 
+from ._registry import Registry, RegistryMeta
 from .exceptions import (
     CannotDeriveNameError,
     CannotRegisterPythonBuiltInError,
@@ -20,4 +21,3 @@ from .exceptions import (
     ModuleAliasError,
     RegistryError,
 )
-from .registry import Registry, RegistryMeta

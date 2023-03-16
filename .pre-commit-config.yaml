@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/codespell-project/codespell
-    rev: v2.2.2
+    rev: v2.2.4
     hooks:
       - id: codespell
         args: ["-L", "ClassE,classe"]
@@ -109,7 +109,7 @@ repos:
           - flake8-use-pathlib
 
   - repo: https://github.com/RobertCraigie/pyright-python
-    rev: v1.1.295
+    rev: v1.1.299
     hooks:
       - id: pyright
         exclude: ^typesafety/

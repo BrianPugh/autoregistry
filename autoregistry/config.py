@@ -3,7 +3,7 @@ import re
 from dataclasses import asdict, dataclass
 
 from .exceptions import InvalidNameError
-from .regex import key_split, to_snake_case
+from .regex import hyphenate, key_split, to_snake_case
 
 
 @dataclass
@@ -25,6 +25,8 @@ class RegistryConfig:
     recursive: bool = True
 
     snake_case: bool = False
+
+    hyphen: bool = False
 
     overwrite: bool = False
 
@@ -84,6 +86,9 @@ class RegistryConfig:
 
         if self.snake_case:
             name = to_snake_case(name)
+
+        if self.hyphen:
+            name = hyphenate(name)
 
         if not self.case_sensitive:
             name = name.lower()

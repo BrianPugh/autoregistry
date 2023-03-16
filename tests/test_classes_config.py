@@ -168,6 +168,17 @@ def test_snake_case():
     ]
 
 
+def test_snake_case_hyphen():
+    Pokemon, Charmander, Pikachu, SurfingPikachu = construct_pokemon_classes(
+        snake_case=True, hyphen=True
+    )
+    assert list(Pokemon.keys()) == [
+        "charmander",
+        "pikachu",
+        "surfing-pikachu",
+    ]
+
+
 def test_config_hierarchy():
     class Pokemon(Registry, suffix="Type", strip_suffix=True, recursive=False):
         pass

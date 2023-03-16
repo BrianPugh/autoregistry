@@ -474,6 +474,45 @@ exception will be raised.
    assert registry["foo"]() == 2
 
 
+hyphen: bool = False
+----------------------------------
+Converts all underscores to hyphens.
+
+.. code-block:: python
+
+   tools = Registry(hyphen=True)
+
+
+   @registry
+   def ballpeen_hammer():
+       pass
+
+
+   @registry
+   def socket_wrench():
+       pass
+
+
+   assert list(Tools) == ["ballpeen-hammer", "socket-wrench"]
+
+Can be used in conjunction with ``snake_case``.
+
+.. code-block:: python
+
+   class Tools(Registry, snake_case=True, hyphen=True):
+       pass
+
+
+   class Hammer(Tools):
+       pass
+
+
+   class SocketWrench(Tools):
+       pass
+
+
+   assert list(Tools) == ["hammer", "socket-wrench"]
+
 redirect: bool = True
 ---------------------
 If ``redirect=True``, then methods that would have collided with the dict-like

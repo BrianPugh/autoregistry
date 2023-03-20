@@ -141,7 +141,7 @@ def test_registry_overwrite():
     registry = Registry(overwrite=True)
 
     @registry
-    def foo():  # type: ignore
+    def foo():  # type: ignore[reportGeneralTypeIssues]
         pass
 
     @registry
@@ -153,7 +153,7 @@ def test_registry_overwrite_key_collision():
     registry = Registry(overwrite=False)
 
     @registry
-    def foo():  # type: ignore
+    def foo():  # type: ignore[reportGeneralTypeIssues]
         pass
 
     with pytest.raises(autoregistry.KeyCollisionError):

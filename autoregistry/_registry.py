@@ -10,6 +10,7 @@ from .config import RegistryConfig
 from .exceptions import (
     CannotDeriveNameError,
     CannotRegisterPythonBuiltInError,
+    InternalError,
     InvalidNameError,
     KeyCollisionError,
     ModuleAliasError,
@@ -54,10 +55,10 @@ class _Registry(dict):
         if not name:
             try:
                 name = str(obj.__name__)
-            except AttributeError:
+            except AttributeError as e:
                 raise CannotDeriveNameError(
                     f"Cannot derive name from a bare {type(obj)}."
-                )
+                ) from e
             name = self.config.format(name)
         elif "." in name or "/" in name:
             raise InvalidNameError(f'Name "{name}" cannot contain "." or "/".')
@@ -120,8 +121,7 @@ class _DictMixin:
         return self.__registry__.config.getitem(self.__registry__, key)
 
     def __iter__(self) -> Generator[str, None, None]:
-        for val in self.__registry__:
-            yield val
+        yield from self.__registry__
 
     def __len__(self) -> int:
         return len(self.__registry__)
@@ -140,8 +140,7 @@ class _DictMixin:
         return self.__registry__.values()
 
     def items(self):
-        for item in self.__registry__.items():
-            yield item
+        yield from self.__registry__.items()
 
     def get(self, key: Union[str, Type], default=None) -> Type:
         try:
@@ -220,14 +219,11 @@ class RegistryMeta(ABCMeta, _DictMixin):
             except AttributeError:
                 pass
         else:
-            raise Exception("Should never happen.")  # pragma: no cover
+            raise InternalError("Should never happen.")  # pragma: no cover
 
         # Derive registry name before updating registry config, since a classes own name is
         # subject to it's parents configuration, not its own.
-        if name is None:
-            registry_name = registry_config.format(cls_name)
-        else:
-            registry_name = name
+        registry_name = registry_config.format(cls_name) if name is None else name
 
         registry_config.update(config)
 
@@ -270,9 +266,9 @@ class RegistryMeta(ABCMeta, _DictMixin):
 
         return new_cls
 
-    def __repr__(self):
+    def __repr__(cls):
         try:
-            return f"<{self.__name__}: {list(self.__registry__.keys())}>"
+            return f"<{cls.__name__}: {list(cls.__registry__.keys())}>"
         except Exception:
             return super().__repr__()
 
@@ -339,11 +335,13 @@ class RegistryDecorator(Registry, _DictMixin, skip=True):
 
         try:
             obj_file = obj.__file__
-            assert obj_file is not None
-        except (AttributeError, AssertionError):
+        except AttributeError:
+            obj_file = None
+        if obj_file is None:
             raise CannotRegisterPythonBuiltInError(
                 f"Cannot register Python BuiltIn {obj}"
             )
+
         obj_folder = str(Path(obj_file).parent)
         # Skip private and magic attributes
         elem_names = [x for x in dir(obj) if not x.startswith("_")]
@@ -354,9 +352,10 @@ class RegistryDecorator(Registry, _DictMixin, skip=True):
                     continue
                 try:
                     handle_file = handle.__file__
-                    assert handle_file is not None
-                except (AttributeError, AssertionError):
-                    # handle is a python built-in
+                except AttributeError:
+                    handle_file = None
+
+                if handle_file is None:  # handle is a python built-in
                     continue
 
                 handle_folder = str(Path(handle_file).parent)

@@ -20,3 +20,7 @@ class ModuleAliasError(RegistryError):
 
 class CannotRegisterPythonBuiltInError(RegistryError):
     """AutoRegistry doesn't work with python built-ins."""
+
+
+class InternalError(RegistryError):
+    """Something went wrong internal to AutoRegistry that should never happen."""

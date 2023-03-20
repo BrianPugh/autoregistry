@@ -6,7 +6,7 @@ from autoregistry import Registry
 
 def construct_pokemon_classes(**kwargs):
     @dataclass
-    class Pokemon(Registry, **kwargs):  # type: ignore
+    class Pokemon(Registry, **kwargs):  # type: ignore[reportGeneralTypeIssues]
         level: int
         hp: int
 

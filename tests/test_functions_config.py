@@ -42,7 +42,7 @@ def test_decorator_regex():
     registry = Registry(regex="[A-Z]+", case_sensitive=True)
 
     @registry
-    def FOO():
+    def FOO():  # noqa: N802
         pass
 
     with pytest.raises(InvalidNameError):

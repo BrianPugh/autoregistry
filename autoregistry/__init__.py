@@ -10,12 +10,14 @@ __all__ = [
     "Registry",
     "RegistryError",
     "RegistryMeta",
+    "InternalError",
 ]
 
 from ._registry import Registry, RegistryMeta
 from .exceptions import (
     CannotDeriveNameError,
     CannotRegisterPythonBuiltInError,
+    InternalError,
     InvalidNameError,
     KeyCollisionError,
     ModuleAliasError,

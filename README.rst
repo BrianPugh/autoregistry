@@ -20,7 +20,7 @@ AutoRegistry has a single  powerful class ``Registry`` that can do the following
 
 * Be inherited to automatically register subclasses by their name.
 
-* Be directly invoked ``my_registery = Registry()`` to create a decorator
+* Be directly invoked ``my_registry = Registry()`` to create a decorator
   for registering callables like functions.
 
 * Traverse and automatically create registries for other python libraries.

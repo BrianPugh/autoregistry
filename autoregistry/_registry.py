@@ -202,14 +202,6 @@ class RegistryMeta(ABCMeta, _DictMixin):
         # Manipulate namespace instead of modifying attributes after calling __new__ so
         # that hooks like __init_subclass__ have appropriately set registry attributes.
         # Each subclass gets its own registry.
-        try:
-            Registry  # pyright: ignore[reportUnusedExpression]
-        except NameError:
-            # Should only happen the very first time that
-            # Registry is being defined.
-            namespace["__registry__"] = _Registry(RegistryConfig(**config))
-            new_cls = super().__new__(cls, cls_name, bases, namespace)
-            return new_cls
 
         # Copy the nearest parent config, then update it with new params
         for parent_cls in bases:
@@ -219,7 +211,10 @@ class RegistryMeta(ABCMeta, _DictMixin):
             except AttributeError:
                 pass
         else:
-            raise InternalError("Should never happen.")  # pragma: no cover
+            # No parent config, create a new one from scratch.
+            namespace["__registry__"] = _Registry(RegistryConfig(**config))
+            new_cls = super().__new__(cls, cls_name, bases, namespace)
+            return new_cls
 
         # Derive registry name before updating registry config, since a classes own name is
         # subject to it's parents configuration, not its own.

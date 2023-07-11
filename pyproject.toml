@@ -1,6 +1,6 @@
 [build-system]
-requires = ["poetry>=1.4.0", "poetry-dynamic-versioning-plugin"]
-build-backend = "poetry.core.masonry.api"
+requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning>=0.21.5"]
+build-backend = "poetry_dynamic_versioning.backend"
 
 [tool.poetry-dynamic-versioning]
 enable = true
@@ -20,7 +20,7 @@ packages = [{include = "autoregistry"}]
 
 [tool.poetry.dependencies]
 # Be as loose as possible if writing a library.
-python = "^3.8"
+python = ">=3.8"
 
 [tool.poetry.group.docs.dependencies]
 sphinx = "~4.5.0"
@@ -28,9 +28,7 @@ sphinx_rtd_theme = "~1.0.0"
 
 [tool.poetry.group.dev.dependencies]
 coverage = {extras = ["toml"], version = "^5.1"}
-ipdb = "^0.13.9"
-poetry-dynamic-versioning = "^0.16.0"
-pre_commit = "^2.16.0"
+ipdb = ">=0.13.9"
 pytest = "^7.1.2"
 pytest-cov = "^3.0.0"
 pytest-mock = "^3.7.0"

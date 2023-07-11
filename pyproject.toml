@@ -30,7 +30,7 @@ sphinx_rtd_theme = "~1.0.0"
 coverage = {extras = ["toml"], version = ">=5.1,<8.0"}
 ipdb = ">=0.13.9"
 pytest = "^7.1.2"
-pytest-cov = "^3.0.0"
+pytest-cov = ">=3,<5"
 pytest-mock = "^3.7.0"
 pyright = "^1.1.273"
 pytest-pyright = "^0.0.3"

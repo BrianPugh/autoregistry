@@ -2,10 +2,9 @@ from autoregistry import RegistryMeta
 
 
 class ExtendedRegistryMeta(RegistryMeta):
-    def __call__(cls, *args, **kwargs):  # noqa: N805
-        out = super().__call__(*args, **kwargs)
-        out.extended_attribute = cls.__name__
-        return out
+    def __init__(cls, name, bases, dct):  # noqa: N805
+        super().__init__(name, bases, dct)
+        cls.extended_attribute = name
 
 
 class Foo(metaclass=ExtendedRegistryMeta):
@@ -17,10 +16,7 @@ class Bar(Foo):
 
 
 def test_extended_registry():
-    foo = Foo()
-    bar = Bar()
-
-    assert foo.extended_attribute == "Foo"
-    assert bar.extended_attribute == "Bar"
+    assert Foo.extended_attribute == "Foo"
+    assert Bar.extended_attribute == "Bar"
 
     assert list(Foo) == ["bar"]

@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: "v0.0.277"
+    rev: "v0.0.287"
     hooks:
       - id: ruff
         args: [--fix, --exit-non-zero-on-fix]
@@ -24,7 +24,7 @@ repos:
         exclude: ^typesafety/
 
   - repo: https://github.com/asottile/blacken-docs
-    rev: 1.15.0
+    rev: 1.16.0
     hooks:
       - id: blacken-docs
 
@@ -55,7 +55,7 @@ repos:
         exclude: \.(html|svg)$
 
   - repo: https://github.com/RobertCraigie/pyright-python
-    rev: v1.1.316
+    rev: v1.1.325
     hooks:
       - id: pyright
         exclude: ^typesafety/

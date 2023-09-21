@@ -203,18 +203,24 @@ class RegistryMeta(ABCMeta, _DictMixin):
         # that hooks like __init_subclass__ have appropriately set registry attributes.
         # Each subclass gets its own registry.
 
-        # Copy the nearest parent config, then update it with new params
-        for parent_cls in bases:
-            try:
-                registry_config = parent_cls.__registry__.config.copy()
-                break
-            except AttributeError:
-                pass
+        # Copy the nearest parent config, then update it with new params.
+        # Some class construction libraries, like ``attrs``, will recreate a class.
+        # In these situations, the old-class will have it's attributes (like the __registry__
+        # object) passed in via the ``namespace``.
+        if "__registry__" in namespace:
+            registry_config = namespace["__registry__"].config
         else:
-            # No parent config, create a new one from scratch.
-            namespace["__registry__"] = _Registry(RegistryConfig(**config))
-            new_cls = super().__new__(cls, cls_name, bases, namespace)
-            return new_cls
+            for parent_cls in bases:
+                try:
+                    registry_config = parent_cls.__registry__.config.copy()
+                    break
+                except AttributeError:
+                    pass
+            else:
+                # No parent config, create a new one from scratch.
+                namespace["__registry__"] = _Registry(RegistryConfig(**config))
+                new_cls = super().__new__(cls, cls_name, bases, namespace)
+                return new_cls
 
         # Derive registry name before updating registry config, since a classes own name is
         # subject to it's parents configuration, not its own.

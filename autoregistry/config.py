@@ -59,6 +59,7 @@ class RegistryConfig:
                 setattr(self, key, value)
 
     def getitem(self, registry: dict, key: str):
+        """Key/Value lookup with keysplitting and optional case-insensitivity."""
         keys = key_split(key)
         for key in keys:
             if not self.case_sensitive:
@@ -70,10 +71,30 @@ class RegistryConfig:
     def format(self, name: str) -> str:
         """Convert and validate a function or class name to a registry key.
 
+        Operations are performed in the following order (if configured):
+            1. ``regex`` validator
+            2. ``prefix`` validation, then stripping.
+            3. ``suffix`` validation, then stripping.
+            4. ``snake_case`` transform (``FooBar`` -> ``foo_bar``).
+            5. ``hyphen`` transform (``foo_bar`` -> ``foo-bar``).
+            6. ``transform`` arbitrary user-provided string transform.
+            7.  The lookup string representation is then stored as all
+                lowercase if ``case_sensitive=False``.
+
         Parameters
         ----------
         name: str
             Name to convert to a registry key.
+
+        Raises
+        ------
+        InvalidNameError
+            If the provided name fails a validation check (``prefix``, ``suffix``, ``regex``).
+
+        Returns
+        -------
+        str
+            New name after applying all transformation and validation rules.
         """
         if self._regex_validator and not self._regex_validator.match(name):
             raise InvalidNameError(f"{name} name must match regex {self.regex}")

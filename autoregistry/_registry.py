@@ -250,11 +250,16 @@ class RegistryMeta(ABCMeta, _DictMixin):
                 new_cls = super().__new__(cls, cls_name, bases, namespace)
                 return new_cls
 
-        # Derive registry name before updating registry config, since a classes own name is
-        # subject to it's parents configuration, not its own.
-        registry_name = registry_config.format(cls_name) if name is None else name
-
-        registry_config.update(config)
+        if skip:
+            # If we're not registering the class, update rules first, then derive name.
+            # This allows for things like suffix changing of a subclass hierarchy.
+            registry_config.update(config)
+            registry_name = registry_config.format(cls_name) if name is None else name
+        else:
+            # If we're registering the class, derive name first, then update rules first.
+            # Typically, a classes own name is subject to it's parents configuration, not its own.
+            registry_name = registry_config.format(cls_name) if name is None else name
+            registry_config.update(config)
 
         namespace["__registry__"] = _Registry(registry_config, name=registry_name)
 

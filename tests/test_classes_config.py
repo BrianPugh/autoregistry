@@ -77,6 +77,25 @@ def test_suffix_yes_strip():
     assert list(Sensor.keys()) == ["oxygen", "temperature"]
 
 
+def test_suffix_skip():
+    class Builder(Registry, suffix="Builder"):
+        pass
+
+    class BarBuilder(Builder):
+        pass
+
+    class FooBuilderA(Builder, skip=True, suffix="BuilderA"):
+        pass
+
+    class FooChildBuilderA(FooBuilderA):
+        pass
+
+    assert list(Builder) == ["bar", "foochild"]
+    assert BarBuilder.__registry__.name == "bar"
+    assert list(FooBuilderA) == ["foochild"]
+    assert FooChildBuilderA.__registry__.name == "foochild"
+
+
 def test_prefix_suffix_yes_strip():
     class Sensor(Registry, prefix="Premium", suffix="Sensor"):
         pass

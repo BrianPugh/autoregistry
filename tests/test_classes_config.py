@@ -4,6 +4,14 @@ from common import construct_pokemon_classes
 from autoregistry import InvalidNameError, Registry
 
 
+def test_typo():
+    # Make sure we catch invalid parameters
+    with pytest.raises(TypeError):
+
+        class Sensor(Registry, asdklfjlk=123):
+            pass
+
+
 def test_case_sensitive():
     Pokemon, Charmander, Pikachu, SurfingPikachu = construct_pokemon_classes(
         case_sensitive=True,

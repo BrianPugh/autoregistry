@@ -57,6 +57,8 @@ class RegistryConfig:
         for key, value in new.items():
             if hasattr(self, key):
                 setattr(self, key, value)
+            else:
+                raise TypeError(f"Unexpected configuration value {key}={value}")
 
     def getitem(self, registry: dict, key: str):
         """Key/Value lookup with keysplitting and optional case-insensitivity."""

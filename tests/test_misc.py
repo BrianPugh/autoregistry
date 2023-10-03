@@ -21,11 +21,21 @@ def test_registry_config_update():
     config.update(
         {
             "suffix": "test",
-            "not_valid_config_key": None,  # This should be ignored.
         }
     )
 
     assert config.suffix == "test"
+
+
+def test_registry_config_update_invalid_key():
+    config = RegistryConfig()
+    with pytest.raises(TypeError):
+        config.update(
+            {
+                "suffix": "test",
+                "not_valid_config_key": None,  # This should be ignored.
+            }
+        )
 
 
 def test_registry_config_cannot_derive_name():

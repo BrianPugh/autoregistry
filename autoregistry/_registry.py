@@ -35,19 +35,22 @@ class _Registry(dict):
     @cls.setter
     def cls(self, new_cls: type):
         if self._cls is not None:
-            self._rereference(self._cls, new_cls)
+            self._rereference(self._cls, new_cls, root=True)
         self._cls = new_cls
 
-    def _rereference(self, old_cls: type, new_cls: type) -> None:
-        """Recursively updates all registry references from ``old_cls`` to ``new_cls``."""
-        # TODO: this could be optimized by only recursively apply to recursive parents
-        # And not searching self at first _rereference iteration.
-        for k, v in self.items():
-            if v is old_cls:
-                self[k] = new_cls
+    def _rereference(self, old_cls: type, new_cls: type, root=False) -> None:
+        """Recursively updates all registry references from ``old_cls`` to ``new_cls``.
 
-        for parent_registry in self.walk_parent_registries():
-            parent_registry._rereference(old_cls, new_cls)
+        Used when a "clone" class is created, in libraries like ``attrs``.
+        """
+        if not root:
+            for k, v in self.items():
+                if v is old_cls:
+                    self[k] = new_cls
+
+        if root or self.config.recursive:
+            for parent_registry in self.walk_parent_registries():
+                parent_registry._rereference(old_cls, new_cls)
 
     def walk_parent_registries(self) -> Generator["_Registry", None, None]:
         """Iterates over immediate parenting classes and returns their ``_Registry``."""

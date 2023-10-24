@@ -31,7 +31,7 @@ def test_abc_undefined_abstractmethod():
 
 
 def test_abc_multiple_inheritence_first():
-    """The programmer doesn't know inheritting from ABC is superfluous."""
+    """The programmer doesn't know inheriting from ABC is superfluous."""
 
     class Pokemon(ABC, Registry):
         @abstractmethod
@@ -58,7 +58,7 @@ def test_abc_multiple_inheritence_first():
 
 
 def test_abc_multiple_inheritence_last():
-    """The programmer doesn't know inheritting from ABC is superfluous."""
+    """The programmer doesn't know inheriting from ABC is superfluous."""
 
     class Pokemon(Registry, ABC):
         @abstractmethod

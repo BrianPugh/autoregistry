@@ -13,6 +13,7 @@ from .exceptions import (
     InvalidNameError,
     KeyCollisionError,
     ModuleAliasError,
+    RegistryError,
 )
 
 
@@ -146,7 +147,10 @@ class _DictMixin:
         return self.__registry__.config.getitem(self.__registry__, key)
 
     def __setitem__(self, key: str, value: Any):
-        self.__registry__.register(value, key, root=True)
+        if type(self) is RegistryDecorator:
+            self.__registry__.register(value, key, root=True)
+        else:
+            raise RegistryError("Cannot directly setitem on a Registry subclass.")
 
     def __iter__(self) -> Generator[str, None, None]:
         yield from self.__registry__

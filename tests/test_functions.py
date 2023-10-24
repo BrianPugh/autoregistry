@@ -191,6 +191,27 @@ def test_registry_register_at_creation_single():
     assert list(registry) == ["bar"]
 
 
+def test_registry_dictionary_assign():
+    registry = Registry()
+
+    def bar():
+        pass
+
+    registry["foo"] = bar
+    assert registry["foo"] == bar
+
+
+def test_registry_dictionary_assign_collision():
+    registry = Registry()
+
+    def bar():
+        pass
+
+    registry["foo"] = bar
+    with pytest.raises(autoregistry.KeyCollisionError):
+        registry["foo"] = bar
+
+
 def test_registry_module_alias():
     import fake_module
 

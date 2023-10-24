@@ -145,6 +145,9 @@ class _DictMixin:
     def __getitem__(self, key: str) -> Type:
         return self.__registry__.config.getitem(self.__registry__, key)
 
+    def __setitem__(self, key: str, value: Any):
+        self.__registry__.register(value, key, root=True)
+
     def __iter__(self) -> Generator[str, None, None]:
         yield from self.__registry__
 
@@ -261,6 +264,7 @@ class RegistryMeta(ABCMeta, _DictMixin):
         if namespace["__registry__"].config.redirect:
             for method_name in [
                 "__getitem__",
+                "__setitem__",
                 "__iter__",
                 "__len__",
                 "__contains__",
@@ -306,6 +310,7 @@ class Registry(metaclass=RegistryMeta):
     __call__: Callable
     __contains__: Callable[..., bool]
     __getitem__: Callable[[str], Type]
+    __setitem__: Callable[[str, Any], Type]
     __iter__: Callable
     __len__: Callable[..., int]
     clear: Callable[[], None]

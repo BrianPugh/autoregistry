@@ -76,6 +76,7 @@ doesn't impact the auto-derived registration key.
 
 ``name`` and ``aliases`` values are **not** subject to configured naming rules and will **not** be modified
 by configurations like ``strip_suffix``.
+Similarly, directly setting a registry element ``my_registry["myfunction"] = myfunction`` is not subject to naming rules.
 However, values are still subject to the ``overwrite`` configuration and will raise ``KeyCollisionError`` if
 ``name`` or ``aliases`` attempts to overwrite an existing entry while ``overwrite=False``.
 Additionally, ``name`` and ``aliases`` may **not** contain a  ``.`` or a ``/`` due to :ref:`Key Splitting`.

@@ -98,6 +98,14 @@ object and use it to decorate functions.
        return 2 * x
 
 
+   # Assigning as you would a dictionary also works
+   def baz(x):
+       return 3 * x
+
+
+   my_registry["baz"] = baz  # The key could be any string.
+
+
    # You can also register classes this way.
    @my_registry
    class Baz:

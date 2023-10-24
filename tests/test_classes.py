@@ -1,6 +1,7 @@
 import pytest
 from common import construct_pokemon_classes
 
+import autoregistry
 from autoregistry import Registry
 
 
@@ -79,6 +80,19 @@ def test_defaults_get():
     assert Pokemon.get("foo") is None
     assert Pokemon.get("foo", "charmander") == Charmander
     assert Pokemon.get("foo", Charmander) == Charmander
+
+
+def test_classes_setitem_exception():
+    """Don't allow setting items for a Registry subclass since it breaks the hierarchy."""
+
+    class Foo(Registry):
+        pass
+
+    def bar():
+        pass
+
+    with pytest.raises(autoregistry.RegistryError):
+        Foo["bar"] = bar
 
 
 def test_multiple_inheritence_last():

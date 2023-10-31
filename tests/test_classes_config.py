@@ -276,6 +276,19 @@ def test_aliases_list():
     assert Sensor["oxygen"] == Sensor["o2"] == Sensor["air"] == Oxygen
 
 
+def test_aliases_list_self_collision():
+    """Having an alias be the same as ``name`` should NOT generate a KeyCollisionError."""
+
+    class Sensor(Registry):
+        pass
+
+    class Oxygen(Sensor, aliases=["oxygen"]):
+        pass
+
+    assert list(Sensor.keys()) == ["oxygen"]
+    assert Sensor["oxygen"] == Oxygen
+
+
 def test_aliases_single_str_invalid():
     class Sensor(Registry):
         pass

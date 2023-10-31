@@ -100,27 +100,38 @@ class _Registry(dict):
         elif "." in name or "/" in name:
             raise InvalidNameError(f'Name "{name}" cannot contain "." or "/".')
 
-        if not self.config.overwrite and name in self:
-            raise KeyCollisionError(f'"{name}" already registered to {self}')
-
         # Validate aliases and massage it into a list.
         if aliases is None:
             aliases = []
         elif isinstance(aliases, str):
             aliases = [aliases]
+        else:
+            aliases = list(aliases)
 
+        # Only use ``aliases_set`` to detect "in", don't iterate since order is not preserved.
+        aliases_set = set(aliases)
+        if len(aliases_set) != len(aliases):
+            raise KeyCollisionError("Cannot provide multiple aliases with same name.")
+
+        if name not in aliases_set:
+            # It may be useful to redundantly define ``name`` in ``aliases``.
+            aliases.insert(0, name)
+
+        # Validate aliases
         for alias in aliases:
             if "." in alias or "/" in alias:
                 raise InvalidNameError(f'Alias "{alias}" cannot contain "." or "/".')
             if not self.config.overwrite and alias in self:
                 raise KeyCollisionError(f'"{alias}" already registered to {self}')
 
-        # Check if should register self
-        if obj == self.cls:
-            if self.config.register_self:
-                self[name] = obj
-        else:
-            self[name] = obj
+        # Register name and aliases
+        for alias in aliases:
+            # Check if should register self
+            if obj == self.cls:
+                if self.config.register_self:
+                    self[alias] = obj
+            else:
+                self[alias] = obj
 
         # Register to parents if one of the following conditions are met:
         #     1. This is the root ``__recursive__`` call.
@@ -129,13 +140,6 @@ class _Registry(dict):
             for parent_registry in self.walk_parent_registries():
                 if root or parent_registry.config.recursive:
                     parent_registry.register(obj, name=name, aliases=aliases)
-
-        # Register aliases
-        for alias in aliases:
-            if not self.config.overwrite and alias in self:
-                raise KeyCollisionError(f'"{alias}" already registered to {self}')
-
-            self[alias] = obj
 
 
 class _DictMixin:

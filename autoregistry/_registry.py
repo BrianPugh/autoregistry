@@ -407,9 +407,11 @@ class RegistryDecorator(Registry, _DictMixin, skip=True):
 
                 subregistry = RegistryDecorator(**config.asdict())
                 subregistry(handle)
-                self(subregistry, name=elem_name)
+                name = subregistry.__registry__.config.format(elem_name)
+                self(subregistry, name=name)
             else:
-                self(handle, name=elem_name)
+                name = self.__registry__.config.format(elem_name)
+                self(handle, name=name)
 
         return obj
 

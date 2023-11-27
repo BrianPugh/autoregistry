@@ -49,6 +49,7 @@ def assert_fake_module_registry(registry, fake_module):
     assert registry["fake_module_1"]["some_list"] == fake_module.fake_module_1.some_list
     assert registry["fake_module_2"]["foo2"] == fake_module.fake_module_2.foo2
     assert registry["fake_module_2"]["bar2"] == fake_module.fake_module_2.bar2
+    assert registry["fakemodule3"] == fake_module.FakeModule3
     assert registry["foo2"] == fake_module.foo2
 
 
@@ -58,9 +59,11 @@ def test_defaults_module():
     registry = Registry()
     registry(fake_module)
     assert list(registry) == [
+        "fakemodule3",
         "bar2",
         "fake_module_1",
         "fake_module_2",
+        "fake_module_3",
         "fake_submodule_1",
         "foo2",
     ]

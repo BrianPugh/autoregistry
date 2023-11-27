@@ -217,4 +217,4 @@ def test_module_non_recursive():
 
     registry = Registry(recursive=False)
     registry(fake_module)
-    assert list(registry) == ["bar2", "foo2"]
+    assert list(registry) == ["fakemodule3", "bar2", "foo2"]

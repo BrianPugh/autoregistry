@@ -87,7 +87,7 @@ jobs:
       #----------------------------------------------
       #              run pre-commit
       #----------------------------------------------
-      - uses: pre-commit/action@v2.0.3
+      - uses: pre-commit/action@v3.0.1
 
       #----------------------------------------------
       #              run test suite
@@ -99,7 +99,7 @@ jobs:
           coverage report
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           flags: unittests

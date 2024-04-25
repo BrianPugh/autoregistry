@@ -167,7 +167,7 @@ Create a registry for another python module.
    ]
 
 
-.. |GHA tests| image:: https://github.com/BrianPugh/autoregistry/workflows/tests/badge.svg
+.. |GHA tests| image:: https://github.com/BrianPugh/autoregistry/actions/workflows/tests.yaml/badge.svg?branch=main
    :target: https://github.com/BrianPugh/autoregistry/actions?query=workflow%3Atests
    :alt: GHA Status
 .. |Codecov report| image:: https://codecov.io/github/BrianPugh/autoregistry/coverage.svg?branch=main

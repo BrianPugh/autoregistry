@@ -34,7 +34,7 @@ pytest-cov = ">=3,<6"
 pytest-mock = "^3.7.0"
 pyright = "^1.1.273"
 # pytest-pyright = ">=0.0.3,<0.0.7"
-attrs = "^23.1.0"
+attrs = ">=23.1,<25.0"
 
 [tool.coverage.run]
 branch = true

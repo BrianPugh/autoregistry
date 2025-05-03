@@ -166,6 +166,24 @@ def test_registry_overwrite_key_collision():
             pass
 
 
+def test_registry_overwrite_no_key_collision_repeated_import():
+    """Tests that repeated identical definitions don't trigger a KeyCollisionError.
+
+    Originally reported:
+        https://github.com/BrianPugh/belay/issues/181
+    """
+    from importlib.util import module_from_spec, spec_from_file_location
+
+    spec_a = spec_from_file_location("repeat_import_a", "tests/repeat_import_a.py")
+    spec_b = spec_from_file_location("repeat_import_b", "tests/repeat_import_b.py")
+    assert spec_a
+    assert spec_b
+    module_a = module_from_spec(spec_a)
+    module_b = module_from_spec(spec_b)
+    import repeat_import_a
+    import repeat_import_b
+
+
 def test_registry_register_at_creation():
     import fake_module
 

@@ -22,10 +22,13 @@ def _is_same_class_definition(a, b) -> bool:
         # Fast check.
         return False
     try:
-        return getsource(a) == getsource(b)
+        if getsource(a) != getsource(b):
+            return False
     except Exception:
         # Failsafe
         return False
+
+    return dir(a) == dir(b)
 
 
 class _Registry(dict):

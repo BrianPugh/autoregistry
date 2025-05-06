@@ -6,7 +6,7 @@ Configuration
 Configuring Inheritance
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-When inheriting from the ``Registry`` class, keyword configuration values can be passed
+When inheriting from the :class:`Registry` class, keyword configuration values can be passed
 along side it when defining the subclass. For example:
 
 
@@ -44,8 +44,8 @@ despite it not ending with ``"Type"``.
 
 Configuring Decorator
 ^^^^^^^^^^^^^^^^^^^^^
-When directly declaring a ``Registry``, configurations are passed as keyword arguments
-when instantiating the ``Registry`` object:
+When directly declaring a :class:`Registry`, configurations are passed as keyword arguments
+when instantiating the :class:`Registry` object:
 
 .. code-block:: python
 
@@ -77,7 +77,7 @@ doesn't impact the auto-derived registration key.
 ``name`` and ``aliases`` values are **not** subject to configured naming rules and will **not** be modified
 by configurations like ``strip_suffix``.
 Similarly, directly setting a registry element ``my_registry["myfunction"] = myfunction`` is not subject to naming rules.
-However, values are still subject to the ``overwrite`` configuration and will raise ``KeyCollisionError`` if
+However, values are still subject to the ``overwrite`` configuration and will raise :exc:`.KeyCollisionError` if
 ``name`` or ``aliases`` attempts to overwrite an existing entry while ``overwrite=False``.
 Additionally, ``name`` and ``aliases`` may **not** contain a  ``.`` or a ``/`` due to :ref:`Key Splitting`.
 
@@ -438,7 +438,8 @@ Snake case conversion is performed *after* name validation (like ``prefix`` and 
 overwrite: bool = False
 -----------------------
 If ``overwrite=False``, attempting to register an object that would overwrite
-an existing registered item would result in a ``KeyCollisionError``.
+a **different** existing registered item would result in a :exc:`.KeyCollisionError`.
+Registering the same object to the same key **will not** raise a :exc:`.KeyCollisionError`.
 If ``overwrite=True``, then the previous entry will be overwritten and no
 exception will be raised.
 

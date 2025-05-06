@@ -1,7 +1,7 @@
 from abc import ABCMeta
 from collections.abc import KeysView, ValuesView
 from functools import partial
-from inspect import ismodule
+from inspect import getsource, ismodule
 from pathlib import Path
 from types import MethodType
 from typing import Any, Callable, Generator, Iterable, Type, Union
@@ -15,6 +15,17 @@ from .exceptions import (
     ModuleAliasError,
     RegistryError,
 )
+
+
+def _is_same_class_definition(a, b) -> bool:
+    if a.__name__ != b.__name__:
+        # Fast check.
+        return False
+    try:
+        return getsource(a) == getsource(b)
+    except Exception:
+        # Failsafe
+        return False
 
 
 class _Registry(dict):
@@ -122,7 +133,11 @@ class _Registry(dict):
             if "." in alias or "/" in alias:
                 raise InvalidNameError(f'Alias "{alias}" cannot contain "." or "/".')
             if not self.config.overwrite and alias in self:
-                raise KeyCollisionError(f'"{alias}" already registered to {self}')
+                if _is_same_class_definition(obj, self[alias]):
+                    # This is a very rare case, caller has to be doing things with importlib
+                    pass
+                else:
+                    raise KeyCollisionError(f'"{alias}" already registered to {self}')
 
         # Register name and aliases
         for alias in aliases:

@@ -187,6 +187,10 @@ def test_registry_overwrite_no_key_collision_repeated_import():
     import repeat_import_a
     import repeat_import_b
 
+    # From the latest import
+    assert repeat_import_a.MyRegistryA == repeat_import_a.MyRegistry["myregistrya"]
+    assert repeat_import_b.MyRegistryB == repeat_import_a.MyRegistry["myregistryb"]
+
 
 def test_registry_register_at_creation():
     import fake_module
@@ -229,12 +233,15 @@ def test_registry_dictionary_assign():
 def test_registry_dictionary_assign_collision():
     registry = Registry()
 
-    def bar():
+    def bar_1():
         pass
 
-    registry["foo"] = bar
+    def bar_2():
+        pass
+
+    registry["foo"] = bar_1
     with pytest.raises(autoregistry.KeyCollisionError):
-        registry["foo"] = bar
+        registry["foo"] = bar_2
 
 
 def test_registry_module_alias():

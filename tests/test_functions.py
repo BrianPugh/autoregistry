@@ -177,9 +177,13 @@ def test_registry_overwrite_no_key_collision_repeated_import():
     spec_a = spec_from_file_location("repeat_import_a", "tests/repeat_import_a.py")
     spec_b = spec_from_file_location("repeat_import_b", "tests/repeat_import_b.py")
     assert spec_a
+    assert spec_a.loader
     assert spec_b
+    assert spec_b.loader
     module_a = module_from_spec(spec_a)
     module_b = module_from_spec(spec_b)
+    spec_a.loader.exec_module(module_a)
+    spec_b.loader.exec_module(module_b)
     import repeat_import_a
     import repeat_import_b
 

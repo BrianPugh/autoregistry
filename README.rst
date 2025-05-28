@@ -167,6 +167,13 @@ Create a registry for another python module.
    ]
 
 
+Project Status
+^^^^^^^^^^^^^^
+
+This library is feature-complete and accomplishes pretty much everything it was designed to do.
+So while releases will be more rare/sparse, do not interpret that as this being a "dead" project!
+
+
 .. |GHA tests| image:: https://github.com/BrianPugh/autoregistry/workflows/tests/badge.svg
    :target: https://github.com/BrianPugh/autoregistry/actions?query=workflow%3Atests
    :alt: GHA Status

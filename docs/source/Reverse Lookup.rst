@@ -12,7 +12,7 @@ Consider the following class hierarchy:
        pass
 
 
-   class SurfingPikachu(Pokemon):
+   class SurfingPikachu(Pikachu):
        pass
 
 

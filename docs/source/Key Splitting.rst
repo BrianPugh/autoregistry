@@ -14,7 +14,7 @@ Consider the following code example:
        pass
 
 
-   class SurfingPikachu(Pokemon):
+   class SurfingPikachu(Pikachu):
        pass
 
 We can naively access the ``SurfingPikachu`` constructor via

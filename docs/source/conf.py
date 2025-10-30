@@ -35,6 +35,8 @@ release = autoregistry.__version__
 extensions = [
     "sphinx_rtd_theme",
     "sphinx.ext.napoleon",
+    "sphinx.ext.intersphinx",
+    "sphinx_copybutton",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -62,6 +64,13 @@ napoleon_use_rtype = True
 napoleon_preprocess_types = False
 napoleon_type_aliases = None
 napoleon_attr_annotations = True
+
+# -- Intersphinx configuration -----------------------------------------------
+
+intersphinx_mapping = {
+    "python": ("https://docs.python.org/3", None),
+    "pydantic": ("https://docs.pydantic.dev/latest/", None),
+}
 
 # -- Options for HTML output -------------------------------------------------
 

@@ -4,6 +4,7 @@ import pytest
 pydantic = pytest.importorskip("pydantic")
 
 from abc import abstractmethod
+from typing import Dict, List
 
 from pydantic import ValidationError
 
@@ -352,16 +353,16 @@ def test_all_dict_method_field_names():
     class Storage(BaseModel, snake_case=True):  # type: ignore[call-arg]
         get: str
         clear: int
-        keys: list[str]
-        values: list[int]
-        items: dict[str, int]
+        keys: List[str]
+        values: List[int]
+        items: Dict[str, int]
 
     class DiskStorage(Storage):
         get: str = "disk"
         clear: int = 1
-        keys: list[str] = ["a", "b"]
-        values: list[int] = [1, 2]
-        items: dict[str, int] = {"x": 1}
+        keys: List[str] = ["a", "b"]
+        values: List[int] = [1, 2]
+        items: Dict[str, int] = {"x": 1}
 
     # Test registry functionality
     assert "disk_storage" in Storage
@@ -428,13 +429,13 @@ def test_mixed_dict_method_and_regular_fields():
         name: str
         get: str
         count: int
-        items: list[str]
+        items: List[str]
 
     class ApiResource(Resource):
         name: str = "api"
         get: str = "GET"
         count: int = 100
-        items: list[str] = ["item1", "item2"]
+        items: List[str] = ["item1", "item2"]
 
     resource = ApiResource()
 

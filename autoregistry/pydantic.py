@@ -58,7 +58,8 @@ class PydanticRegistryMeta(PydanticBaseModelMetaclass, RegistryMeta):
             # Call parent metaclasses (Pydantic and Registry)
             cls = super().__new__(mcs, cls_name, bases, namespace, **kwargs)
 
-        if not hasattr(cls, "model_fields"):
+        if not hasattr(cls, "model_fields"):  # pragma: no cover
+            # Defensive: model_fields always exists in Pydantic v2
             return cls
 
         # Clean up DICT_METHODS in model_fields
@@ -97,8 +98,8 @@ class PydanticRegistryMeta(PydanticBaseModelMetaclass, RegistryMeta):
         # Keep DICT_METHODS that are user-defined field values (not callable)
         for method_name in DICT_METHODS:
             value = instance.__dict__.get(method_name)
-            if value is not None and callable(value):
-                # This is a method that leaked through - remove it
+            if value is not None and callable(value):  # pragma: no cover
+                # Safety net: __new__ should prevent this, but we double-check
                 instance.__dict__.pop(method_name, None)
 
         return instance

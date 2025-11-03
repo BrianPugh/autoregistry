@@ -67,3 +67,22 @@ All of AutoRegistry's configuration options work with Pydantic models:
    ['red_apple', 'green_apple']
 
 See :ref:`Configuration` for all available options.
+
+How it Works
+------------
+
+The integration uses multiple inheritance and a custom metaclass:
+
+.. code-block:: python
+
+   from pydantic import BaseModel as PydanticBaseModel
+   from autoregistry import Registry
+   from autoregistry.pydantic import PydanticRegistryMeta
+
+
+   class BaseModel(PydanticBaseModel, Registry, metaclass=PydanticRegistryMeta):
+       """Base class combining Pydantic's BaseModel with AutoRegistry."""
+
+The :class:`PydanticRegistryMeta` metaclass merges both Pydantic's and AutoRegistry's metaclasses, ensuring registry dict-like methods (like ``keys()``, ``items()``) operate at the class level while Pydantic's validation works at the instance level.
+
+This is actually how :class:`autoregistry.pydantic.BaseModel` is exactly defined (no body!). **All** logic is within :class:`PydanticRegistryMeta`; :class:`autoregistry.pydantic.BaseModel` only responsibility is to combine these class/metaclass definitions so that inheritance is correct.

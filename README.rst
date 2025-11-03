@@ -4,6 +4,10 @@
 
 .. inclusion-marker-do-not-remove
 
+**Documentation:** https://autoregistry.readthedocs.io
+
+**Source Code:** https://github.com/BrianPugh/autoregistry
+
 AutoRegistry
 ============
 

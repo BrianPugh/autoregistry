@@ -11,3 +11,4 @@
    Key Splitting
    Reverse Lookup
    Configuration
+   Pydantic Integration

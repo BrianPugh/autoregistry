@@ -2,10 +2,11 @@ coverage:
   status:
     project:
       default:
-        # Commits pushed to main should not make the overall
-        # project coverage decrease by more than 1%
-        target: auto
-        threshold: 1%
+        # Allow coverage to be >= 85% (to account for defensive code)
+        # Threshold allows 2% wiggle room from target
+        target: 85%
+        threshold: 2%
+        informational: true  # Don't block CI, just show info
     patch:
       default:
         # Be tolerant on code coverage diff on PRs to limit

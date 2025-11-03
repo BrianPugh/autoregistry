@@ -16,6 +16,20 @@ from .exceptions import (
     RegistryError,
 )
 
+DICT_METHODS = (
+    "__getitem__",
+    "__setitem__",
+    "__iter__",
+    "__len__",
+    "__contains__",
+    "__call__",
+    "keys",
+    "values",
+    "items",
+    "get",
+    "clear",
+)
+
 
 class _Registry(dict):
     """Unified container object for __registry__."""
@@ -270,18 +284,7 @@ class RegistryMeta(ABCMeta, _DictMixin):
         namespace["__registry__"] = _Registry(registry_config, name=registry_name)
 
         if namespace["__registry__"].config.redirect:
-            for method_name in [
-                "__getitem__",
-                "__setitem__",
-                "__iter__",
-                "__len__",
-                "__contains__",
-                "keys",
-                "values",
-                "items",
-                "get",
-                "clear",
-            ]:
+            for method_name in DICT_METHODS:
                 if method_name in namespace and not isinstance(
                     namespace[method_name], (staticmethod, classmethod)
                 ):

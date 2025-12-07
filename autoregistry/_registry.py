@@ -1,9 +1,11 @@
+import inspect
+import os
 from abc import ABCMeta
 from collections.abc import KeysView, ValuesView
 from functools import partial
 from inspect import ismodule
 from pathlib import Path
-from types import MethodType
+from types import FunctionType, MethodType
 from typing import Any, Callable, Generator, Iterable, Type, Union
 
 from .config import RegistryConfig
@@ -29,6 +31,61 @@ DICT_METHODS = (
     "get",
     "clear",
 )
+
+
+def _is_reimport(existing_obj: Any, new_obj: Any) -> bool:
+    """
+    Detect if new_obj is a re-import of existing_obj.
+
+    This handles the case where a module is imported multiple times
+    (e.g., via importlib with different module names), causing the same
+    class or function definition to execute multiple times.
+
+    Criteria:
+    - Both are classes, OR both are functions
+    - Same __name__ and __qualname__
+    - Same source file (realpath-normalized)
+    - Different __module__ (indicates re-import with different module name)
+
+    Line numbers are intentionally NOT checked to support hot-reload
+    scenarios where the definition may move within the file.
+
+    See: https://github.com/BrianPugh/belay/issues/181
+    """
+    both_classes = isinstance(existing_obj, type) and isinstance(new_obj, type)
+    both_functions = isinstance(existing_obj, FunctionType) and isinstance(
+        new_obj, FunctionType
+    )
+
+    if not (both_classes or both_functions):
+        return False
+
+    if existing_obj.__name__ != new_obj.__name__:
+        return False
+
+    if getattr(existing_obj, "__qualname__", None) != getattr(
+        new_obj, "__qualname__", None
+    ):
+        return False
+
+    # If __module__ is the same, these are two different definitions in the
+    # same module execution, not a re-import. This distinguishes between:
+    # - Re-import: same file loaded as "mod_v1" then "mod_v2" (different __module__)
+    # - Collision: two `def foo()` in the same file/execution (same __module__)
+    existing_module = getattr(existing_obj, "__module__", None)
+    new_module = getattr(new_obj, "__module__", None)
+    if existing_module == new_module:
+        return False
+
+    try:
+        existing_file = os.path.realpath(inspect.getfile(existing_obj))
+        new_file = os.path.realpath(inspect.getfile(new_obj))
+    except (TypeError, OSError):
+        # TypeError: Built-in or extension types
+        # OSError: Source file unavailable (deleted, permissions, etc.)
+        return False
+
+    return existing_file == new_file
 
 
 class _Registry(dict):
@@ -135,7 +192,11 @@ class _Registry(dict):
         for alias in aliases:
             if "." in alias or "/" in alias:
                 raise InvalidNameError(f'Alias "{alias}" cannot contain "." or "/".')
-            if not self.config.overwrite and alias in self:
+            if (
+                not self.config.overwrite
+                and alias in self
+                and not _is_reimport(self[alias], obj)
+            ):
                 raise KeyCollisionError(f'"{alias}" already registered to {self}')
 
         # Register name and aliases

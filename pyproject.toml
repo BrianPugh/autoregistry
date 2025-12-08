@@ -1,46 +1,75 @@
 [build-system]
-requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning>=1.0.1"]
-build-backend = "poetry_dynamic_versioning.backend"
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
 
-[tool.poetry-dynamic-versioning]
-enable = true
-vcs = "git"
-style = "semver"
-
-[tool.poetry]
+[project]
 name = "autoregistry"
-version = "0.0.0"  # Do not change, let poetry-dynamic-versioning handle it.
-homepage = "https://github.com/BrianPugh/autoregistry"
-repository = "https://github.com/BrianPugh/autoregistry"
-license = "Apache-2.0"
+dynamic = ["version"]
 description = "Automatic registry design-pattern for mapping names to functionality."
-authors = ["Brian Pugh"]
 readme = "README.rst"
-packages = [{include = "autoregistry"}]
+license = "Apache-2.0"
+requires-python = ">=3.8"
+authors = [
+    { name = "Brian Pugh" }
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Typing :: Typed",
+]
+dependencies = []
 
-[tool.poetry.dependencies]
-# Be as loose as possible if writing a library.
-python = ">=3.8"
-pydantic = {version = ">=2.0", optional = true}
+[project.optional-dependencies]
+pydantic = ["pydantic>=2.0"]
+docs = [
+    "sphinx>=4.5,<7.2",
+    "sphinx-rtd-theme>=1.0,<3.1",
+    "sphinx-copybutton>=0.5.0",
+]
 
-[tool.poetry.extras]
-pydantic = ["pydantic"]
+[project.urls]
+Homepage = "https://github.com/BrianPugh/autoregistry"
+Repository = "https://github.com/BrianPugh/autoregistry"
 
-[tool.poetry.group.docs.dependencies]
-sphinx = ">=4.5,<7.2"
-sphinx_rtd_theme = ">=1.0,<3.1"
-sphinx-copybutton = ">=0.5.0"
+[tool.hatch.version]
+source = "vcs"
 
-[tool.poetry.group.dev.dependencies]
-coverage = {extras = ["toml"], version = ">=5.1,<8.0"}
-ipdb = ">=0.13.9"
-pytest = ">=7.1.2,<9.0.0"
-pytest-cov = ">=3,<6"
-pytest-mock = "^3.7.0"
-pyright = "^1.1.273"
-# pytest-pyright = ">=0.0.3,<0.0.7"
-attrs = ">=23.1,<26.0"
-pydantic = ">=2.0"
+[tool.hatch.build.hooks.vcs]
+version-file = "autoregistry/_version.py"
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/autoregistry",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["autoregistry"]
+
+[dependency-groups]
+dev = [
+    "coverage[toml]>=5.1,<8.0",
+    "ipdb>=0.13.9",
+    "pytest>=7.1.2,<9.0.0",
+    "pytest-cov>=3,<6",
+    "pytest-mock>=3.7.0",
+    "pyright>=1.1.273",
+    "ruff>=0.1.0",
+    "attrs>=23.1,<26.0",
+    "pydantic>=2.0",
+    "sphinx>=4.5,<7.2",
+    "sphinx-rtd-theme>=1.0,<3.1",
+    "sphinx-copybutton>=0.5.0",
+]
 
 [tool.coverage.run]
 branch = true
@@ -75,6 +104,20 @@ venv = ".venv"
 
 [tool.ruff]
 target-version = 'py38'
+line-length = 88  # Must agree with Black
+
+exclude = [
+    "migrations",
+    "__pycache__",
+    "manage.py",
+    "settings.py",
+    "env",
+    ".env",
+    "venv",
+    ".venv",
+]
+
+[tool.ruff.lint]
 select = [
     "B",  # flake8-bugbear
     "C4", # flake8-comprehensions
@@ -95,17 +138,6 @@ select = [
     "YTT", # flake8-2020
 ]
 
-exclude = [
-    "migrations",
-    "__pycache__",
-    "manage.py",
-    "settings.py",
-    "env",
-    ".env",
-    "venv",
-    ".venv",
-]
-
 ignore = [
     "B905",  # zip strict=True; remove once python <3.10 support is dropped.
     "D100",
@@ -123,19 +155,18 @@ ignore = [
     "F401",
     "TRY003",  # Avoid specifying messages outside exception class; overly strict, especially for ValueError
 ]
-line-length = 88  # Must agree with Black
 
-[tool.ruff.flake8-bugbear]
+[tool.ruff.lint.flake8-bugbear]
 extend-immutable-calls = [
     "chr",
     "typer.Argument",
     "typer.Option",
 ]
 
-[tool.ruff.pydocstyle]
+[tool.ruff.lint.pydocstyle]
 convention = "numpy"
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 "tests/*.py" = [
     "D100",
     "D101",
@@ -153,7 +184,7 @@ convention = "numpy"
     "N807",  # Function name should not start and end with `__`
 ]
 
-[tool.ruff.pep8-naming]
+[tool.ruff.lint.pep8-naming]
 staticmethod-decorators = [
     "pydantic.validator",
     "pydantic.root_validator",

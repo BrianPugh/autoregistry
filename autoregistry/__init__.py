@@ -1,5 +1,8 @@
-# Don't manually change, let poetry-dynamic-versioning-plugin handle it.
-__version__ = "0.0.0"
+try:
+    from ._version import __version__
+except ImportError:
+    # Package not installed (editable install without build)
+    __version__ = "0.0.0"
 
 __all__ = [
     "CannotDeriveNameError",

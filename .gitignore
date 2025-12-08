@@ -233,4 +233,8 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
-/poetry.lock
+# uv lock file (generated, not committed for libraries)
+/uv.lock
+
+# hatch-vcs generated version file
+autoregistry/_version.py

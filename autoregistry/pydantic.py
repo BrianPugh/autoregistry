@@ -40,7 +40,17 @@ class PydanticRegistryMeta(PydanticBaseModelMetaclass, RegistryMeta):
         """
         # Save user's explicit field annotations and default values before super().__new__()
         # (RegistryMeta will wrap defaults in MethodDescriptor, so we need originals)
-        user_annotations = namespace.get("__annotations__", {})
+        if "__annotate_func__" in namespace:
+            # Python 3.14+ (PEP 649): annotations are lazily evaluated via __annotate_func__
+            try:
+                user_annotations = namespace["__annotate_func__"](1)  # 1 = Format.VALUE
+            except (NameError, TypeError):
+                # NameError: annotation evaluation fails to resolve a name
+                # TypeError: __annotate_func__ receives unexpected argument or has call issues
+                user_annotations = {}
+        else:
+            # Python < 3.14: annotations stored directly in namespace
+            user_annotations = namespace.get("__annotations__", {})
         user_defaults = {
             name: namespace[name]
             for name in DICT_METHODS

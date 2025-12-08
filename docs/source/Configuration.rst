@@ -570,3 +570,35 @@ they will override the dict-like registry interface.
    foo = Foo()
    assert list(Foo.keys()) == ["bar"]
    assert foo.keys() == 0
+
+
+Advanced
+^^^^^^^^
+Additional parameters that basically **no users of this library should ever care about or use**, but they are documented here just in case!
+
+.. _base:
+
+base: bool = False
+------------------
+To mark a class as a base registry class, set ``base=True``.
+Subclasses will **not** be registered to a base registry class.
+
+.. code-block:: python
+
+    class MyBase(Registry, base=True):
+        pass
+
+
+    class Handler(MyBase):
+        pass
+
+
+    assert list(MyBase) == []  # Handler is not registered to MyBase
+    assert list(Handler) == []
+
+Both the built-in ``Registry`` class and ``autoregistry.pydantic.BaseModel`` have ``base=True`` set.
+This is done for two reasons:
+
+1. Pragmatically, there's basically no situation it would be useful to do ``Registry["my_class"]``.
+
+2. This prevents cross-library contamination and the :exc:`KeyCollisionError` that could occur.

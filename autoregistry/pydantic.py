@@ -115,7 +115,12 @@ class PydanticRegistryMeta(PydanticBaseModelMetaclass, RegistryMeta):
         return instance
 
 
-class BaseModel(PydanticBaseModel, Registry, metaclass=PydanticRegistryMeta):
+class BaseModel(
+    PydanticBaseModel,
+    Registry,
+    metaclass=PydanticRegistryMeta,
+    base=True,  # type: ignore[call-arg]
+):
     """Base class combining Pydantic's BaseModel with AutoRegistry."""
 
 

@@ -1,4 +1,5 @@
 """Tests for Pydantic integration with AutoRegistry."""
+
 import pytest
 
 pydantic = pytest.importorskip("pydantic")
@@ -454,3 +455,15 @@ def test_mixed_dict_method_and_regular_fields():
     # Registry should still work
     assert "api_resource" in Resource
     assert Resource["api_resource"] is ApiResource
+
+
+def test_same_name_classes_no_key_collision():
+    """Test that two classes with the same name can be registered without KeyCollisionError."""
+
+    class User(BaseModel):  # type: ignore[reportGeneralTypeIssues]
+        name: str
+
+        # Should not raise a KeyCollisionError
+
+    class User(BaseModel):  # noqa: F811
+        id: int

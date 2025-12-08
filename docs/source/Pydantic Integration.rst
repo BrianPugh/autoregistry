@@ -80,9 +80,11 @@ The integration uses multiple inheritance and a custom metaclass:
    from autoregistry.pydantic import PydanticRegistryMeta
 
 
-   class BaseModel(PydanticBaseModel, Registry, metaclass=PydanticRegistryMeta):
+   class BaseModel(PydanticBaseModel, Registry, metaclass=PydanticRegistryMeta, base=True):
        """Base class combining Pydantic's BaseModel with AutoRegistry."""
 
 The :class:`PydanticRegistryMeta` metaclass merges both Pydantic's and AutoRegistry's metaclasses, ensuring registry dict-like methods (like ``keys()``, ``items()``) operate at the class level while Pydantic's validation works at the instance level.
+
+The ``base=True`` parameter marks this as a base registry class, so subclasses will **not** be registered to ``BaseModel`` itself (see :ref:`base <base>` for details).
 
 This is actually how :class:`autoregistry.pydantic.BaseModel` is exactly defined (no body!). **All** logic is within :class:`PydanticRegistryMeta`; :class:`autoregistry.pydantic.BaseModel` only responsibility is to combine these class/metaclass definitions so that inheritance is correct.

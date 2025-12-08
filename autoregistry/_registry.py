@@ -91,10 +91,11 @@ def _is_reimport(existing_obj: Any, new_obj: Any) -> bool:
 class _Registry(dict):
     """Unified container object for __registry__."""
 
-    def __init__(self, config: RegistryConfig, name: str = ""):
+    def __init__(self, config: RegistryConfig, name: str = "", base: bool = False):
         super().__init__()
         self.config = config
         self.name = name
+        self.base = base
 
         # These will be populated later
         self._cls: Any = None
@@ -123,15 +124,14 @@ class _Registry(dict):
     def walk_parent_registries(self) -> Generator["_Registry", None, None]:
         """Iterates over immediate parenting classes and returns their ``_Registry``."""
         for parent_cls in self.cls.__bases__:
-            if parent_cls is Registry:
-                # Never register to the base Registry class.
-                # Unwanted cross-library interactions may occur, otherwise.
-                continue
-
             try:
                 parent_registry = parent_cls.__registry__
             except AttributeError:
                 # Not a Registry object
+                continue
+
+            if parent_registry.base:
+                # Never register to base registry classes (e.g. Registry, pydantic.BaseModel).
                 continue
 
             yield parent_registry
@@ -296,6 +296,7 @@ class RegistryMeta(ABCMeta, _DictMixin):
         name: Union[str, None] = None,
         aliases: Union[str, None, Iterable[str]] = None,
         skip: bool = False,
+        base: bool = False,
         **config,
     ):
         """Create Class Constructor.
@@ -309,6 +310,9 @@ class RegistryMeta(ABCMeta, _DictMixin):
             Additionally, register this class under these string(s).
         skip : bool
             Do **not** register this class to the appropriate registry(s).
+        base : bool
+            Mark this class as a base registry class.
+            Subclasses will not be registered to a base registry class.
         """
         # Manipulate namespace instead of modifying attributes after calling __new__ so
         # that hooks like __init_subclass__ have appropriately set registry attributes.
@@ -332,7 +336,9 @@ class RegistryMeta(ABCMeta, _DictMixin):
                     pass
             else:
                 # No parent config, create a new one from scratch.
-                namespace["__registry__"] = _Registry(RegistryConfig(**config))
+                namespace["__registry__"] = _Registry(
+                    RegistryConfig(**config), base=base
+                )
                 new_cls = super().__new__(cls, cls_name, bases, namespace)
                 return new_cls
 
@@ -342,7 +348,9 @@ class RegistryMeta(ABCMeta, _DictMixin):
 
         registry_config.update(config)
 
-        namespace["__registry__"] = _Registry(registry_config, name=registry_name)
+        namespace["__registry__"] = _Registry(
+            registry_config, name=registry_name, base=base
+        )
 
         if namespace["__registry__"].config.redirect:
             for method_name in DICT_METHODS:
@@ -378,7 +386,7 @@ class RegistryMeta(ABCMeta, _DictMixin):
             return super().__repr__()
 
 
-class Registry(metaclass=RegistryMeta):
+class Registry(metaclass=RegistryMeta, base=True):
     __call__: Callable
     __contains__: Callable[..., bool]
     __getitem__: Callable[[str], Type]

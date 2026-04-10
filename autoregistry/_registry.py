@@ -6,7 +6,16 @@ from functools import partial
 from inspect import ismodule
 from pathlib import Path
 from types import FunctionType, MethodType
-from typing import Any, Callable, Generator, Iterable, Type, Union
+from typing import (
+    Any,
+    Callable,
+    Generator,
+    Iterable,
+    Optional,
+    Tuple,
+    Type,
+    Union,
+)
 
 from .config import RegistryConfig
 from .exceptions import (
@@ -250,10 +259,14 @@ class _DictMixin:
     def values(self) -> ValuesView:
         return self.__registry__.values()
 
-    def items(self):
+    def items(self) -> Generator[Tuple[str, Type], None, None]:
         yield from self.__registry__.items()
 
-    def get(self, key: Union[str, Type], default=None) -> Type:
+    def get(
+        self,
+        key: str,
+        default: Union[str, Type, None] = None,
+    ) -> Optional[Type]:
         try:
             return self[key]
         except KeyError:
@@ -387,6 +400,12 @@ class RegistryMeta(ABCMeta, _DictMixin):
 
 
 class Registry(metaclass=RegistryMeta, base=True):
+    # These class-level ``Callable`` annotations exist so that static checkers
+    # see that ``Registry`` instances (created via the decorator pattern
+    # ``my_reg = Registry()`` which returns a ``RegistryDecorator``) support
+    # the dict-like interface. The class-level (metaclass) side is handled by
+    # ``RegistryMeta`` inheriting from ``_DictMixin``; these annotations cover
+    # the instance side.
     __call__: Callable
     __contains__: Callable[..., bool]
     __getitem__: Callable[[str], Type]
@@ -399,10 +418,41 @@ class Registry(metaclass=RegistryMeta, base=True):
     keys: Callable[[], KeysView]
     values: Callable[[], ValuesView]
 
+    # The real work happens in ``RegistryMeta.__new__`` via ``**config``.
+    # This explicit ``__init_subclass__`` signature exists so that static type
+    # checkers (pyright, mypy) recognize class-definition kwargs like
+    # ``class Foo(Registry, snake_case=True)``. Keep the ``RegistryConfig``
+    # fields below in sync with ``autoregistry/config.py``.
+    def __init_subclass__(
+        cls,
+        *,
+        # ``RegistryMeta.__new__`` explicit parameters
+        name: Optional[str] = None,
+        aliases: Union[str, Iterable[str], None] = None,
+        skip: bool = False,
+        base: bool = False,
+        # ``RegistryConfig`` fields
+        case_sensitive: Optional[bool] = None,
+        prefix: Optional[str] = None,
+        suffix: Optional[str] = None,
+        strip_prefix: Optional[bool] = None,
+        strip_suffix: Optional[bool] = None,
+        regex: Optional[str] = None,
+        register_self: Optional[bool] = None,
+        recursive: Optional[bool] = None,
+        snake_case: Optional[bool] = None,
+        hyphen: Optional[bool] = None,
+        transform: Optional[Callable[[str], str]] = None,
+        overwrite: Optional[bool] = None,
+        redirect: Optional[bool] = None,
+        **kwargs: Any,
+    ) -> None:
+        super().__init_subclass__(**kwargs)
+
     def __new__(cls, *args, **kwargs):
         if cls is Registry:
             # A Registry is being explicitly created for decorating
-            return super().__new__(RegistryDecorator)
+            return super().__new__(RegistryDecorator)  # type: ignore[misc]
         else:
             # Registry is being subclassed
             return super().__new__(cls)

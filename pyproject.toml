@@ -140,6 +140,7 @@ select = [
 
 ignore = [
     "B905",  # zip strict=True; remove once python <3.10 support is dropped.
+    "S603",  # subprocess call: check for execution of untrusted input
     "D100",
     "D101",
     "D102",

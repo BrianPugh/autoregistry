@@ -1,11 +1,13 @@
+from typing import cast
+
 import pytest
 
-from autoregistry import Registry
+from autoregistry import Registry, RegistryDecorator
 from autoregistry.exceptions import InvalidNameError, KeyCollisionError
 
 
 def test_decorator_case_sensitive():
-    registry = Registry(case_sensitive=True)
+    registry = cast(RegistryDecorator, Registry(case_sensitive=True))
 
     @registry
     def foo():
@@ -18,7 +20,7 @@ def test_decorator_case_sensitive():
 
 
 def test_decorator_called():
-    registry = Registry()
+    registry = cast(RegistryDecorator, Registry())
 
     @registry()
     def foo():
@@ -28,7 +30,7 @@ def test_decorator_called():
 
 
 def test_decorator_invalid_name_suffix():
-    registry = Registry(suffix="_baz")
+    registry = cast(RegistryDecorator, Registry(suffix="_baz"))
 
     with pytest.raises(InvalidNameError):
 
@@ -39,7 +41,7 @@ def test_decorator_invalid_name_suffix():
 
 def test_decorator_regex():
     # Capital letters only
-    registry = Registry(regex="[A-Z]+", case_sensitive=True)
+    registry = cast(RegistryDecorator, Registry(regex="[A-Z]+", case_sensitive=True))
 
     @registry
     def FOO():  # noqa: N802
@@ -55,7 +57,7 @@ def test_decorator_regex():
 
 
 def test_decorator_called_name_override():
-    registry = Registry()
+    registry = cast(RegistryDecorator, Registry())
 
     @registry(name="bar")
     def foo():
@@ -66,7 +68,7 @@ def test_decorator_called_name_override():
 
 
 def test_decorator_called_name_override_dont_follow_rules():
-    registry = Registry(suffix="_baz")
+    registry = cast(RegistryDecorator, Registry(suffix="_baz"))
 
     # "bar" doesn't end with "_baz"
     @registry(name="bar")
@@ -78,7 +80,7 @@ def test_decorator_called_name_override_dont_follow_rules():
 
 
 def test_decorator_called_name_invalid():
-    registry = Registry()
+    registry = cast(RegistryDecorator, Registry())
 
     with pytest.raises(InvalidNameError):
 
@@ -94,7 +96,7 @@ def test_decorator_called_name_invalid():
 
 
 def test_decorator_called_aliases_str():
-    registry = Registry()
+    registry = cast(RegistryDecorator, Registry())
 
     @registry(aliases="bar")
     def foo():
@@ -105,7 +107,7 @@ def test_decorator_called_aliases_str():
 
 
 def test_decorator_called_aliases_str_invalid():
-    registry = Registry()
+    registry = cast(RegistryDecorator, Registry())
 
     with pytest.raises(InvalidNameError):
 
@@ -121,7 +123,7 @@ def test_decorator_called_aliases_str_invalid():
 
 
 def test_decorator_called_aliases_duplicate():
-    registry = Registry()
+    registry = cast(RegistryDecorator, Registry())
     with pytest.raises(KeyCollisionError):
 
         @registry(aliases=["bar", "bar"])
@@ -130,7 +132,7 @@ def test_decorator_called_aliases_duplicate():
 
 
 def test_decorator_called_aliases_str_dont_follow_rules():
-    registry = Registry(suffix="_baz")
+    registry = cast(RegistryDecorator, Registry(suffix="_baz"))
 
     @registry
     def foo_baz():
@@ -146,7 +148,7 @@ def test_decorator_called_aliases_str_dont_follow_rules():
 
 
 def test_decorator_called_aliases_list():
-    registry = Registry()
+    registry = cast(RegistryDecorator, Registry())
 
     @registry(aliases=["bar", "baz"])
     def foo():
@@ -157,7 +159,7 @@ def test_decorator_called_aliases_list():
 
 
 def test_decorator_aliases_collision():
-    registry = Registry()
+    registry = cast(RegistryDecorator, Registry())
 
     @registry
     def bar():
@@ -171,7 +173,7 @@ def test_decorator_aliases_collision():
 
 
 def test_decorator_aliases_overwrite():
-    registry = Registry(overwrite=True)
+    registry = cast(RegistryDecorator, Registry(overwrite=True))
 
     @registry
     def bar():
@@ -186,7 +188,7 @@ def test_decorator_aliases_overwrite():
 
 
 def test_decorator_hyphenate():
-    registry = Registry(hyphen=True)
+    registry = cast(RegistryDecorator, Registry(hyphen=True))
 
     @registry
     def bar():
@@ -203,7 +205,7 @@ def test_registry_transform():
     def transform(name) -> str:
         return f"foo-{name}"
 
-    registry = Registry(transform=transform)
+    registry = cast(RegistryDecorator, Registry(transform=transform))
 
     @registry
     def bar():
@@ -215,6 +217,6 @@ def test_registry_transform():
 def test_module_non_recursive():
     import fake_module
 
-    registry = Registry(recursive=False)
+    registry = cast(RegistryDecorator, Registry(recursive=False))
     registry(fake_module)
     assert list(registry) == ["fakemodule3", "bar2", "foo2"]

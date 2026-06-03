@@ -1,8 +1,10 @@
+from typing import cast
+
 import pytest
 from common import construct_functions
 
 import autoregistry
-from autoregistry import Registry
+from autoregistry import Registry, RegistryDecorator
 from autoregistry.exceptions import ModuleAliasError
 from tests.fake_module import fake_submodule_1
 
@@ -56,7 +58,7 @@ def assert_fake_module_registry(registry, fake_module):
 def test_defaults_module():
     import fake_module
 
-    registry = Registry()
+    registry = cast(RegistryDecorator, Registry())
     registry(fake_module)
     assert list(registry) == [
         "fakemodule3",
@@ -75,7 +77,7 @@ def test_defaults_module():
 def test_defaults_module_dot_query():
     import fake_module
 
-    registry = Registry()
+    registry = cast(RegistryDecorator, Registry())
     registry(fake_module)
 
     assert registry["fake_module_1.foo1"] == fake_module.fake_module_1.foo1
@@ -92,7 +94,7 @@ def test_defaults_module_dot_query():
 def test_defaults_module_dot_contains():
     import fake_module
 
-    registry = Registry()
+    registry = cast(RegistryDecorator, Registry())
     registry(fake_module)
 
     assert "fake_module_1.foo1" in registry
@@ -128,7 +130,7 @@ def test_case_sensitive_module():
     """Tests that the registry config is propagated to subregistries."""
     import fake_module
 
-    registry = Registry(case_sensitive=True)
+    registry = cast(RegistryDecorator, Registry(case_sensitive=True))
     registry(fake_module)
 
     assert "fake_module_1" in registry
@@ -141,7 +143,7 @@ def test_case_sensitive_module():
 
 
 def test_registry_overwrite():
-    registry = Registry(overwrite=True)
+    registry = cast(RegistryDecorator, Registry(overwrite=True))
 
     @registry
     def foo():  # type: ignore[reportGeneralTypeIssues]
@@ -153,7 +155,7 @@ def test_registry_overwrite():
 
 
 def test_registry_overwrite_key_collision():
-    registry = Registry(overwrite=False)
+    registry = cast(RegistryDecorator, Registry(overwrite=False))
 
     @registry
     def foo():  # type: ignore[reportGeneralTypeIssues]
@@ -175,7 +177,7 @@ def test_registry_register_at_creation():
     def bar():
         pass
 
-    registry = Registry([foo, bar, fake_module])
+    registry = cast(RegistryDecorator, Registry([foo, bar, fake_module]))
 
     for name in ["foo", "bar"]:
         assert name in registry
@@ -189,13 +191,13 @@ def test_registry_register_at_creation_single():
     def bar():
         pass
 
-    registry = Registry(bar)
+    registry = cast(RegistryDecorator, Registry(bar))
 
     assert list(registry) == ["bar"]
 
 
 def test_registry_dictionary_assign():
-    registry = Registry()
+    registry = cast(RegistryDecorator, Registry())
 
     def bar():
         pass
@@ -205,7 +207,7 @@ def test_registry_dictionary_assign():
 
 
 def test_registry_dictionary_assign_collision():
-    registry = Registry()
+    registry = cast(RegistryDecorator, Registry())
 
     def bar():
         pass
@@ -218,6 +220,6 @@ def test_registry_dictionary_assign_collision():
 def test_registry_module_alias():
     import fake_module
 
-    registry = Registry(fake_module)
+    registry = cast(RegistryDecorator, Registry(fake_module))
     with pytest.raises(ModuleAliasError):
         registry(fake_module, aliases="module_alias")

@@ -11,12 +11,13 @@ __all__ = [
     "KeyCollisionError",
     "ModuleAliasError",
     "Registry",
+    "RegistryDecorator",
     "RegistryError",
     "RegistryMeta",
     "InternalError",
 ]
 
-from ._registry import Registry, RegistryMeta
+from ._registry import Registry, RegistryDecorator, RegistryMeta
 from .exceptions import (
     CannotDeriveNameError,
     CannotRegisterPythonBuiltInError,

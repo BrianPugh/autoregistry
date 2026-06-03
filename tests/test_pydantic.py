@@ -410,7 +410,7 @@ def test_non_dict_method_shadowing_warnings_still_appear():
 
         class MyModel(MyBase):
             name: str = "test"
-            custom_method: str  # Shadow our custom method
+            custom_method: str  # pyright: ignore[reportIncompatibleMethodOverride]  # Shadow our custom method
 
         # Should have exactly 1 warning about shadowing custom_method
         assert len(w) == 1

@@ -8,8 +8,8 @@ from autoregistry import Registry
 def test_abc_undefined_abstractmethod():
     class Pokemon(Registry):
         @abstractmethod
-        def attack(self):
-            pass
+        def attack(self) -> int:
+            ...
 
     class Charmander(Pokemon):
         def attack(self):
@@ -19,13 +19,13 @@ def test_abc_undefined_abstractmethod():
         pass
 
     with pytest.raises(TypeError):
-        Pokemon()
+        Pokemon()  # pyright: ignore[reportAbstractUsage]
 
     with pytest.raises(TypeError):
         Pokemon["pikachu"]()
 
     with pytest.raises(TypeError):
-        Pikachu()
+        Pikachu()  # pyright: ignore[reportAbstractUsage]
 
     Charmander()
 
@@ -35,8 +35,8 @@ def test_abc_multiple_inheritence_first():
 
     class Pokemon(ABC, Registry):
         @abstractmethod
-        def attack(self):
-            pass
+        def attack(self) -> int:
+            ...
 
     class Charmander(Pokemon):
         def attack(self):
@@ -46,13 +46,13 @@ def test_abc_multiple_inheritence_first():
         pass
 
     with pytest.raises(TypeError):
-        Pokemon()  # pyright: ignore[reportGeneralTypeIssues]
+        Pokemon()  # pyright: ignore[reportAbstractUsage]
 
     with pytest.raises(TypeError):
         Pokemon["pikachu"]()
 
     with pytest.raises(TypeError):
-        Pikachu()  # pyright: ignore[reportGeneralTypeIssues]
+        Pikachu()  # pyright: ignore[reportAbstractUsage]
 
     Charmander()
 
@@ -62,8 +62,8 @@ def test_abc_multiple_inheritence_last():
 
     class Pokemon(Registry, ABC):
         @abstractmethod
-        def attack(self):
-            pass
+        def attack(self) -> int:
+            ...
 
     class Charmander(Pokemon):
         def attack(self):
@@ -73,12 +73,12 @@ def test_abc_multiple_inheritence_last():
         pass
 
     with pytest.raises(TypeError):
-        Pokemon()  # pyright: ignore[reportGeneralTypeIssues]
+        Pokemon()  # pyright: ignore[reportAbstractUsage]
 
     with pytest.raises(TypeError):
         Pokemon["pikachu"]()
 
     with pytest.raises(TypeError):
-        Pikachu()  # pyright: ignore[reportGeneralTypeIssues]
+        Pikachu()  # pyright: ignore[reportAbstractUsage]
 
     Charmander()

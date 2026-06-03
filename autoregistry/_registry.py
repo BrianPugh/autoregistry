@@ -248,13 +248,14 @@ class _DictMixin:
             return False
         return True
 
-    def keys(self) -> KeysView:
+    def keys(self) -> "KeysView[str]":
         return self.__registry__.keys()
 
-    def values(self) -> ValuesView:
+    def values(self) -> "ValuesView[Any]":
+        # Registries hold arbitrary registered objects (classes or functions).
         return self.__registry__.values()
 
-    def items(self):
+    def items(self) -> "Generator[tuple[str, Any], None, None]":
         yield from self.__registry__.items()
 
     def get(self, key: str, default: Any = None) -> Any:

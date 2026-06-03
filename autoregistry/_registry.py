@@ -6,9 +6,10 @@ from functools import partial
 from inspect import ismodule
 from pathlib import Path
 from types import FunctionType, MethodType
-from typing import Any, Generator, Iterable, TypeVar, Union, cast
+from typing import TYPE_CHECKING, Any, Generator, Iterable, TypeVar, Union, cast
 
 _R = TypeVar("_R", bound="Registry")
+_T = TypeVar("_T")
 
 from .config import RegistryConfig
 from .exceptions import (
@@ -292,6 +293,23 @@ class MethodDescriptor:
 
 class RegistryMeta(ABCMeta, _DictMixin):
     __registry__: _Registry
+
+    if TYPE_CHECKING:
+        # Class-mode lookups (e.g. ``MyRegistry["name"]``) resolve here, on the
+        # metaclass. The registered values are always subclasses of the registry
+        # class, so report them as ``type[MyRegistry]`` via a self-type rather
+        # than the ``Any`` used by _DictMixin. These are type-only overrides; the
+        # runtime implementations are inherited from _DictMixin. Instance and
+        # decorator registries (RegistryDecorator) keep the ``Any`` returns,
+        # since those hold arbitrary callables.
+        def __getitem__(cls: "type[_T]", key: str) -> "type[_T]":
+            ...
+
+        def values(cls: "type[_T]") -> "ValuesView[type[_T]]":
+            ...
+
+        def items(cls: "type[_T]") -> "Generator[tuple[str, type[_T]], None, None]":
+            ...
 
     def __new__(
         cls,

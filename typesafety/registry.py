@@ -34,6 +34,13 @@ def test_bare_registry_is_registry() -> None:
     assert_type(Registry(), Registry)
 
 
+def test_class_mode_lookup_returns_subclass_type() -> None:
+    # Class-mode lookups report the registry's own type (registered values are
+    # subclasses), so the result is callable and yields an instance.
+    assert_type(Foo["bar"], type[Foo])
+    assert_type(Foo["bar"](), Foo)
+
+
 def test_decorator_interface_via_cast() -> None:
     registry = cast(RegistryDecorator, Registry())
 

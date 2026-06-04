@@ -1,7 +1,7 @@
 import dataclasses
 import re
 from dataclasses import asdict, dataclass
-from typing import Callable, Optional
+from typing import Any, Callable, Optional
 
 from .exceptions import InvalidNameError
 from .regex import hyphenate, key_split, to_snake_case
@@ -60,7 +60,7 @@ class RegistryConfig:
             else:
                 raise TypeError(f"Unexpected configuration value {key}={value}")
 
-    def getitem(self, registry: dict, key: str):
+    def getitem(self, registry: dict, key: str) -> Any:
         """Key/Value lookup with keysplitting and optional case-insensitivity."""
         keys = key_split(key)
         for key in keys:

@@ -20,7 +20,9 @@ def test_extended_registry():
     foo = Foo()
     bar = Bar()
 
-    assert foo.extended_attribute == "Foo"  # pyright: ignore[reportGeneralTypeIssues]
-    assert bar.extended_attribute == "Bar"  # pyright: ignore[reportGeneralTypeIssues]
+    foo_attr = foo.extended_attribute  # pyright: ignore[reportAttributeAccessIssue]
+    bar_attr = bar.extended_attribute  # pyright: ignore[reportAttributeAccessIssue]
+    assert foo_attr == "Foo"
+    assert bar_attr == "Bar"
 
     assert list(Foo) == ["bar"]

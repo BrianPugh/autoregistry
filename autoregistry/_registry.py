@@ -6,7 +6,10 @@ from functools import partial
 from inspect import ismodule
 from pathlib import Path
 from types import FunctionType, MethodType
-from typing import Any, Callable, Generator, Iterable, Type, Union
+from typing import TYPE_CHECKING, Any, Generator, Iterable, TypeVar, Union, cast
+
+_R = TypeVar("_R", bound="Registry")
+_T = TypeVar("_T")
 
 from .config import RegistryConfig
 from .exceptions import (
@@ -222,7 +225,9 @@ class _DictMixin:
 
     __registry__: _Registry
 
-    def __getitem__(self, key: str) -> Type:
+    def __getitem__(self, key: str) -> Any:
+        # The registry may hold arbitrary registered objects (classes *or*
+        # functions), so the value type is intentionally ``Any``.
         return self.__registry__.config.getitem(self.__registry__, key)
 
     def __setitem__(self, key: str, value: Any):
@@ -244,16 +249,17 @@ class _DictMixin:
             return False
         return True
 
-    def keys(self) -> KeysView:
+    def keys(self) -> "KeysView[str]":
         return self.__registry__.keys()
 
-    def values(self) -> ValuesView:
+    def values(self) -> "ValuesView[Any]":
+        # Registries hold arbitrary registered objects (classes or functions).
         return self.__registry__.values()
 
-    def items(self):
+    def items(self) -> "Generator[tuple[str, Any], None, None]":
         yield from self.__registry__.items()
 
-    def get(self, key: Union[str, Type], default=None) -> Type:
+    def get(self, key: str, default: Any = None) -> Any:
         try:
             return self[key]
         except KeyError:
@@ -287,6 +293,23 @@ class MethodDescriptor:
 
 class RegistryMeta(ABCMeta, _DictMixin):
     __registry__: _Registry
+
+    if TYPE_CHECKING:
+        # Class-mode lookups (e.g. ``MyRegistry["name"]``) resolve here, on the
+        # metaclass. The registered values are always subclasses of the registry
+        # class, so report them as ``type[MyRegistry]`` via a self-type rather
+        # than the ``Any`` used by _DictMixin. These are type-only overrides; the
+        # runtime implementations are inherited from _DictMixin. Instance and
+        # decorator registries (RegistryDecorator) keep the ``Any`` returns,
+        # since those hold arbitrary callables.
+        def __getitem__(cls: "type[_T]", key: str) -> "type[_T]":
+            ...
+
+        def values(cls: "type[_T]") -> "ValuesView[type[_T]]":
+            ...
+
+        def items(cls: "type[_T]") -> "Generator[tuple[str, type[_T]], None, None]":
+            ...
 
     def __new__(
         cls,
@@ -387,25 +410,23 @@ class RegistryMeta(ABCMeta, _DictMixin):
 
 
 class Registry(metaclass=RegistryMeta, base=True):
-    __call__: Callable
-    __contains__: Callable[..., bool]
-    __getitem__: Callable[[str], Type]
-    __setitem__: Callable[[str, Any], Type]
-    __iter__: Callable
-    __len__: Callable[..., int]
-    clear: Callable[[], None]
-    get: Callable[..., Type]
-    items: Callable
-    keys: Callable[[], KeysView]
-    values: Callable[[], ValuesView]
-
-    def __new__(cls, *args, **kwargs):
+    # The dict-like interface (``__getitem__``, ``values``, ``keys``, ...) is
+    # provided by ``_DictMixin`` on the metaclass ``RegistryMeta``, so it is
+    # available for class-level access (e.g. ``MyRegistry.values()``). It is
+    # intentionally *not* re-declared here: bare ``Callable`` annotations on the
+    # class body shadow the metaclass methods and break class-level access under
+    # pyright ("missing self/cls" on ``type[MyRegistry]``).
+    def __new__(cls: "type[_R]", *args, **kwargs) -> "_R":
         if cls is Registry:
-            # A Registry is being explicitly created for decorating
-            return super().__new__(RegistryDecorator)
+            # A bare ``Registry()`` is being explicitly created for decorating.
+            # At runtime this is a ``RegistryDecorator``; for typing purposes it
+            # is reported as ``Registry`` (callers that want the decorator
+            # interface should ``cast`` to ``RegistryDecorator``), so that
+            # subclass instantiation (e.g. ``MyRegistry()``) stays correctly typed.
+            return cast("_R", object.__new__(RegistryDecorator))
         else:
             # Registry is being subclassed
-            return super().__new__(cls)
+            return cast("_R", object.__new__(cls))
 
 
 class RegistryDecorator(Registry, _DictMixin, skip=True):

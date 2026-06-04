@@ -1,3 +1,5 @@
+from typing import cast
+
 from attrs import frozen
 
 from autoregistry import Registry
@@ -39,7 +41,10 @@ def test_attrs_children():
     assert Media["horror_movie"] is HorrorMovie
     assert Movie["horror_movie"] is HorrorMovie
 
-    horror_movie = Media["horror_movie"](
+    # A string-key lookup is typed as the registry base (``type[Media]``), so
+    # instantiating with subclass-specific fields requires narrowing to the
+    # known concrete type.
+    horror_movie = cast("type[HorrorMovie]", Media["horror_movie"])(
         name="Nosferatu",
         year=1922,
         director="Murnau",

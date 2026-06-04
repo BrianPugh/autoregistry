@@ -62,7 +62,7 @@ dev = [
     "pytest>=7.1.2,<9.0.0",
     "pytest-cov>=3,<8",
     "pytest-mock>=3.7.0",
-    "pyright>=1.1.273",
+    "pyright>=1.1.400",
     "ruff>=0.1.0",
     "attrs>=23.1,<27.0",
     "pydantic>=2.0",
@@ -101,6 +101,21 @@ exclude_lines = [
 [tool.pyright]
 venvPath = "."
 venv = ".venv"
+# Only type-check the package and its test/type-safety suites. This keeps build
+# artifacts (dist/, build/), illustrative examples/ (kept readable rather than
+# strictly typed), and scratch files at the repo root out of scope.
+include = [
+    "autoregistry",
+    "tests",
+    "typesafety",
+]
+
+# The typesafety/ directory holds static type-safety tests. Enable
+# reportUnnecessaryTypeIgnoreComment there so that a `# pyright: ignore`
+# asserting an expected error fails if that error ever disappears.
+[[tool.pyright.executionEnvironments]]
+root = "typesafety"
+reportUnnecessaryTypeIgnoreComment = "error"
 
 [tool.ruff]
 target-version = 'py38'
@@ -182,6 +197,13 @@ convention = "numpy"
     "PGH001",  # use of "eval"
     "N806",  # variable names should be lowercase; all of them are type[Registry]
     "N807",  # Function name should not start and end with `__`
+]
+"typesafety/*.py" = [
+    # Bare ``# pyright: ignore`` is intentional here: the diagnostic rule name
+    # for these assertions varies across pyright versions, and the directory's
+    # ``reportUnnecessaryTypeIgnoreComment`` setting already guards that the
+    # expected error still occurs.
+    "PGH003",
 ]
 
 [tool.ruff.lint.pep8-naming]

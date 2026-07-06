@@ -1,4 +1,5 @@
 import warnings
+from typing import TYPE_CHECKING
 
 from pydantic import BaseModel as PydanticBaseModel
 from pydantic.fields import FieldInfo
@@ -6,7 +7,16 @@ from pydantic_core import PydanticUndefined
 
 from ._registry import DICT_METHODS, Registry, RegistryMeta
 
-PydanticBaseModelMetaclass = type(PydanticBaseModel)
+if TYPE_CHECKING:
+    # ``type(PydanticBaseModel)`` is opaque to static type checkers (mypy
+    # rejects a variable as a base class). Import the real metaclass for
+    # analysis only; at runtime it is derived from the public API to avoid
+    # depending on pydantic's private module layout.
+    from pydantic._internal._model_construction import (
+        ModelMetaclass as PydanticBaseModelMetaclass,
+    )
+else:
+    PydanticBaseModelMetaclass = type(PydanticBaseModel)
 
 
 def _update_model_field(cls, field_name, field_info):

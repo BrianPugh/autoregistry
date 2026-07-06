@@ -15,7 +15,7 @@ for that diagnostic varies across pyright versions.
 not collect it), so the import is never executed and needs no runtime backport.
 """
 
-from typing import Any, assert_type, cast
+from typing import Any, Callable, Optional, Union, assert_type, cast
 
 from autoregistry import Registry, RegistryDecorator
 
@@ -41,15 +41,57 @@ def test_class_mode_lookup_returns_subclass_type() -> None:
     assert_type(Foo["bar"](), Foo)
 
 
+def test_class_mode_get_mirrors_getitem() -> None:
+    # ``get`` follows the same self-type rule as ``__getitem__``: registered
+    # values are subclasses of the registry class.
+    assert_type(Foo.get("bar"), Optional[type[Foo]])
+    assert_type(Foo.get("bar", 5), Union[type[Foo], int])
+    # A ``str`` default is itself looked up as a fallback key at runtime; the
+    # union return covers both outcomes.
+    assert_type(Foo.get("bar", "fallback"), Union[type[Foo], str])
+
+
 def test_decorator_interface_via_cast() -> None:
     registry = cast(RegistryDecorator, Registry())
 
     @registry
-    def handler() -> None: ...
+    def handler() -> None:
+        ...
 
     # Registered lookups are intentionally ``Any``: a registry may hold
     # arbitrary classes or functions.
     assert_type(registry["handler"], Any)
+
+
+def test_decorator_preserves_signature() -> None:
+    # ``RegistryDecorator`` is the fully-typed spelling of the decorator
+    # interface (``Registry()`` constructs one at runtime, but is statically
+    # typed as ``Registry``; see ``Registry.__new__``).
+    registry = RegistryDecorator()
+
+    @registry
+    def handler(target: str) -> float:
+        return 1.0
+
+    # Decorating returns the object unchanged: the signature must survive.
+    assert_type(handler("x"), float)
+    handler(None)  # pyright: ignore
+
+    @registry(name="renamed", aliases="alias")
+    def other(count: int) -> str:
+        return str(count)
+
+    assert_type(other(1), str)
+
+
+def test_decorator_registers_class_unchanged() -> None:
+    registry = RegistryDecorator()
+
+    @registry
+    class Widget:
+        pass
+
+    assert_type(Widget(), Widget)
 
 
 def test_keys_must_be_strings() -> None:

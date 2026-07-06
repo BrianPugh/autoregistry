@@ -5,11 +5,23 @@ from collections.abc import KeysView, ValuesView
 from functools import partial
 from inspect import ismodule
 from pathlib import Path
-from types import FunctionType, MethodType
-from typing import TYPE_CHECKING, Any, Generator, Iterable, TypeVar, Union, cast
+from types import FunctionType, MethodType, ModuleType
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Callable,
+    Generator,
+    Iterable,
+    Optional,
+    TypeVar,
+    Union,
+    cast,
+    overload,
+)
 
 _R = TypeVar("_R", bound="Registry")
 _T = TypeVar("_T")
+_D = TypeVar("_D")
 
 from .config import RegistryConfig
 from .exceptions import (
@@ -311,6 +323,23 @@ class RegistryMeta(ABCMeta, _DictMixin):
         def items(cls: "type[_T]") -> "Generator[tuple[str, type[_T]], None, None]":
             ...
 
+        # ``get`` mirrors ``__getitem__``: class-mode lookups yield registered
+        # subclasses. A ``str`` default is itself looked up at runtime (fallback
+        # key), which the ``Union[type[_T], _D]`` return already covers.
+        # mypy rejects the ``cls``-typed overloads as an override of
+        # ``_DictMixin.get`` (it binds ``type[_T]`` to ``type[Never]``), even
+        # though the equivalent non-overloaded self-types above pass.
+        @overload  # type: ignore[override]
+        def get(cls: "type[_T]", key: str) -> "Optional[type[_T]]":
+            ...
+
+        @overload
+        def get(cls: "type[_T]", key: str, default: "_D") -> "Union[type[_T], _D]":
+            ...
+
+        def get(cls: "type[_T]", key: str, default: Any = None) -> Any:
+            ...
+
     def __new__(
         cls,
         cls_name,
@@ -432,7 +461,12 @@ class Registry(metaclass=RegistryMeta, base=True):
 class RegistryDecorator(Registry, _DictMixin, skip=True):
     __name__: str
 
-    def __init__(self, objs=None, /, **config):
+    def __init__(
+        self,
+        objs: Union[Callable, ModuleType, list, tuple, None] = None,
+        /,
+        **config,
+    ):
         """Create a Registry for decorating."""
         # overwrite the registry data so its independent
         # of the Registry object.
@@ -445,6 +479,30 @@ class RegistryDecorator(Registry, _DictMixin, skip=True):
 
         for obj in objs:
             self(obj)
+
+    # Decorating returns the registered object unchanged, so report ``_T``
+    # rather than ``Any`` to preserve the decorated function/class signature.
+    @overload
+    def __call__(
+        self,
+        obj: _T,
+        /,
+        *,
+        name: str = "",
+        aliases: Union[str, None, Iterable[str]] = None,
+    ) -> _T:
+        ...
+
+    @overload
+    def __call__(
+        self,
+        obj: None = None,
+        /,
+        *,
+        name: str = "",
+        aliases: Union[str, None, Iterable[str]] = None,
+    ) -> "Callable[[_T], _T]":
+        ...
 
     def __call__(
         self,

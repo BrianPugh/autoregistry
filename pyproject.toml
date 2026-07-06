@@ -63,6 +63,7 @@ dev = [
     "pytest-cov>=3,<8",
     "pytest-mock>=3.7.0",
     "pyright>=1.1.400",
+    "mypy>=1.14",
     "ruff>=0.1.0",
     "attrs>=23.1,<27.0",
     "pydantic>=2.0",
@@ -116,6 +117,14 @@ include = [
 [[tool.pyright.executionEnvironments]]
 root = "typesafety"
 reportUnnecessaryTypeIgnoreComment = "error"
+
+# Mypy checks only the package itself: it is the second checker guarding
+# consumer-facing type hints (notably the pydantic metaclass and the
+# RegistryDecorator overloads). tests/ and typesafety/ are pyright-only —
+# typesafety/'s negative assertions use `# pyright: ignore` and are expected
+# to error under mypy.
+[tool.mypy]
+files = ["autoregistry"]
 
 [tool.ruff]
 target-version = 'py38'

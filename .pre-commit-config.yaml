@@ -62,3 +62,12 @@ repos:
         language: system
         types: [python]
         pass_filenames: false
+      # Second type checker guarding consumer-facing hints (pydantic metaclass,
+      # RegistryDecorator overloads). Scoped to autoregistry/ via [tool.mypy]
+      # in pyproject.toml; tests/ and typesafety/ are pyright-only.
+      - id: mypy
+        name: mypy
+        entry: uv run mypy
+        language: system
+        types: [python]
+        pass_filenames: false

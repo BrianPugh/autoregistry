@@ -15,7 +15,7 @@ for that diagnostic varies across pyright versions.
 not collect it), so the import is never executed and needs no runtime backport.
 """
 
-from typing import Any, Callable, Optional, Union, assert_type, cast
+from typing import Any, Iterable, Optional, Union, assert_type, cast
 
 from autoregistry import Registry, RegistryDecorator
 
@@ -92,6 +92,29 @@ def test_decorator_registers_class_unchanged() -> None:
         pass
 
     assert_type(Widget(), Widget)
+
+
+def test_decorator_subclass_can_extend_call() -> None:
+    # Subclassing ``RegistryDecorator`` with a widened ``__call__`` (extra
+    # keyword-only options, like a caching registry) must remain legal
+    # alongside the base-class overloads, and decorating must still work.
+    class CachedRegistry(RegistryDecorator):
+        def __call__(
+            self,
+            obj: Any = None,
+            /,
+            *,
+            name: str = "",
+            aliases: Union[str, None, Iterable[str]] = None,
+            maxsize: Optional[int] = None,
+        ) -> Any:
+            return super().__call__(obj, name=name, aliases=aliases)
+
+    cached = CachedRegistry()
+
+    @cached
+    def compute(x: int) -> int:
+        return x
 
 
 def test_keys_must_be_strings() -> None:

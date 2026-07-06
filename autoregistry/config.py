@@ -1,7 +1,7 @@
 import dataclasses
 import re
 from dataclasses import asdict, dataclass
-from typing import Any, Callable, Optional
+from typing import Any, Callable, Dict, Optional
 
 from .exceptions import InvalidNameError
 from .regex import hyphenate, key_split, to_snake_case
@@ -53,7 +53,7 @@ class RegistryConfig:
         obj = dataclasses.replace(self)
         return obj
 
-    def update(self, new: dict) -> None:
+    def update(self, new: Dict[str, Any]) -> None:
         for key, value in new.items():
             if hasattr(self, key):
                 setattr(self, key, value)
